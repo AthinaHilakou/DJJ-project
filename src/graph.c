@@ -34,10 +34,10 @@ int** createAdjMatrix(int numVertices, int maxNeighbors) {
 }
 
 // returns an array of the neighbors for the given vertex
-int* getNeighbors(int** adjMatrix, int vertex, int maxNeighbors) {
-    int* neighbors = (int*) malloc(maxNeighbors * sizeof(int));
+int* getNeighbors(int** adjMatrix, int vertex, int numVertices) {
+    int* neighbors = (int*) malloc(numVertices * sizeof(int));
     int count = 0;
-    for (int i = 0; i < maxNeighbors; i++) {
+    for (int i = 0; i < numVertices; i++) {
         if (adjMatrix[vertex][i] == 1) {
             neighbors[count] = i;
             count++;
@@ -45,6 +45,18 @@ int* getNeighbors(int** adjMatrix, int vertex, int maxNeighbors) {
     }
     return neighbors;
 }
+
+int* getReverseNeighbors(int** adjMatrix, int vertex, int numVertices) {
+    int* neighbors = (int*) malloc(numVertices * sizeof(int));
+    int count = 0;
+    for (int i = 0; i < numVertices; i++) {
+        if (adjMatrix[i][vertex] == 1) {
+            neighbors[count] = i;
+            count++;
+        }
+    }
+    return neighbors;
+} 
 
 void printAdjMatrix(int** adjMatrix, int numVertices) {
     printf("Adjacency Matrix:\n");
