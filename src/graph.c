@@ -14,7 +14,7 @@ void removeEdge(int** adjMatrix, int src, int dest) {
 
 // creates a random adjacency matrix with numVertices vertices and maxNeighbors neighbors per vertex
 int** createAdjMatrix(int numVertices, int maxNeighbors) {
-    if(maxNeighbors > numVertices) {
+    if(maxNeighbors >= numVertices) {
         printf("Error: maxNeighbors cannot be greater than numVertices\n");
         return NULL;
     }
@@ -27,7 +27,10 @@ int** createAdjMatrix(int numVertices, int maxNeighbors) {
             do{ // if there is already an edge from i to randNum, generate a new random number
                 randNum = rand() % numVertices;
             }while (adjMatrix[i][randNum] == 1 || randNum == i);    // dont allow self neighbors
+            // int weight = rand() % 1000 + 1; // generate random weight between 1 and 1000
+            // TODO: save the weight in the adjacency matrix
             adjMatrix[i][randNum] = 1; // set edge from i to randNum
+            // addEdge(adjMatrix, i, randNum);
         }
     }
     return adjMatrix;
