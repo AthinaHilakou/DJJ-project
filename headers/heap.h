@@ -12,11 +12,14 @@ typedef struct{
 typedef struct{
     Node* items; 
     int size; //given by the user, corresponds to K constant
+    int capacity;
 }heap, *Heap;
 
 
 //Functions
-Heap heap_create(int K, Node* items); //create a heap from node list "items" O(n) 
+Heap heap_create(Node* items, int size, int capacity); //create a heap from node list "items" O(n) 
+void heap_insert(Heap h, Node item);
+Node heap_pop(Heap h);
 Node heap_update(Heap h, Node item); //inserts a new item in heap. Old root is popped and returned
 Node heap_find_max(Heap h); 
 void heap_destroy(Heap h);
@@ -25,3 +28,4 @@ void heap_destroy(Heap h);
 //Helper functions
 void heapify(Heap h);
 void bubble_down(Heap h, int root);
+void bubble_up(Heap h, int child);
