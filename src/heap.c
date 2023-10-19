@@ -1,8 +1,8 @@
 #include "../headers/heap.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-
-Heap heap_create(int K, Node *items){
+Heap heap_create(Node *items, int size, int capacity){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -10,10 +10,10 @@ Heap heap_create(int K, Node *items){
         return NULL;
     }
     //set the value of size
-    h->size = K;
- 
+    h->size = size;
+    h->capacity = capacity;
     //Allocating memory for items
-    h->items = (Node*)malloc(K*sizeof(Node));
+    h->items = (Node*)malloc(capacity*sizeof(Node));
  
     //Checking if memory is allocated
     if (h->items == NULL) {
@@ -22,7 +22,7 @@ Heap heap_create(int K, Node *items){
     }
 
     //Put items in heap
-    for(int i = 0; i < K; i++){
+    for(int i = 0; i < capacity; i++){
         h->items[i] = items[i];
     }
 
@@ -30,6 +30,40 @@ Heap heap_create(int K, Node *items){
     //Heapify
     heapify(h);
     return h;
+}
+
+void heap_insert(Heap h, Node item){
+   
+   if(h->size < h->capacity){
+        h->items[h->size] = item;
+        h->size++;
+   }
+   else if(h->size == h->capacity){
+        int new_capacity = (h->capacity)*2;
+        h->items = (Node*)realloc(h->items, new_capacity*sizeof(Node));
+        h->capacity = new_capacity;
+        h->items[h->size] = item;
+        h->size++;
+        bubble_up(h,(h->size-1));
+   }
+
+}
+
+Node heap_pop(Heap h){
+    if(h->size == 0)
+        return;
+    else if(h->size*2 == h->capacity){
+        int new_capacity = h->capacity/2;
+        h->items = (Node*)realloc(h->items, new_capacity*sizeof(Node));
+        h->capacity = new_capacity;
+    }
+    Node ret;
+    ret = h->items[0];
+    h->items[0] = h->items[(h->size-1)];
+    h->items[(h->size-1)] = NULL;
+    h->size--;
+    bubble_down(h,0);
+    return ret;
 }
 
 
@@ -79,6 +113,20 @@ void bubble_down(Heap h, int root){
     }
     else 
         return;
+}
+
+
+void bubble_up(Heap h, int child){
+    if (child == 0 || child < 0 || (child > h->size - 1))
+        return;
+    int parent = (child - 1)/2;
+    Node temp;
+    if(h->items[parent]->weight < h->items[child]->weight){
+        temp = h->items[parent];
+        h->items[parent] = h->items[child];
+        h->items[child] = temp;
+        bubble_up(h,parent);
+    }
 }
 
 void heapify(Heap h){
