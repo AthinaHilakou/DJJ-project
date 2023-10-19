@@ -18,8 +18,7 @@ typedef struct{
 }heap, *Heap;
 
 
-//TODO node should not be visible to outside functions
-//TODO update returns true/false 
+
 
 
 //Functions
