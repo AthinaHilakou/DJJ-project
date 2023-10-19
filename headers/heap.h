@@ -10,18 +10,25 @@ typedef struct{
 }node ,*Node;
 
 typedef struct{
-    Node* items; 
+    Node array; 
     int size; //given by the user, corresponds to K constant
     int capacity;
+    int (*weight_fun)(void* a, void *b);
+    void *data_of_interest;//distance of elements from this node are used as weights in the heap  
 }heap, *Heap;
 
 
+//TODO node should not be visible to outside functions
+//TODO update returns true/false 
+
+
 //Functions
-Heap heap_create(Node* items, int size, int capacity); //create a heap from node list "items" O(n) 
-void heap_insert(Heap h, Node item);
-Node heap_pop(Heap h);
-Node heap_update(Heap h, Node item); //inserts a new item in heap. Old root is popped and returned
-Node heap_find_max(Heap h); 
+Heap heap_create(void *data, void *data_of_interest,
+ int (*weight_fun)(void* a, void *b), int data_size, int capacity);
+void heap_insert(Heap h, void *item);
+void *heap_pop(Heap h);
+bool heap_update(Heap h, void *item, void *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
+void *heap_find_max(Heap h);
 void heap_destroy(Heap h);
 
 
