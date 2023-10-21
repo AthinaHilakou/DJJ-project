@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Heap heap_create(void *data, void *data_of_interest,
- int (*weight_fun)(void* a, void *b), int data_size, int capacity){
+Heap heap_create(void *data_array, void *data_of_interest,
+ int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -11,13 +11,13 @@ Heap heap_create(void *data, void *data_of_interest,
         return NULL;
     }
     //set the value of size
-    h->size = data_size;
+    h->size = array_size;
     h->capacity = capacity;
     h->weight_fun = weight_fun;
     h->data_of_interest = data_of_interest;
     //Allocating memory for items
     h->array = (Node)malloc(capacity*sizeof(node));
- 
+
     //Checking if memory is allocated
     if (h->array == NULL){
         printf("Memory error");
@@ -25,9 +25,9 @@ Heap heap_create(void *data, void *data_of_interest,
     }
 
     //Put items in heap
-    for(int i = 0; i < data_size; i++){
-        h->array[i].item = data[i];
-        h->array[i].weight = (*weight_fun)(data[i], data_of_interest);
+    for(int i = 0; i < array_size; i++){
+        h->array[i].item = data_array + i*data_size;  // TODO fix data size
+        h->array[i].weight = (*weight_fun)(data_array + i*data_size, data_of_interest);
     }
 
 

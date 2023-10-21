@@ -2,7 +2,8 @@
 /*Note: this specific heap implementation is used to represent the K nearest neighbors
 of a node in a KNNG, therefore it is *not* scalable, as K
 is a constant. According to the definition of a KKNG a heap of this kind contains exactly K elements.*/
-
+#include <stdlib.h>
+#include <stdbool.h>
 //Structures 
 typedef struct{
     void *item; //item of unknown data type, general implementation
@@ -22,8 +23,10 @@ typedef struct{
 
 
 //Functions
-Heap heap_create(void *data, void *data_of_interest,
- int (*weight_fun)(void* a, void *b), int data_size, int capacity);
+// Heap heap_create(void *data, void *data_of_interest,
+// int (*weight_fun)(void* a, void *b), int data_size, int capacity);
+Heap heap_create(void *data_array, void *data_of_interest,
+ int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size){
 void heap_insert(Heap h, void *item);
 void *heap_pop(Heap h);
 bool heap_update(Heap h, void *item, void *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
