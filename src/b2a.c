@@ -10,6 +10,7 @@
 /*                                                                        */
 /**************************************************************************/
 #include <stdio.h>
+#include<stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -26,7 +27,7 @@ int NUM_FLOAT_PER_RECORD ;
 
 
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
   /* char *theRecord ; */
