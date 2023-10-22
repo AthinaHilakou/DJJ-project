@@ -26,7 +26,7 @@ Heap heap_create(void *data_array, void *data_of_interest,
 
     //Put items in heap
     for(int i = 0; i < array_size; i++){
-        h->array[i].item = data_array + i*data_size;  // TODO fix data size
+        h->array[i].item = data_array + i*data_size;
         h->array[i].weight = (*weight_fun)(data_array + i*data_size, data_of_interest);
     }
 
@@ -71,6 +71,13 @@ void *heap_pop(Heap h){
     return ret;
 }
 
+int get_heap_size(Heap h){
+    return h->size;
+}
+
+void get_heap_item_from_index(Heap h, int index){
+    return h->array[index].item;
+}
 
 
 bool heap_update(Heap h, void *item, void *old_root){
