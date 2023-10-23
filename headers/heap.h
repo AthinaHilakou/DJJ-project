@@ -8,7 +8,6 @@ is a constant. According to the definition of a KKNG a heap of this kind contain
 typedef struct{
     void *item; //item of unknown data type, general implementation
     int weight; //weight of item in heap, a positive integer
-    int index; //index of item in the original array
 }node ,*Node;
 
 typedef struct{
@@ -20,12 +19,9 @@ typedef struct{
 }heap, *Heap;
 
 
-
-
-
 //Functions
 Heap heap_create(void *data_array, void *data_of_interest,
- int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size){
+ int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size);
 void heap_insert(Heap h, void *item);
 void *heap_pop(Heap h);
 bool heap_update(Heap h, void *item, void *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
@@ -37,7 +33,6 @@ void heap_destroy(Heap h);
 void heapify(Heap h);
 void bubble_down(Heap h, int root);
 void bubble_up(Heap h, int child);
-int get_heap_size(Heap h){
-
+int get_heap_size(Heap h);
 // Heap heap_create(void *data, void *data_of_interest,
 // int (*weight_fun)(void* a, void *b), int data_size, int capacity);

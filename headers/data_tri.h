@@ -7,6 +7,8 @@ typedef struct myData_tri{
 
 void *import_data_tri(char * filename); // "datasets/ascii/5k.orig.tri.ascii"
 
+void free_data_tri(Data_tri *data_ptr); // free data_ptr
+
 // euclidean distance
 int dist_euc(Data_tri *a, Data_tri *b);
 
