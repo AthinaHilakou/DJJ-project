@@ -21,10 +21,9 @@ void *import_data_tri(char* filename){
         exit(1);
     }
     size_t size = sb.st_size;
-    int lines = size / (41*sizeof(char));
+    int lines = size / (41*sizeof(char));       // each line has 40 chars and '\n
 
     Data_tri *data_ptr = malloc(lines * sizeof(Data_tri));
-
     if(data_ptr == NULL){
         perror("malloc");
         exit(1);
@@ -49,6 +48,10 @@ void *import_data_tri(char* filename){
     }
 
     return data_ptr;
+}
+
+void free_data_tri(Data_tri *data_ptr){
+    free(data_ptr);
 }
 
 
