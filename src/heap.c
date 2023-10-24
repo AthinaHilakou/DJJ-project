@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
-Heap heap_create(void *data_array, void *data_of_interest,
- int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size){
+Heap heap_create(int *data_array, int data_of_interest,
+ int (*weight_fun)(int a, int b), int array_size, int capacity){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -27,8 +27,8 @@ Heap heap_create(void *data_array, void *data_of_interest,
 
     //Put items in heap
     for(int i = 0; i < array_size; i++){
-        h->array[i].item = data_array + i*data_size;
-        h->array[i].weight = (*weight_fun)(data_array + i*data_size, data_of_interest);
+        h->array[i].index = data_array[i];
+        h->array[i].weight = (*weight_fun)(data_array[i], data_of_interest);
     }
 
 
@@ -37,11 +37,11 @@ Heap heap_create(void *data_array, void *data_of_interest,
     return h;
 }
 
-void heap_insert(Heap h, void *item){
+void heap_insert(Heap h, int index){
    
    if(h->size < h->capacity){
-        h->array[h->size].item = item;  // insert item
-        h->array[h->size].weight = h->weight_fun(h->data_of_interest, item);    // calculate weight
+        h->array[h->size].index = index;  // insert item
+        h->array[h->size].weight = h->weight_fun(h->data_of_interest, index);    // calculate weight
         h->size++;                  // update size of heap
         bubble_up(h,(h->size-1));   // restore heap property
    }
@@ -49,15 +49,14 @@ void heap_insert(Heap h, void *item){
         int new_capacity = (h->capacity)*2; // double capacity
         h->array = (Node)realloc(h->array, new_capacity*sizeof(node));  // reallocate memory
         h->capacity = new_capacity; // update capacity
-        Node temp = NULL;
-        h->array[h->size] = *temp; // insert item
+        h->array[h->size].index = index; // insert item
         h->size++;  // update size of heap
         bubble_up(h,(h->size-1)); // restore heap property
    }
 
 }
 
-void *heap_pop(Heap h){
+int heap_pop(Heap h){
     if(h->size == 0)
         return NULL;
     else if(h->size*4 == h->capacity){
@@ -65,11 +64,10 @@ void *heap_pop(Heap h){
         h->array = (Node)realloc(h->array, new_capacity*sizeof(node));
         h->capacity = new_capacity;
     }
-    void *ret;
-    ret = h->array[0].item;
-    h->array[0] = h->array[(h->size-1)];
-    Node temp = NULL;
-    h->array[(h->size-1)] = *temp;
+    int ret;
+    ret = h->array[0].index;
+    h->array[0].index = h->array[(h->size-1)].index;
+    h->array[0].weight = h->array[(h->size-1)].weight;
     h->size--;
     bubble_down(h,0);
     return ret;
@@ -79,17 +77,13 @@ int get_heap_size(Heap h){
     return h->size;
 }
 
-void get_heap_item_from_index(Heap h, int index){
-    return h->array[index].item;
-}
-
-bool heap_update(Heap h, void *item, void *old_root){
-   bool ret_value = false;
-   old_root = NULL;  
-   int item_weight = h->weight_fun(h->data_of_interest, item);
+bool heap_update(Heap h, int index, int *old_root){
+   bool ret_value = false;  
+   old_root = NULL;
+   int item_weight = h->weight_fun(h->data_of_interest, index);
    if(item_weight < h->array[0].weight){
-        old_root = h->array[0].item;
-        h->array[0].item = item;
+        *old_root = h->array[0].index;
+        h->array[0].index = index;
         h->array[0].weight = item_weight;
         ret_value = true;
         bubble_down(h, 0); //bubble down from root to maintain heap property
@@ -97,8 +91,8 @@ bool heap_update(Heap h, void *item, void *old_root){
    return ret_value;
 }
 
-void *heap_find_max(Heap h){
-    return h->array[0].item;
+int heap_find_max(Heap h){
+    return h->array[0].index;
 }
 
 void heap_destroy(Heap h){
@@ -114,33 +108,32 @@ void bubble_down(Heap h, int root){
     if(left > last) // leaf node, no children
         return;
 
-    int min;
-    int l_weight = INT_MAX;
+    int max;
+    int l_weight, r_weight;
     if(left < last){                        // if left child exists
         l_weight = (h->array[left].weight);
     }
-    int r_weight = INT_MAX;
     if(right < last){                       // if right child exists
         r_weight = (h->array[right].weight);
     }
 
-    // find the child with the minimum weight
+    // find the child with the maximum weight
     if(l_weight > r_weight)
-        min = left;
+        max = left;
     else 
-        min = right;
+        max = right;
     
-    void *temp;
+    int temp;
     int temp_weight;
     int temp_index;
-    if ((h->array[root].weight) > (h->array[min].weight)){
-        temp = h->array[root].item;
+    if ((h->array[root].weight) < (h->array[max].weight)){
+        temp = h->array[root].index;
         temp_weight = h->array[root].weight;
-        h->array[root].item = h->array[min].item;
-        h->array[root].weight = h->array[min].weight;
-        h->array[min].item = temp;
-        h->array[min].weight = temp_weight;
-        bubble_down(h,min);
+        h->array[root].index = h->array[max].index;
+        h->array[root].weight = h->array[max].weight;
+        h->array[max].index = temp;
+        h->array[max].weight = temp_weight;
+        bubble_down(h,max);
     }
 }
 
@@ -148,17 +141,17 @@ void bubble_up(Heap h, int child){
     if (child == 0 || child < 0 || (child > h->size - 1))
         return;
     int parent = (child - 1)/2; // zero-based indexing
-    void *temp;
+    int temp;
     int temp_weight;
     int temp_index;
 
     // swap if parent node distance is greater than child node distance
-    if(h->array[parent].weight > h->array[child].weight){
-        temp = h->array[parent].item;
+    if(h->array[parent].weight < h->array[child].weight){
+        temp = h->array[parent].index;
         temp_weight = h->array[parent].weight;
-        h->array[parent].item = h->array[child].item;
+        h->array[parent].index = h->array[child].index;
         h->array[parent].weight = h->array[child].weight;
-        h->array[child].item = temp;
+        h->array[child].index = temp;
         h->array[child].weight = temp_weight;
         bubble_up(h,parent);
     }

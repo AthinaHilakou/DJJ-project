@@ -1,31 +1,47 @@
 //An implementation of an ADT heap
-/*Note: this specific heap implementation is used to represent the K nearest neighbors
-of a node in a KNNG, therefore it is *not* scalable, as K
-is a constant. According to the definition of a KKNG a heap of this kind contains exactly K elements.*/
+//heap stores indexes of data array 
 #include <stdlib.h>
 #include <stdbool.h>
 //Structures 
 typedef struct{
-    void *item; //item of unknown data type, general implementation
-    int weight; //weight of item in heap, a positive integer
+    int index; //index of item in data array 
+    int weight; //dist of item from data_of_interest, a positive integer
 }node ,*Node;
 
 typedef struct{
-    Node array; 
-    int size; //given by the user, corresponds to K constant
-    int capacity;
-    int (*weight_fun)(void* a, void *b);
-    void *data_of_interest;//distance of elements from this node are used as weights in the heap  
+    Node array; //array of indexes
+    int size; //number of items in array
+    int capacity; //heap capacity 
+    int (*weight_fun)(int a, int b); //calculates distance between items given their indexes, distance is used as weight in the heap
+    int data_of_interest;//distance of elements from this item is used as weight in the heap  
 }heap, *Heap;
 
 
 //Functions
-Heap heap_create(void *data_array, void *data_of_interest,
- int (*weight_fun)(void* a, void *b), int array_size, int capacity, int data_size);
-void heap_insert(Heap h, void *item);
-void *heap_pop(Heap h);
-bool heap_update(Heap h, void *item, void *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
-void *heap_find_max(Heap h);
+/*Heap Create
+  data_array: array of int indexes
+  data_of_interest: index of item we want to calculate distances from 
+  weight_fun: given two indexes, calculates distance between the items they correspond to
+  array_size: size of data_array
+  capacity: heap capacity
+  returns a max heap based on parameters specified
+  */
+Heap heap_create(int *data_array, int data_of_interest, int (*weight_fun)(int a, int b), int array_size, int capacity);
+/*Heap insert
+  inserts item in heap h, corresponding to index specified*/
+void heap_insert(Heap h, int index);
+/*Heap pop
+  pops top item from heap h */
+int heap_pop(Heap h);
+/*Heap update 
+  inserts index in heap provided that thw weight corresponding to index is smaller than that of the old root,
+  If index is inserted the old root is popped and returned in old_root*/
+bool heap_update(Heap h, int index, int *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
+/*Heap Find Max 
+  returns index of heap top*/
+int heap_find_max(Heap h);
+/*Heap Destroy
+  deallocates memory for heap*/
 void heap_destroy(Heap h);
 
 
@@ -34,5 +50,3 @@ void heapify(Heap h);
 void bubble_down(Heap h, int root);
 void bubble_up(Heap h, int child);
 int get_heap_size(Heap h);
-// Heap heap_create(void *data, void *data_of_interest,
-// int (*weight_fun)(void* a, void *b), int data_size, int capacity);
