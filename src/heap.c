@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-Heap heap_create(int *data_array, int data_of_interest,
- int (*weight_fun)(int a, int b), int array_size, int capacity){
+Heap heap_create(int *data_array, int data_of_interest, int array_size){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -13,11 +12,10 @@ Heap heap_create(int *data_array, int data_of_interest,
     }
     //set the value of size
     h->size = array_size;   // size of input array
-    h->capacity = capacity; // current max size of heap
-    h->weight_fun = weight_fun; // weight function specific to the data type
+    h->capacity = 3*array_size/2; // current max size of heap
     h->data_of_interest = data_of_interest; // the "owner" of the heap
     //Allocating memory for items
-    h->array = (Node)malloc(capacity*sizeof(node));
+    h->array = (Node)malloc((h->capacity)*sizeof(node));
 
     //Checking if memory is allocated
     if (h->array == NULL){
@@ -28,7 +26,6 @@ Heap heap_create(int *data_array, int data_of_interest,
     //Put items in heap
     for(int i = 0; i < array_size; i++){
         h->array[i].index = data_array[i];
-        h->array[i].weight = (*weight_fun)(data_array[i], data_of_interest);
     }
 
 
@@ -37,11 +34,11 @@ Heap heap_create(int *data_array, int data_of_interest,
     return h;
 }
 
-void heap_insert(Heap h, int index){
+void heap_insert(Heap h, int index, int weight){
    
    if(h->size < h->capacity){
         h->array[h->size].index = index;  // insert item
-        h->array[h->size].weight = h->weight_fun(h->data_of_interest, index);    // calculate weight
+        h->array[h->size].weight = weight; // insert weight
         h->size++;                  // update size of heap
         bubble_up(h,(h->size-1));   // restore heap property
    }
@@ -77,14 +74,15 @@ int get_heap_size(Heap h){
     return h->size;
 }
 
-bool heap_update(Heap h, int index, int *old_root){
+int index_from_heap(Heap h, int node_index){
+    return h->array[node_index].index;
+}
+
+bool heap_update(Heap h, int index, int weight){
    bool ret_value = false;  
-   old_root = NULL;
-   int item_weight = h->weight_fun(h->data_of_interest, index);
-   if(item_weight < h->array[0].weight){
-        *old_root = h->array[0].index;
+   if(weight < h->array[0].weight){
         h->array[0].index = index;
-        h->array[0].weight = item_weight;
+        h->array[0].weight = weight;
         ret_value = true;
         bubble_down(h, 0); //bubble down from root to maintain heap property
    }
@@ -110,9 +108,9 @@ void bubble_down(Heap h, int root){
 
     int max;
     int l_weight, r_weight;
-    if(left < last){                        // if left child exists
-        l_weight = (h->array[left].weight);
-    }
+    
+    l_weight = (h->array[left].weight);
+    r_weight = INT_MIN;
     if(right < last){                       // if right child exists
         r_weight = (h->array[right].weight);
     }

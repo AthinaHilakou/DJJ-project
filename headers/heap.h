@@ -12,7 +12,6 @@ typedef struct{
     Node array; //array of indexes
     int size; //number of items in array
     int capacity; //heap capacity 
-    int (*weight_fun)(int a, int b); //calculates distance between items given their indexes, distance is used as weight in the heap
     int data_of_interest;//distance of elements from this item is used as weight in the heap  
 }heap, *Heap;
 
@@ -21,27 +20,26 @@ typedef struct{
 /*Heap Create
   data_array: array of int indexes
   data_of_interest: index of item we want to calculate distances from 
-  weight_fun: given two indexes, calculates distance between the items they correspond to
   array_size: size of data_array
   capacity: heap capacity
   returns a max heap based on parameters specified
   */
-Heap heap_create(int *data_array, int data_of_interest, int (*weight_fun)(int a, int b), int array_size, int capacity);
-/*Heap insert
-  inserts item in heap h, corresponding to index specified*/
-void heap_insert(Heap h, int index);
+Heap heap_create(int *data_array, int data_of_interest, int array_size);
+/*Inserts item in heap h, corresponding to index specified*/
+void heap_insert(Heap h, int index, int weight);
 /*Heap pop
   pops top item from heap h */
 int heap_pop(Heap h);
 /*Heap update 
   inserts index in heap provided that thw weight corresponding to index is smaller than that of the old root,
   If index is inserted the old root is popped and returned in old_root*/
-bool heap_update(Heap h, int index, int *old_root); //upon return old_root contains the old root of the heap, if it was updated, else null
+bool heap_update(Heap h, int index, int weight);//upon return old_root contains the old root of the heap, if it was updated, else null
 /*Heap Find Max 
   returns index of heap top*/
 int heap_find_max(Heap h);
 /*Heap Destroy
   deallocates memory for heap*/
+int index_from_heap(Heap h, int node_index);
 void heap_destroy(Heap h);
 
 
