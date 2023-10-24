@@ -1,3 +1,5 @@
 test*
 *.o
 *.Identifier
+b2a
+a.out

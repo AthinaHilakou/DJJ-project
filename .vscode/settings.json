@@ -1,6 +1,9 @@
 {
   "files.associations": {
+    "cmath": "c",
+    "fcntl.h": "c",
     "time.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "stdlib.h": "c"
   }
 }
