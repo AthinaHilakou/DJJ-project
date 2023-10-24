@@ -49,8 +49,7 @@ void heap_insert(Heap h, void *item){
         int new_capacity = (h->capacity)*2; // double capacity
         h->array = (Node)realloc(h->array, new_capacity*sizeof(node));  // reallocate memory
         h->capacity = new_capacity; // update capacity
-        Node temp = NULL;
-        h->array[h->size] = *temp; // insert item
+        h->array[h->size].item = item; // insert item
         h->size++;  // update size of heap
         bubble_up(h,(h->size-1)); // restore heap property
    }
@@ -68,8 +67,7 @@ void *heap_pop(Heap h){
     void *ret;
     ret = h->array[0].item;
     h->array[0] = h->array[(h->size-1)];
-    Node temp = NULL;
-    h->array[(h->size-1)] = *temp;
+    h->array[(h->size-1)].item = NULL;
     h->size--;
     bubble_down(h,0);
     return ret;
@@ -114,33 +112,32 @@ void bubble_down(Heap h, int root){
     if(left > last) // leaf node, no children
         return;
 
-    int min;
-    int l_weight = INT_MAX;
+    int max;
+    int l_weight, r_weight;
     if(left < last){                        // if left child exists
         l_weight = (h->array[left].weight);
     }
-    int r_weight = INT_MAX;
     if(right < last){                       // if right child exists
         r_weight = (h->array[right].weight);
     }
 
-    // find the child with the minimum weight
+    // find the child with the maximum weight
     if(l_weight > r_weight)
-        min = left;
+        max = left;
     else 
-        min = right;
+        max = right;
     
     void *temp;
     int temp_weight;
     int temp_index;
-    if ((h->array[root].weight) > (h->array[min].weight)){
+    if ((h->array[root].weight) < (h->array[max].weight)){
         temp = h->array[root].item;
         temp_weight = h->array[root].weight;
-        h->array[root].item = h->array[min].item;
-        h->array[root].weight = h->array[min].weight;
-        h->array[min].item = temp;
-        h->array[min].weight = temp_weight;
-        bubble_down(h,min);
+        h->array[root].item = h->array[max].item;
+        h->array[root].weight = h->array[max].weight;
+        h->array[max].item = temp;
+        h->array[max].weight = temp_weight;
+        bubble_down(h,max);
     }
 }
 
@@ -153,7 +150,7 @@ void bubble_up(Heap h, int child){
     int temp_index;
 
     // swap if parent node distance is greater than child node distance
-    if(h->array[parent].weight > h->array[child].weight){
+    if(h->array[parent].weight < h->array[child].weight){
         temp = h->array[parent].item;
         temp_weight = h->array[parent].weight;
         h->array[parent].item = h->array[child].item;
