@@ -1,5 +1,5 @@
 #include "../headers/graph.h"
-#include "../headers/data_tri.h"
+#include "../headers/data.h"
 #include "../headers/heap.h"
 #include "../headers/data.h"
 #include <stdlib.h>
@@ -9,8 +9,8 @@ int main() {
     srand(time(NULL)); // seed random number generator
     int numVertices = 20;
     int maxNeighbors = 10;
-
-    Data_tri *data = (Data_tri *) import_data_tri("datasets/ascii/5k.orig.tri.ascii");
+    int data_size;
+    Data data = import_data("datasets/given/00000020.bin", &data_size);
     int **myadjMatrix = (int **) createAdjMatrix(numVertices, maxNeighbors);
     
     Heap *neighbors;
@@ -23,7 +23,8 @@ int main() {
         // get real and reverse neighbors
         adjMatrix = getNeighbors(myadjMatrix, j, numVertices, &neighbors_count);
         // create heap from the neighbors & reverse neighbors
-        neighbors[j] = heap_create(adjMatrix, j, neighbors_count);
+        int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
+        neighbors[j] = heap_create(adjMatrix, j, neighbors_count, weights);
     }
 
     
@@ -35,7 +36,8 @@ int main() {
         // get real and reverse neighbors
         adjMatrix = getAllNeighbors(myadjMatrix, j, numVertices, &all_neighbors_count);
         // create heap from the neighbors & reverse neighbors
-        all_neighbors[j] = heap_create(adjMatrix, j, all_neighbors_count);
+        int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
+        all_neighbors[j] = heap_create(adjMatrix, j, all_neighbors_count, weights);
     }
 
     // main loop
@@ -52,7 +54,7 @@ int main() {
                 int neighbor_neighbors_size = get_heap_size(all_neighbors[neighbor_index]);
                 for(int k = 0; k < neighbor_neighbors_size; k++){
                     int neighbor_neighbor_index = index_from_heap(all_neighbors[neighbor_index], k);
-                    int weight = dist_msr(&data[i], &data[neighbor_neighbor_index]);
+                    int weight = dist_msr(data, i, neighbor_neighbor_index);
 
                     update_counter += heap_update(neighbors[i], neighbor_neighbor_index, weight);
 

@@ -1,4 +1,5 @@
 #include "../headers/heap.h"
+#include "../headers/data.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -80,8 +81,6 @@ int get_heap_size(Heap h){
 int index_from_heap(Heap h, int node_index){
     return h->array[node_index].index;
 }
-
-// int *get_weights(int *array,
 
 bool heap_update(Heap h, int index, int weight){
    bool ret_value = false;  

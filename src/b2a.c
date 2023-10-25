@@ -27,7 +27,7 @@ int NUM_FLOAT_PER_RECORD ;
 
 
 
-int b2a_fun(int argc, char *argv[])
+int b2a(int argc, char *argv[])
 {
 
   /* char *theRecord ; */
@@ -41,9 +41,9 @@ int b2a_fun(int argc, char *argv[])
   float tempFloat ;
 
 
-  if (argc < 3)
+  if (argc < 2)
   { 
-    printf("usage: %s filename numFloats_per_record \n", argv[0]) ; 
+    printf("usage: %s filename \n", argv[0]) ; 
     exit(1) ; 
   }
 
@@ -79,6 +79,9 @@ int b2a_fun(int argc, char *argv[])
   returnVal = 4 ;
   offset = 0 ;
   i = 0 ;
+  int lines = read(rp1, &theRecord, sizeof(int) ) ;
+  printf("lines are %d", lines);
+
   while (returnVal == 4)
   {
     returnVal = lseek(rp1, offset, SEEK_SET) ;
@@ -86,11 +89,11 @@ int b2a_fun(int argc, char *argv[])
     if (returnVal < sizeof(float))
       exit(1) ;
     /* printf("%12.5f ", *(float *) theRecord) ; */
-    printf("%12.8f ", *(float *) theRecord) ;
+    // printf("%12.8f ", *(float *) theRecord) ;
     offset += 4 ;
     if ( ((i++ + 1) % NUM_FLOAT_PER_RECORD) == 0)
     {
-      printf("\n") ;
+      // printf("\n") ;
       i = 0 ;
     }
   }
