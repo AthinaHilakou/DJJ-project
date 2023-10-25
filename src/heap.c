@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-Heap heap_create(int *data_array, int data_of_interest, int array_size){
+Heap heap_create(int *data_array, int data_of_interest, int array_size, int *weights){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -26,6 +26,9 @@ Heap heap_create(int *data_array, int data_of_interest, int array_size){
     //Put items in heap
     for(int i = 0; i < array_size; i++){
         h->array[i].index = data_array[i];
+        // printf("\nindex: %d\n", h->array[i].index);
+        h->array[i].weight = weights[i];
+        // printf("weight: %d\n", h->array[i].weight);
     }
 
 
@@ -55,7 +58,7 @@ void heap_insert(Heap h, int index, int weight){
 
 int heap_pop(Heap h){
     if(h->size == 0)
-        return NULL;
+        return -1;
     else if(h->size*4 == h->capacity){
         int new_capacity = h->capacity/2;
         h->array = (Node)realloc(h->array, new_capacity*sizeof(node));
@@ -77,6 +80,8 @@ int get_heap_size(Heap h){
 int index_from_heap(Heap h, int node_index){
     return h->array[node_index].index;
 }
+
+// int *get_weights(int *array,
 
 bool heap_update(Heap h, int index, int weight){
    bool ret_value = false;  
@@ -103,15 +108,15 @@ void bubble_down(Heap h, int root){
     int left = (2*(root+1)-1);
     int right = 2*(root+1);
     int last = ((h->size)-1);
-    if(left > last) // leaf node, no children
+    if(left > last) // if it's a leaf node, skip this
         return;
 
     int max;
     int l_weight, r_weight;
     
-    l_weight = (h->array[left].weight);
+    l_weight = (h->array[left].weight); // we know this exists
     r_weight = INT_MIN;
-    if(right < last){                       // if right child exists
+    if(right < last){                       // check if right child exists
         r_weight = (h->array[right].weight);
     }
 

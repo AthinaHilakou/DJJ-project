@@ -24,7 +24,7 @@ typedef struct{
   capacity: heap capacity
   returns a max heap based on parameters specified
   */
-Heap heap_create(int *data_array, int data_of_interest, int array_size);
+Heap heap_create(int *data_array, int data_of_interest, int array_size, int *weights);
 /*Inserts item in heap h, corresponding to index specified*/
 void heap_insert(Heap h, int index, int weight);
 /*Heap pop

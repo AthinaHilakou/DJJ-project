@@ -27,8 +27,10 @@ run: $(BIN)
 	./$(BIN)
 
 tests: $(TESTS) $(BIN)
-	./$(TESTS) $(BIN)
-
+	$(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o $(TESTS) -o $(TESTS:.c=) -lm
+	./$(TESTS:.c=)
+do:
+	./$(TESTS:.c=)
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN)
