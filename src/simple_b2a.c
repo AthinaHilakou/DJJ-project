@@ -13,7 +13,7 @@ struct DataLine {
     float float4;
 };
 
-int main() {
+int simple_b2a_fun() {
     const char *file_path = "datasets/bin/5k.rect.normal.bin";
     int fd = open(file_path, O_RDONLY);
     if (fd == -1) {

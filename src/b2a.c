@@ -27,7 +27,7 @@ int NUM_FLOAT_PER_RECORD ;
 
 
 
-int main(int argc, char *argv[])
+int b2a_fun(int argc, char *argv[])
 {
 
   /* char *theRecord ; */

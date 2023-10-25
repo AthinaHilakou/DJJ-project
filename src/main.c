@@ -48,10 +48,10 @@ int main() {
             int all_neighbors_size = get_heap_size(all_neighbors[i]);
             for(int j = 0; j < all_neighbors_size; j++){
                 // for each neighbor of neighbor
-                int neighbor_index = heap_from_idex(all_neighbors[i], j);
+                int neighbor_index = index_from_heap(all_neighbors[i], j);
                 int neighbor_neighbors_size = get_heap_size(all_neighbors[neighbor_index]);
                 for(int k = 0; k < neighbor_neighbors_size; k++){
-                    int neighbor_neighbor_index = heap_from_idex(all_neighbors[neighbor_index], k);
+                    int neighbor_neighbor_index = index_from_heap(all_neighbors[neighbor_index], k);
                     int weight = dist_msr(&data[i], &data[neighbor_neighbor_index]);
 
                     update_counter += heap_update(neighbors[i], neighbor_neighbor_index, weight);
@@ -60,7 +60,7 @@ int main() {
                     }
                 }
             }
-            break;
+            // break;
         }
 
     
