@@ -28,7 +28,7 @@ void *import_data(char* filename, int *data_size){
         exit(1);
     }
     size_t size = sb.st_size;
-    uint lines;       // each line has 40 chars and '\n
+    uint lines;       
 
     fread(&lines, sizeof(lines), 1, fp);
     printf("lines are %d\n", lines);
