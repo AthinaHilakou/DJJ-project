@@ -30,7 +30,7 @@ void *import_data(char* filename, int *data_size){
     }
     int fd = fileno(fp);
 
-    int lines;
+    uint lines;       
 
     fread(&lines, sizeof(__uint32_t), 1, fp);
     printf("lines are %d\n", lines);
