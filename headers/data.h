@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <math.h>
-// make sure to convert big/low endian to machine integer
 
 #pragma once
 #define DATA_LENTH 100
