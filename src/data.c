@@ -13,6 +13,13 @@
 // } data, *Data;
 
 
+float readfloat(FILE *f) {
+  float v;
+  fread((void*)(&v), sizeof(v), 1, f);
+  return v;
+}
+
+
 
 void *import_data(char* filename, int *data_size){
 
@@ -21,45 +28,40 @@ void *import_data(char* filename, int *data_size){
         perror("fopen");
         exit(1);
     }
+    int fd = fileno(fp);
 
-    struct stat sb;
-    if (fstat(fileno(fp), &sb) == -1) {
-        perror("fstat");
-        exit(1);
-    }
-    size_t size = sb.st_size;
     uint lines;       
 
-    fread(&lines, sizeof(lines), 1, fp);
+    fread(&lines, sizeof(__uint32_t), 1, fp);
     printf("lines are %d\n", lines);
     *data_size = lines;
-    return 0;
 
-    // Data *data_ptr = malloc(lines * sizeof(Data_tri));
-    // if(data_ptr == NULL){
-    //     perror("malloc");
-    //     exit(1);
-    // }
+    Data data_ptr = malloc(lines * sizeof(struct mydata));
+    if(data_ptr == NULL){
+        perror("malloc");
+        exit(1);
+    }
 
-    // int a, b, c, d;
-    // for(int i  = 1; i < lines; i++){
+    float temp;
+    
+    for(int i  = 0; i < lines; i++){
+        printf("i is %d\n", i);
+        for(int j = 0; j < 100; j++){
+            // Read the float values
+            data_ptr[i].data_array[j] = readfloat(fp);
+        }
 
-    //     if (fseek(fp, (i - 1) * 41 * sizeof(char), SEEK_SET) != 0) {
-    //         perror("fseek");
-    //         exit(1);
-    //     }
-    //     if (fscanf(fp, "%d %d %d %d", &a, &b, &c, &d) != 4) {
-    //         perror("fscanf");
-    //         exit(1);
-    //     }
-    //     // a is the index, we dont need it
-    //     data_ptr[i].x = b;
-    //     data_ptr[i].y = c;
-    //     data_ptr[i].z = d;
+    }
 
-    // }
+    for(int i = 0; i < lines; i++){
+        printf("i is %d: ", i);
+        for(int j = 0; j < 20; j++){
+            printf("%5.4f ", data_ptr[i].data_array[j]);
+        }
+        printf("\n");
+    }
 
-    // return data_ptr;
+    return data_ptr;
 }
 
 void free_data(Data *data_ptr){

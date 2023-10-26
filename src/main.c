@@ -8,24 +8,35 @@
 int main() {
     srand(time(NULL)); // seed random number generator
     int numVertices = 20;
-    int maxNeighbors = 10;
+    int maxNeighbors = 5;
     int data_size;
     Data data = import_data("datasets/given/00000020.bin", &data_size);
     int **myadjMatrix = (int **) createAdjMatrix(numVertices, maxNeighbors);
     
+    for(int i = 0; i < 5; i++){
+        printf("i is %d\n", i);
+        for(int j = 0; j < 10; j++){
+            printf("%f ", data[i].data_array[j]);
+        }
+        printf("\n");
+    }
+
     Heap *neighbors;
     neighbors = (Heap *) malloc(numVertices * sizeof(Heap));
 
     // Sample K random neighbors for each node
     int* adjMatrix = (int*) malloc(numVertices * sizeof(int));
     int neighbors_count;
+    printf("help\n");
     for(int j = 0; j < numVertices; j++) {
         // get real and reverse neighbors
         adjMatrix = getNeighbors(myadjMatrix, j, numVertices, &neighbors_count);
         // create heap from the neighbors & reverse neighbors
+        printNeighbors(adjMatrix, neighbors_count, j);
         int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
         neighbors[j] = heap_create(adjMatrix, j, neighbors_count, weights);
     }
+    printf("help2\n");
 
     
     // Fina K real and ALL reverse neighbors for each node

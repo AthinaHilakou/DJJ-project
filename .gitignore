@@ -2,3 +2,7 @@
 *.Identifier
 b2a
 a.out
+
+datasets/given
+test.txt
+bin/main

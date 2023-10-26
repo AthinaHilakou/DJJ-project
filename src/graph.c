@@ -88,6 +88,14 @@ void printAdjMatrix(int** adjMatrix, int numVertices) {
     }
 }
 
+void printNeighbors(int *array, int size, int owner){
+    printf("Neighbors of %d: ", owner);
+    for(int i = 0; i < size; i++){
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+}
+
 void freegraph(int** graph, int numVertices) {
     for (int i = 0; i < numVertices; i++) {
         free(graph[i]); // free adjacency matrix memory
