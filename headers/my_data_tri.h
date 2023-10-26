@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct myData_tri{
     int index;
     int x;
@@ -10,10 +12,10 @@ void *import_data_tri(char * filename); // "datasets/ascii/5k.orig.tri.ascii"
 void free_data_tri(Data_tri *data_ptr); // free data_ptr
 
 // euclidean distance
-int dist_euc(Data_tri *a, Data_tri *b);
+int dist_euc_tri(Data_tri *a, Data_tri *b);
 
 // mean square root
-int dist_msr(Data_tri *a, Data_tri *b);
+int dist_msr_tri(Data_tri *a, Data_tri *b);
 
 // manhattan distance
-int dist_manh(Data_tri *a, Data_tri *b);
+int dist_manh_tri(Data_tri *a, Data_tri *b);
