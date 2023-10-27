@@ -17,6 +17,7 @@ void test_heap_create(void) {
     for(int i = 0; i < 5; i++){
         weights[i] = compare_ints(data_array[i], data_of_interest);
     }
+    
     int array_size = 5;
     Heap h = heap_create(data_array, data_of_interest, array_size, weights);
     TEST_CHECK(h != NULL);

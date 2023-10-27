@@ -5,6 +5,7 @@
     "time.h": "c",
     "stdio.h": "c",
     "stdlib.h": "c",
-    "mman.h": "c"
+    "mman.h": "c",
+    "acutest.h": "c"
   }
 }

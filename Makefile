@@ -27,8 +27,11 @@ run: $(BIN)
 	./$(BIN)
 
 tests: $(TESTS) $(BIN)
-	$(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o $(TESTS) -o $(TESTS:.c=) -lm
-	./$(TESTS:.c=)
+	touch $(TESTS)
+	$(CC) $(CFLAGS) obj/heap.o $(TESTS_DIR)/test_heap.c -o $(TESTS_DIR)/test_heap -lm
+	./$(TESTS_DIR)/test_heap
+	$(CC) $(CFLAGS) obj/data.o $(TESTS_DIR)/test_import.c -o $(TESTS_DIR)/test_import -lm
+	./$(TESTS_DIR)/test_import
 do:
 	./$(TESTS:.c=)
 
