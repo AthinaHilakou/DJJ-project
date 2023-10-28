@@ -13,7 +13,8 @@ Heap heap_create(int *data_array, int data_of_interest, int array_size, int *wei
     }
     //set the value of size
     h->size = array_size;   // size of input array
-    h->capacity = 3*array_size/2; // current max size of heap
+    h->capacity = 3*array_size/2 + 10; // current max size of heap
+    //TODO: Remove data of interest, no longer makes sense
     h->data_of_interest = data_of_interest; // the "owner" of the heap
     //Allocating memory for items
     h->array = (Node)malloc((h->capacity)*sizeof(node));
