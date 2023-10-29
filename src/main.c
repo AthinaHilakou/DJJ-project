@@ -10,17 +10,17 @@ int main() {
     int maxNeighbors = 5;
     int data_size;
     Data data = import_data("datasets/given/00000020.bin", &data_size);
-    int **myadjMatrix = (int **) createAdjMatrix(data_size, maxNeighbors);
+    int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
     
     Heap *neighbors;
-    neighbors = (Heap *) malloc(data_size*sizeof(Heap));
+    neighbors = (Heap *)malloc(data_size*sizeof(Heap));
 
     // Sample K random neighbors for each node
-    int* adjMatrix = (int*) malloc(data_size * sizeof(int));
+    int* adjMatrix = (int*)malloc(data_size*sizeof(int));
     int neighbors_count;
     for(int j = 0; j < data_size; j++){
         // get real and reverse neighbors
-        adjMatrix = getNeighbors(myadjMatrix, j, data_size, &neighbors_count);
+        getNeighbors(myadjMatrix, j, data_size, &neighbors_count, adjMatrix);
         // create heap from the neighbors & reverse neighbors
         printNeighbors(adjMatrix, neighbors_count, j);
         float *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
@@ -30,11 +30,11 @@ int main() {
     
     // Fina K real and ALL reverse neighbors for each node
     Heap *all_neighbors;
-    all_neighbors = (Heap *) malloc(data_size * sizeof(Heap));
+    all_neighbors = (Heap *)malloc(data_size*sizeof(Heap));
     int all_neighbors_count;
     for(int j = 0; j < data_size; j++) {
         // get real and reverse neighbors
-        adjMatrix = getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count);
+        getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, adjMatrix);
         // create heap from the neighbors & reverse neighbors
         float *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
         all_neighbors[j] = heap_create(adjMatrix, all_neighbors_count, weights);
