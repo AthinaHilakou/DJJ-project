@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-Heap heap_create(int *data_array, int data_of_interest, int array_size, int *weights){
+Heap heap_create(int *data_array, int array_size, float *weights){
     Heap h = (Heap)malloc(sizeof(heap));
     // Checking if memory is allocated
     if (h == NULL) {
@@ -14,8 +14,6 @@ Heap heap_create(int *data_array, int data_of_interest, int array_size, int *wei
     //set the value of size
     h->size = array_size;   // size of input array
     h->capacity = 3*array_size/2 + 10; // current max size of heap
-    //TODO: Remove data of interest, no longer makes sense
-    h->data_of_interest = data_of_interest; // the "owner" of the heap
     //Allocating memory for items
     h->array = (Node)malloc((h->capacity)*sizeof(node));
 
@@ -39,7 +37,7 @@ Heap heap_create(int *data_array, int data_of_interest, int array_size, int *wei
     return h;
 }
 
-void heap_insert(Heap h, int index, int weight){
+void heap_insert(Heap h, int index, float weight){
    
    if(h->size < h->capacity){
         h->array[h->size].index = index;  // insert item
@@ -83,7 +81,7 @@ int index_from_heap(Heap h, int node_index){
     return h->array[node_index].index;
 }
 
-bool heap_update(Heap h, int index, int weight){
+bool heap_update(Heap h, int index, float weight){
    bool ret_value = false;  
    if(weight < h->array[0].weight){
         h->array[0].index = index;
@@ -97,6 +95,33 @@ bool heap_update(Heap h, int index, int weight){
 int heap_find_max(Heap h){
     return h->array[0].index;
 }
+
+
+
+int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors){
+    int** neighbors = (int**)malloc(numVertices * sizeof(int*));
+    int *sizes = calloc(numVertices, sizeof(int)); //num of neighbors for each node 
+    int count = 0;
+    int z;
+    for(int i = 0; i < numVertices; i++){
+        neighbors[i] = (int *)malloc(numVertices * sizeof(int)); //TODO fix potato seg fault possible
+        for(int j = 0; j < k; j++){
+            z = index_from_heap(HeapArray[i], j);
+            neighbors[i][sizes[i]] = z;
+            sizes[i]++; 
+            neighbors[z][sizes[z]] = i;
+            sizes[z]++;
+
+        }
+    }
+
+
+
+    return neighbors;
+}
+
+
+
 
 void heap_destroy(Heap h){
     free(h->array);
@@ -112,7 +137,7 @@ void bubble_down(Heap h, int root){
         return;
 
     int max;
-    int l_weight, r_weight;
+    float l_weight, r_weight;
     
     l_weight = (h->array[left].weight); // we know this exists
     r_weight = INT_MIN;
@@ -127,7 +152,7 @@ void bubble_down(Heap h, int root){
         max = right;
     
     int temp;
-    int temp_weight;
+    float temp_weight;
     int temp_index;
     if ((h->array[root].weight) < (h->array[max].weight)){
         temp = h->array[root].index;
@@ -145,7 +170,7 @@ void bubble_up(Heap h, int child){
         return;
     int parent = (child - 1)/2; // zero-based indexing
     int temp;
-    int temp_weight;
+    float temp_weight;
     int temp_index;
 
     // swap if parent node distance is greater than child node distance

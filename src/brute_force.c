@@ -1,16 +1,18 @@
 #include "../headers/brute_force.h"
-int **brute_force(int k, int (*weight)(Data *, int, int), Data *data, int data_size){
+int **brute_force(int k, float (*weight)(Data *, int, int), Data *data, int data_size){
 	Heap *all_real_neighbors;
     all_real_neighbors = (Heap *)malloc(data_size*sizeof(Heap)); //real nughbors of each data point
-	int weight;
+	int weight_val;
 	for(int i = 0; i < data_size; i++){ //initialize heaps 
-		all_real_neighbors[i] = heap_create(NULL, i, 0, NULL);
+		all_real_neighbors[i] = heap_create(NULL, 0, NULL);
 	}
 
     for(int i = 0; i < data_size; i++){
-        for(int j = 0; j < data_size; j++){
-			if (weight = weight(data,i,j)){ //if two points are neighbors insert them the heap 
-				heap_insert(all_real_neighbors[i], j, weight);
+    	printf("i: %d, ", i); 
+		for(int j = 0; j < data_size; j++){
+
+			if((weight_val = weight(data,i,j)) && (i != j)){ //if two points are neighbors insert them the heap 
+				heap_insert(all_real_neighbors[i], j, weight_val);
 			}
 		}
 	}
@@ -34,14 +36,16 @@ int **brute_force(int k, int (*weight)(Data *, int, int), Data *data, int data_s
 
 }
 
-//TODO calcuate real neighbors for only one point or return the whole array of recall values
-int recall(int *aprox_KNN, int index, int k, int (*weight)(Data *, int, int), Data *data, int data_size){
+float recall(int **aprox_KNN, int k, float (*weight)(Data *, int, int), Data *data, int data_size){
     int ** real_KNN = brute_force(k, weight, data, data_size); //real neighbors of each data point
 	int matches = 0;
-	for(int i = 0; i < k; i++){
-		for(int j = 0; j < k; j++){
-			if(aprox_KNN[i] == real_KKN[index][j]){
-				matches++; //count how many real neighbors are in the aprox KNN
+	for(int f = 0; f < data_size; f++){ //for each data point
+		for(int i = 0; i < k; i++){
+			for(int j = 0; j < k; j++){
+				if(aprox_KNN[f][i] == real_KNN[f][j]){
+					matches++; //count how many real neighbors are in the aprox KNN
+					continue;
+				}
 			}
 		}
 	}
@@ -50,5 +54,6 @@ int recall(int *aprox_KNN, int index, int k, int (*weight)(Data *, int, int), Da
 		free(real_KNN[i]);
 	}
 	free(real_KNN);
-	return matches/k; //accuracy measure for KNN descent algorithm
+	float recall = (float)(matches/(data_size*k));
+	return recall; //accuracy measure for KNN descent algorithm
 }

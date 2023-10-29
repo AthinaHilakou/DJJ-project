@@ -68,7 +68,7 @@ void free_data(Data *data_ptr){
     free(data_ptr);
 }
 
-int dist_msr(Data array,int index_a, int index_b){
+float dist_msr(Data array, int index_a, int index_b){
     int sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
         sum += (array[index_a].data_array[i] - array[index_b].data_array[i])*(array[index_a].data_array[i] - array[index_b].data_array[i]);
@@ -76,7 +76,7 @@ int dist_msr(Data array,int index_a, int index_b){
     return sqrt(sum);
 }
 
-int dist_manh(Data array,int index_a, int index_b){
+float dist_manh(Data array,int index_a, int index_b){
     int sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
         sum += abs(array[index_a].data_array[i] - array[index_b].data_array[i]);
@@ -84,8 +84,8 @@ int dist_manh(Data array,int index_a, int index_b){
     return sum;
 }
 
-int *get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, int (* weight)(Data, int a, int b)){
-    int *weights = (int *)malloc(array_lenth*sizeof(int));
+float *get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, float (* weight)(Data, int a, int b)){
+    float *weights = (float *)malloc(array_lenth*sizeof(float));
     for(int i = 0; i < array_lenth; i++){
         weights[i] = weight(dataset, data_of_interest, array[i]);
     }

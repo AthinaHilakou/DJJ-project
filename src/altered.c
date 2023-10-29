@@ -7,35 +7,35 @@
 
 int altered() {
     srand(time(NULL)); // seed random number generator
-    int numVertices = 20;
+    
     int maxNeighbors = 10;
     int data_size;
     Data data = import_data("datasets/given/00000020.bin", &data_size);
-    int **myadjMatrix = (int **) createAdjMatrix(numVertices, maxNeighbors);
+    int **myadjMatrix = (int **) createAdjMatrix(data_size, maxNeighbors);
     
     Heap *neighbors;
-    neighbors = (Heap *) malloc(numVertices * sizeof(Heap));
+    neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 
     // Sample K random neighbors for each node
-    int* adjMatrix = (int*) malloc(numVertices * sizeof(int));
+    int* adjMatrix = (int*) malloc(data_size * sizeof(int));
     int neighbors_count;
-    for(int j = 0; j < numVertices; j++) {
+    for(int j = 0; j < data_size; j++) {
         // get real and reverse neighbors
-        adjMatrix = getNeighbors(myadjMatrix, j, numVertices, &neighbors_count);
+        adjMatrix = getNeighbors(myadjMatrix, j, data_size, &neighbors_count);
         // create heap from the neighbors & reverse neighbors
-        int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
-        neighbors[j] = heap_create(adjMatrix, j, neighbors_count, weights);
+        float *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
+        neighbors[j] = heap_create(adjMatrix, neighbors_count, weights);
     }
 
     
     // Fina K real and ALL reverse neighbors for each node
     int **all_neighbors;
-    all_neighbors = (int **) malloc(numVertices * sizeof(int *));
+    all_neighbors = (int **) malloc(data_size * sizeof(int *));
     int all_neighbors_count;
-    int sizes[numVertices];
-    for(int j = 0; j < numVertices; j++) {
+    int sizes[data_size];
+    for(int j = 0; j < data_size; j++) {
         // get real and reverse neighbors
-        all_neighbors[j] = getAllNeighbors(myadjMatrix, j, numVertices, &all_neighbors_count);
+        all_neighbors[j] = getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count);
         sizes[j] = all_neighbors_count;
     }
 
@@ -43,8 +43,8 @@ int altered() {
     while(1){
         int update_counter = 0;
         // for each node
-
-        for(int i = 0; i < numVertices; i++){
+        
+        for(int i = 0; i < data_size; i++){
             // for each neighbor            
             for(int j = 0; j < sizes[i]; j++){
                 // for each neighbor of neighbor
@@ -52,7 +52,7 @@ int altered() {
                 int neighbor_neighbor_size = sizes[neighbor_index];
                 for(int k = 0; k < neighbor_neighbor_size; k++){
                     int neighbor_neighbor_index = all_neighbors[neighbor_index][k];
-                    int weight = dist_msr(data, i, neighbor_neighbor_index);
+                    float weight = dist_msr(data, i, neighbor_neighbor_index);
                     update_counter += heap_update(neighbors[i], neighbor_neighbor_index, weight);
                     }
                 }

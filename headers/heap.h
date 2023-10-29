@@ -5,14 +5,13 @@
 //Structures 
 typedef struct{
     int index; //index of item in data array 
-    int weight; //dist of item from data_of_interest, a positive integer
+    float weight; //dist of item from data_of_interest, a positive integer
 }node ,*Node;
 
 typedef struct{
     Node array; //array of indexes
     int size; //number of items in array
     int capacity; //heap capacity 
-    int data_of_interest;//distance of elements from this item is used as weight in the heap  
 }heap, *Heap;
 
 
@@ -24,22 +23,27 @@ typedef struct{
   capacity: heap capacity
   returns a max heap based on parameters specified
   */
-Heap heap_create(int *data_array, int data_of_interest, int array_size, int *weights);
+Heap heap_create(int *data_array, int array_size, float *weights);
 /*Inserts item in heap h, corresponding to index specified*/
-void heap_insert(Heap h, int index, int weight);
+void heap_insert(Heap h, int index, float weight);
 /*Heap pop
   pops top item from heap h */
 int heap_pop(Heap h);
 /*Heap update 
   inserts index in heap provided that thw weight corresponding to index is smaller than that of the old root,
   If index is inserted the old root is popped and returned in old_root*/
-bool heap_update(Heap h, int index, int weight);//upon return old_root contains the old root of the heap, if it was updated, else null
+bool heap_update(Heap h, int index, float weight);//upon return old_root contains the old root of the heap, if it was updated, else null
 /*Heap Find Max 
   returns index of heap top*/
 int heap_find_max(Heap h);
 /*Heap Destroy
   deallocates memory for heap*/
 int index_from_heap(Heap h, int node_index);
+
+/* //!WARNING: This function may cause seg fault 
+get real and reverse neighbors for all vertices from a list of heaps */
+int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors);
+
 void heap_destroy(Heap h);
 
 

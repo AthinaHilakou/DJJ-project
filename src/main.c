@@ -7,48 +7,37 @@
 
 int main() {
     srand(time(NULL)); // seed random number generator
-    int numVertices = 20;
     int maxNeighbors = 5;
     int data_size;
     Data data = import_data("datasets/given/00000020.bin", &data_size);
-    int **myadjMatrix = (int **) createAdjMatrix(numVertices, maxNeighbors);
+    int **myadjMatrix = (int **) createAdjMatrix(data_size, maxNeighbors);
     
-    for(int i = 0; i < 5; i++){
-        printf("i is %d\n", i);
-        for(int j = 0; j < 10; j++){
-            printf("%f ", data[i].data_array[j]);
-        }
-        printf("\n");
-    }
-
     Heap *neighbors;
-    neighbors = (Heap *) malloc(numVertices * sizeof(Heap));
+    neighbors = (Heap *) malloc(data_size*sizeof(Heap));
 
     // Sample K random neighbors for each node
-    int* adjMatrix = (int*) malloc(numVertices * sizeof(int));
+    int* adjMatrix = (int*) malloc(data_size * sizeof(int));
     int neighbors_count;
-    printf("help\n");
-    for(int j = 0; j < numVertices; j++) {
+    for(int j = 0; j < data_size; j++){
         // get real and reverse neighbors
-        adjMatrix = getNeighbors(myadjMatrix, j, numVertices, &neighbors_count);
+        adjMatrix = getNeighbors(myadjMatrix, j, data_size, &neighbors_count);
         // create heap from the neighbors & reverse neighbors
         printNeighbors(adjMatrix, neighbors_count, j);
-        int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
-        neighbors[j] = heap_create(adjMatrix, j, neighbors_count, weights);
+        float *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
+        neighbors[j] = heap_create(adjMatrix, neighbors_count, weights);
     }
-    printf("help2\n");
 
     
     // Fina K real and ALL reverse neighbors for each node
     Heap *all_neighbors;
-    all_neighbors = (Heap *) malloc(numVertices * sizeof(Heap));
+    all_neighbors = (Heap *) malloc(data_size * sizeof(Heap));
     int all_neighbors_count;
-    for(int j = 0; j < numVertices; j++) {
+    for(int j = 0; j < data_size; j++) {
         // get real and reverse neighbors
-        adjMatrix = getAllNeighbors(myadjMatrix, j, numVertices, &all_neighbors_count);
+        adjMatrix = getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count);
         // create heap from the neighbors & reverse neighbors
-        int *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
-        all_neighbors[j] = heap_create(adjMatrix, j, all_neighbors_count, weights);
+        float *weights = get_weights(adjMatrix, j, data, neighbors_count, dist_msr);
+        all_neighbors[j] = heap_create(adjMatrix, all_neighbors_count, weights);
     }
 
     // main loop
@@ -56,7 +45,7 @@ int main() {
         int update_counter = 0;
         // for each node
 
-        for(int i = 0; i < numVertices; i++){
+        for(int i = 0; i < data_size; i++){
             // for each neighbor
             int all_neighbors_size = get_heap_size(all_neighbors[i]);
             for(int j = 0; j < all_neighbors_size; j++){
@@ -65,7 +54,7 @@ int main() {
                 int neighbor_neighbors_size = get_heap_size(all_neighbors[neighbor_index]);
                 for(int k = 0; k < neighbor_neighbors_size; k++){
                     int neighbor_neighbor_index = index_from_heap(all_neighbors[neighbor_index], k);
-                    int weight = dist_msr(data, i, neighbor_neighbor_index);
+                    float weight = dist_msr(data, i, neighbor_neighbor_index);
 
                     update_counter += heap_update(neighbors[i], neighbor_neighbor_index, weight);
 
