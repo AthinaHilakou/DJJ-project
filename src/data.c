@@ -84,10 +84,9 @@ float dist_manh(Data array,int index_a, int index_b){
     return sum;
 }
 
-float *get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, float (* weight)(Data, int a, int b)){
-    float *weights = (float *)malloc(array_lenth*sizeof(float));
+void get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, 
+float (* weight)(Data, int a, int b), float *weights){
     for(int i = 0; i < array_lenth; i++){
         weights[i] = weight(dataset, data_of_interest, array[i]);
     }
-    return weights;
 }

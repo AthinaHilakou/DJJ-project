@@ -38,7 +38,6 @@ int** createAdjMatrix(int numVertices, int maxNeighbors) {
 
 // returns an array of the neighbors for the given vertex
 void getNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeighbors, int* neighbors) {
-    //int* neighbors = (int*) malloc(numVertices * sizeof(int));
     for(int i = 0; i < numVertices; i++){
         neighbors[i] = 0;
     }
@@ -50,11 +49,9 @@ void getNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeighbor
         }
     }
     *numNeighbors = count;
-    //return neighbors;
 }
 
 void getReverseNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeighbors, int* neighbors) {
-    //int* neighbors = (int*) malloc(numVertices * sizeof(int));
     for(int i = 0; i < numVertices; i++){
         neighbors[i] = 0;
     }
@@ -66,12 +63,10 @@ void getReverseNeighbors(int** adjMatrix, int vertex, int numVertices, int* numN
         }
     }
     *numNeighbors = count;
-    //return neighbors;
 }
 
 
 void getAllNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeighbors, int* neighbors) {
-    //int* neighbors = (int*) malloc(numVertices * sizeof(int));
     for(int i = 0; i < numVertices; i++){
         neighbors[i] = 0;
     }
@@ -83,7 +78,6 @@ void getAllNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeigh
         }
     }
     *numNeighbors = count;
-    //return neighbors;
 }
 
 void printAdjMatrix(int** adjMatrix, int numVertices) {

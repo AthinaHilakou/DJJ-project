@@ -19,7 +19,8 @@ float dist_msr(Data array,int index_a, int index_b);
 
 float dist_manh(Data array,int index_a, int index_b);
 
-float *get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, float (* weight)(Data , int a, int b));
+void get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, 
+float (* weight)(Data, int a, int b), float *weights);
 
 void *import_data(char* filename, int *size);
 // void *import_data_bin(char * filename, int data_size){
