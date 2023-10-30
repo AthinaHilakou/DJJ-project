@@ -69,7 +69,7 @@ void free_data(Data *data_ptr){
 }
 
 float dist_msr(Data array, int index_a, int index_b){
-    int sum = 0;
+    float sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
         sum += (array[index_a].data_array[i] - array[index_b].data_array[i])*(array[index_a].data_array[i] - array[index_b].data_array[i]);
     }
@@ -77,7 +77,7 @@ float dist_msr(Data array, int index_a, int index_b){
 }
 
 float dist_manh(Data array,int index_a, int index_b){
-    int sum = 0;
+    float sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
         sum += abs(array[index_a].data_array[i] - array[index_b].data_array[i]);
     }

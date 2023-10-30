@@ -42,7 +42,7 @@ int index_from_heap(Heap h, int node_index);
 
 /* //!WARNING: This function may cause seg fault 
 get real and reverse neighbors for all vertices from a list of heaps */
-int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors);
+//int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors);
 
 void heap_destroy(Heap h);
 

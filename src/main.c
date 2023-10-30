@@ -13,7 +13,7 @@ int main() {
     Data data = import_data("datasets/given/00000020.bin", &data_size);
 
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
-    
+    printAdjMatrix(myadjMatrix, data_size);
     Heap *neighbors;
     neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 
@@ -41,11 +41,16 @@ int main() {
    
     // main loop
     while(1){
+        printf("loop\n");
         int update_counter = 0;
         for(int j = 0; j < data_size; j++) {
             // get real and reverse neighbors
             getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, all_neighbors[j]);
             sizes[j] = all_neighbors_count;
+            for(int i = 0; i < all_neighbors_count; i++){
+                //printf("%d ", all_neighbors[j][i]);
+            }
+            //printf("\n");
         }
         // for each node
         for(int i = 0; i < data_size; i++){
@@ -57,6 +62,7 @@ int main() {
                 for(int k = 0; k < neighbor_neighbor_size; k++){
                     int neighbor_neighbor_index = all_neighbors[neighbor_index][k];
                     float weight = dist_msr(data, i, neighbor_neighbor_index);
+                    //printf("weight = %f\n", weight);
                     int old_neighbor = index_from_heap(neighbors[i],0);
                     if(heap_update(neighbors[i], neighbor_neighbor_index, weight)){
                        update_counter++;
@@ -73,7 +79,7 @@ int main() {
         }
     }
     printf("done\n");
-
+    printAdjMatrix(myadjMatrix, data_size);
     //Free resources
     for(int i = 0; i < data_size; i++){
         heap_destroy(neighbors[i]);

@@ -82,6 +82,8 @@ int index_from_heap(Heap h, int node_index){
 }
 
 bool heap_update(Heap h, int index, float weight){
+    //printf("index = %d, weight = %f\n", index, weight);
+    //printf("h->array[0].index = %d, h->array[0].weight = %f\n", h->array[0].index, h->array[0].weight);
    bool ret_value = false;  
    if(weight < h->array[0].weight){
         h->array[0].index = index;
@@ -98,7 +100,7 @@ int heap_find_max(Heap h){
 
 
 
-int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors){
+/*int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors){
     int** neighbors = (int**)malloc(numVertices * sizeof(int*));
     int *sizes = calloc(numVertices, sizeof(int)); //num of neighbors for each node 
     int count = 0;
@@ -118,7 +120,7 @@ int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighb
 
 
     return neighbors;
-}
+}*/
 
 
 
