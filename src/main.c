@@ -47,9 +47,9 @@ int main() {
             // get real and reverse neighbors
             getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, all_neighbors[j]);
             sizes[j] = all_neighbors_count;
-            for(int i = 0; i < all_neighbors_count; i++){
+            //for(int i = 0; i < all_neighbors_count; i++){
                 //printf("%d ", all_neighbors[j][i]);
-            }
+            //}
             //printf("\n");
         }
         // for each node
@@ -61,13 +61,17 @@ int main() {
                 int neighbor_neighbor_size = sizes[neighbor_index];
                 for(int k = 0; k < neighbor_neighbor_size; k++){
                     int neighbor_neighbor_index = all_neighbors[neighbor_index][k];
+                    //printf("{i = %d , n = %d, nn index = %d}\n",i, neighbor_index, neighbor_neighbor_index);
                     float weight = dist_msr(data, i, neighbor_neighbor_index);
-                    //printf("weight = %f\n", weight);
                     int old_neighbor = index_from_heap(neighbors[i],0);
-                    if(heap_update(neighbors[i], neighbor_neighbor_index, weight)){
-                       update_counter++;
-                       addEdge(myadjMatrix, i, neighbor_neighbor_index);
-                       removeEdge(myadjMatrix, i, old_neighbor);
+                    if(weight){ //ensure that neighbor's neighbor is not i itself AND that the edge exists
+                        if(heap_update(neighbors[i], neighbor_neighbor_index, weight) == true){
+                            update_counter++;
+                            printf("old top = %d, new top = %d\n", old_neighbor, index_from_heap(neighbors[i],0));
+                            //printf("i, nn weight = %f,i = %d, old_top = %d, nn index = %d\n", weight, i, old_neighbor, neighbor_neighbor_index);
+                            removeEdge(myadjMatrix, i, old_neighbor);
+                            addEdge(myadjMatrix, i, neighbor_neighbor_index);  
+                        }
                     }
                 }
             }

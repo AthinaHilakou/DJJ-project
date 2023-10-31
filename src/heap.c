@@ -91,6 +91,11 @@ bool heap_update(Heap h, int index, float weight){
         ret_value = true;
         bubble_down(h, 0); //bubble down from root to maintain heap property
    }
+    // if(weight < h->array[0].weight){
+    //     int old_top = heap_pop(h);
+    //     heap_insert(h, index, weight);
+    //     ret_value = true;
+    // }
    return ret_value;
 }
 
