@@ -104,31 +104,13 @@ int heap_find_max(Heap h){
 }
 
 
-
-/*int** getAllHeapNeighbors(Heap* HeapArray,int k, int numVertices, int* numNeighbors){
-    int** neighbors = (int**)malloc(numVertices * sizeof(int*));
-    int *sizes = calloc(numVertices, sizeof(int)); //num of neighbors for each node 
-    int count = 0;
-    int z;
-    for(int i = 0; i < numVertices; i++){
-        neighbors[i] = (int *)malloc(numVertices * sizeof(int)); //TODO fix potato seg fault possible
-        for(int j = 0; j < k; j++){
-            z = index_from_heap(HeapArray[i], j);
-            neighbors[i][sizes[i]] = z;
-            sizes[i]++; 
-            neighbors[z][sizes[z]] = i;
-            sizes[z]++;
-
-        }
+void print_heap(Heap h){
+    printf("Heap start \n");
+    for(int i = 0; i < h->size; i++){
+        printf("index: %d, weight: %f\n", h->array[i].index, h->array[i].weight);
     }
-
-
-
-    return neighbors;
-}*/
-
-
-
+    printf("Heap end \n");
+}
 
 void heap_destroy(Heap h){
     free(h->array);
