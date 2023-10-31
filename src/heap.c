@@ -50,10 +50,10 @@ void heap_insert(Heap h, int index, float weight){
         h->array = (Node)realloc(h->array, new_capacity*sizeof(node));  // reallocate memory
         h->capacity = new_capacity; // update capacity
         h->array[h->size].index = index; // insert item
+        h->array[h->size].weight = weight; // insert weight
         h->size++;  // update size of heap
         bubble_up(h,(h->size-1)); // restore heap property
    }
-
 }
 
 int heap_pop(Heap h){

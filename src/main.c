@@ -13,7 +13,7 @@ int main() {
     Data data = import_data("datasets/given/00000020.bin", &data_size);
 
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
-    printAdjMatrix(myadjMatrix, data_size);
+    // printAdjMatrix(myadjMatrix, data_size);
     Heap *neighbors;
     neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 
@@ -41,31 +41,24 @@ int main() {
    
     // main loop
     while(1){
-        printf("loop\n");
         int update_counter = 0;
         for(int j = 0; j < data_size; j++) {
             // get real and reverse neighbors
             getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, all_neighbors[j]);
-            // print_heap(neighbors[j]);
             sizes[j] = all_neighbors_count;
-            //for(int i = 0; i < all_neighbors_count; i++){
-                //printf("%d ", all_neighbors[j][i]);
-            //}
-            //printf("\n");
         }
         // for each node
         for(int i = 0; i < data_size; i++){
             // for each neighbor            
             for(int j = 0; j < sizes[i]; j++){
-                // for each neighbor of neighbor
                 int neighbor_index = all_neighbors[i][j];
                 int neighbor_neighbor_size = sizes[neighbor_index];
+                // for each neighbor of neighbor
                 for(int k = 0; k < neighbor_neighbor_size; k++){
                     int neighbor_neighbor_index = all_neighbors[neighbor_index][k];
                     if(i == neighbor_neighbor_index){
                         continue;
                     }
-                    //printf("{i = %d , n = %d, nn index = %d}\n",i, neighbor_index, neighbor_neighbor_index);
                     float weight = dist_msr(data, i, neighbor_neighbor_index);
                     int old_neighbor = index_from_heap(neighbors[i],0);
                     if(weight){ //ensure that neighbor's neighbor is not i itself AND that the edge exists
@@ -74,25 +67,24 @@ int main() {
                         }
                         if(heap_update(neighbors[i], neighbor_neighbor_index, weight) == true){
                             update_counter++;
-                            // printf("i = %d, old top = %d, new top = %d\n", i, old_neighbor, index_from_heap(neighbors[i],0));
-                            //printf("i, nn weight = %f,i = %d, old_top = %d, nn index = %d\n", weight, i, old_neighbor, neighbor_neighbor_index);
                             removeEdge(myadjMatrix, i, old_neighbor);
                             addEdge(myadjMatrix, i, neighbor_neighbor_index);  
-                            printf("i = %d, nn index = %d, weight = %f\n", i, neighbor_neighbor_index, weight);
-                            print_heap(neighbors[i]);
                         }
                     }
                 }
             }
             // break;
         }
-        printf("update_counter: %d\n", update_counter);
         if(update_counter == 0){
             break;
         }
     }
-    printf("done\n");
+
     printAdjMatrix(myadjMatrix, data_size);
+    printf("recall of graph is %f\n", recall(myadjMatrix, 10, dist_msr, data, data_size));
+
+
+
     //Free resources
     for(int i = 0; i < data_size; i++){
         heap_destroy(neighbors[i]);
