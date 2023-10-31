@@ -33,7 +33,6 @@ void *import_data(char* filename, int *data_size){
     uint lines;       
 
     fread(&lines, sizeof(__uint32_t), 1, fp);
-    printf("lines are %d\n", lines);
     *data_size = lines;
 
     Data data_ptr = malloc(lines * sizeof(struct mydata));
@@ -45,7 +44,6 @@ void *import_data(char* filename, int *data_size){
     float temp;
     
     for(int i  = 0; i < lines; i++){
-        printf("i is %d\n", i);
         for(int j = 0; j < 100; j++){
             // Read the float values
             data_ptr[i].data_array[j] = readfloat(fp);
@@ -53,14 +51,7 @@ void *import_data(char* filename, int *data_size){
 
     }
 
-    for(int i = 0; i < lines; i++){
-        printf("i is %d: ", i);
-        for(int j = 0; j < 20; j++){
-            printf("%5.4f ", data_ptr[i].data_array[j]);
-        }
-        printf("\n");
-    }
-
+    fclose(fp);
     return data_ptr;
 }
 

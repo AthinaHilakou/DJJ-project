@@ -61,13 +61,16 @@ int main() {
                 int neighbor_neighbor_size = sizes[neighbor_index];
                 for(int k = 0; k < neighbor_neighbor_size; k++){
                     int neighbor_neighbor_index = all_neighbors[neighbor_index][k];
+                    if(i == neighbor_neighbor_index){
+                        continue;
+                    }
                     //printf("{i = %d , n = %d, nn index = %d}\n",i, neighbor_index, neighbor_neighbor_index);
                     float weight = dist_msr(data, i, neighbor_neighbor_index);
                     int old_neighbor = index_from_heap(neighbors[i],0);
                     if(weight){ //ensure that neighbor's neighbor is not i itself AND that the edge exists
                         if(heap_update(neighbors[i], neighbor_neighbor_index, weight) == true){
                             update_counter++;
-                            printf("old top = %d, new top = %d\n", old_neighbor, index_from_heap(neighbors[i],0));
+                            printf("i = %d, old top = %d, new top = %d\n", i, old_neighbor, index_from_heap(neighbors[i],0));
                             //printf("i, nn weight = %f,i = %d, old_top = %d, nn index = %d\n", weight, i, old_neighbor, neighbor_neighbor_index);
                             removeEdge(myadjMatrix, i, old_neighbor);
                             addEdge(myadjMatrix, i, neighbor_neighbor_index);  
