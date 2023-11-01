@@ -1,5 +1,5 @@
 #include "../headers/brute_force.h"
-int **brute_force(int k, float (*weight)(Data *, int, int), Data *data, int data_size){
+int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_size){
 	Heap *all_real_neighbors;
     all_real_neighbors = (Heap *)malloc(data_size*sizeof(Heap)); //real nughbors of each data point
 	float weight_val;
@@ -27,15 +27,33 @@ int **brute_force(int k, float (*weight)(Data *, int, int), Data *data, int data
 		}
 	}
 
+	printf("brute KNN weights:\n");
+	for(int i = 0; i < data_size; i++){
+		printf("%2d: ", i);
+		for(int j = 0; j < k; j++){
+			printf("%d %1.2f, ", real_KNN[i][j], weight(data, i, real_KNN[i][j]));
+		}
+		printf("\n");
+	}
+
     for(int i = 0; i < data_size; i++){
         heap_destroy(all_real_neighbors[i]);
     }
     free(all_real_neighbors);
+	printf("brute KNN:\n");
+	for(int i = 0; i < data_size; i++){
+		printf("%2d: ", i);
+		for(int j = 0; j < k; j++){
+			printf("%d ", real_KNN[i][j]);
+		}
+		printf("\n");
+	}
+	
     return real_KNN;
 
 }
 
-float recall(int **aprox_KNN, int k, float (*weight)(Data *, int, int), Data *data, int data_size){
+float recall(int **aprox_KNN, int k, float (*weight)(Data , int, int), Data data, int data_size){
     int ** real_KNN = brute_force(k, weight, data, data_size); //real neighbors of each data point
 	int matches = 0;
 	for(int i = 0; i < data_size; i++){ //for each data point
@@ -51,6 +69,7 @@ float recall(int **aprox_KNN, int k, float (*weight)(Data *, int, int), Data *da
 			// }
 		}
 	}
+
 	printf("matches: %d of %d\n", matches, data_size * k);
 
 	for(int i = 0; i < data_size; i++){ //free real_KNN
@@ -58,6 +77,5 @@ float recall(int **aprox_KNN, int k, float (*weight)(Data *, int, int), Data *da
 	}
 	free(real_KNN);
 	float myrecall = (float)matches / (float)(data_size * k);
-	printf("recall: %f\n", myrecall);
 	return myrecall; //accuracy measure for KNN descent algorithm
 }

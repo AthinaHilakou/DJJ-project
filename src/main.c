@@ -2,6 +2,7 @@
 #include "../headers/data.h"
 #include "../headers/heap.h"
 #include "../headers/data.h"
+#include "../headers/brute_force.h"
 #include <stdlib.h>
 #include <sys/mman.h>
 
@@ -65,11 +66,22 @@ int main() {
                         if(myadjMatrix[i][neighbor_neighbor_index] == 1){
                             continue;
                         }
+                        if(i == 0){
+
+                        printf("Before update %d:\n", i);
+                        print_heap(neighbors[i]);
+                        }
                         if(heap_update(neighbors[i], neighbor_neighbor_index, weight) == true){
+                            printf("update edge %d %d->%d\n", i, old_neighbor, neighbor_neighbor_index);
                             update_counter++;
                             removeEdge(myadjMatrix, i, old_neighbor);
                             addEdge(myadjMatrix, i, neighbor_neighbor_index);  
                         }
+                        if(i == 0){
+                        printf("After update %d:\n", i);
+                        print_heap(neighbors[i]);
+                        }
+
                     }
                 }
             }
@@ -79,11 +91,24 @@ int main() {
             break;
         }
     }
-
-    printAdjMatrix(myadjMatrix, data_size);
+    // printf("KNN aproximation:\n");
+    // printAdjMatrix(myadjMatrix, data_size);
+    // printf("KNN brute force:\n");
     printf("recall of graph is %f\n", recall(myadjMatrix, 10, dist_msr, data, data_size));
 
+    printf("KNN weights:\n");
 
+
+
+    for(int i = 0; i < data_size; i++){
+        printf("%2d: ", i);
+        for(int j = 0; j < data_size; j++){
+            if(myadjMatrix[i][j] == 1){
+                printf("%d %1.2f, ", j, dist_msr(data, i, j));
+            }
+        }
+        printf("\n");
+    }
 
     //Free resources
     for(int i = 0; i < data_size; i++){

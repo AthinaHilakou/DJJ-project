@@ -9,4 +9,4 @@
 // int **brute_force(int k, float (*weight)(Data *, int, int), Data *data, int data_size);
 
 //calculate the recall value of a data point specified by index
-float recall(int **aprox_KNN, int k, float (*weight)(Data *, int, int), Data *data, int data_size);
+float recall(int **aprox_KNN, int k, float (*weight)(Data , int, int), Data data, int data_size);

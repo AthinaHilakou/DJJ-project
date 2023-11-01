@@ -2,6 +2,7 @@
 //heap stores indexes of data array 
 #include <stdlib.h>
 #include <stdbool.h>
+#pragma once
 //Structures 
 typedef struct{
     int index; //index of item in data array 
