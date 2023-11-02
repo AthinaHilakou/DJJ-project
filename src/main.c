@@ -4,14 +4,17 @@
 #include "../headers/data.h"
 #include "../headers/brute_force.h"
 #include <stdlib.h>
+#include <time.h>
 #include <sys/mman.h>
 
 int main() {
     srand(time(NULL)); // seed random number generator
+    clock_t start, end;
+    double cpu_time_used;
 
-    int maxNeighbors = 10;
+    int maxNeighbors = 35;
     int data_size;
-    Data data = import_data("datasets/given/00000020.bin", &data_size);
+    Data data = import_data("datasets/given/00000500.bin", &data_size);
 
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
     // printAdjMatrix(myadjMatrix, data_size);
@@ -39,9 +42,13 @@ int main() {
     }
     int all_neighbors_count;
     int sizes[data_size];
+
+    int outside = 0;
    
+    start = clock();
     // main loop
     while(1){
+        printf("Outside loop %d\n", outside++);
         int update_counter = 0;
         for(int j = 0; j < data_size; j++) {
             // get real and reverse neighbors
@@ -66,21 +73,20 @@ int main() {
                         if(myadjMatrix[i][neighbor_neighbor_index] == 1){
                             continue;
                         }
-                        if(i == 0){
+                        // if(i == 0){
 
-                        printf("Before update %d:\n", i);
-                        print_heap(neighbors[i]);
-                        }
+                        // printf("Before update %d:\n", i);
+                        // print_heap(neighbors[i]);
+                        // }
                         if(heap_update(neighbors[i], neighbor_neighbor_index, weight) == true){
-                            printf("update edge %d %d->%d\n", i, old_neighbor, neighbor_neighbor_index);
                             update_counter++;
                             removeEdge(myadjMatrix, i, old_neighbor);
                             addEdge(myadjMatrix, i, neighbor_neighbor_index);  
                         }
-                        if(i == 0){
-                        printf("After update %d:\n", i);
-                        print_heap(neighbors[i]);
-                        }
+                        // if(i == 0){
+                        // printf("After update %d:\n", i);
+                        // print_heap(neighbors[i]);
+                        // }
 
                     }
                 }
@@ -91,24 +97,27 @@ int main() {
             break;
         }
     }
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("KNN aproximation done in %3.2f seconds\n", cpu_time_used);
     // printf("KNN aproximation:\n");
     // printAdjMatrix(myadjMatrix, data_size);
     // printf("KNN brute force:\n");
     printf("recall of graph is %f\n", recall(myadjMatrix, 10, dist_msr, data, data_size));
 
-    printf("KNN weights:\n");
+    // printf("KNN weights:\n");
 
 
 
-    for(int i = 0; i < data_size; i++){
-        printf("%2d: ", i);
-        for(int j = 0; j < data_size; j++){
-            if(myadjMatrix[i][j] == 1){
-                printf("%d %1.2f, ", j, dist_msr(data, i, j));
-            }
-        }
-        printf("\n");
-    }
+    // for(int i = 0; i < data_size; i++){
+    //     printf("%2d: ", i);
+    //     for(int j = 0; j < data_size; j++){
+    //         if(myadjMatrix[i][j] == 1){
+    //             printf("%d %1.2f, ", j, dist_msr(data, i, j));
+    //         }
+    //     }
+    //     printf("\n");
+    // }
 
     //Free resources
     for(int i = 0; i < data_size; i++){

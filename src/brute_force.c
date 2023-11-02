@@ -1,17 +1,18 @@
 #include "../headers/brute_force.h"
+#include "../headers/min_heap.h"
 int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_size){
-	Heap *all_real_neighbors;
-    all_real_neighbors = (Heap *)malloc(data_size*sizeof(Heap)); //real nughbors of each data point
+	min_Heap *all_real_neighbors;
+    all_real_neighbors = (min_Heap *)malloc(data_size*sizeof(min_Heap)); //real nughbors of each data point
 	float weight_val;
 	for(int i = 0; i < data_size; i++){ //initialize heaps 
-		all_real_neighbors[i] = heap_create(NULL, 0, NULL);
+		all_real_neighbors[i] = min_heap_create(NULL, 0, NULL);
 	}
 
     for(int i = 0; i < data_size; i++){
 		for(int j = 0; j < data_size; j++){
 			if(i != j){ //if two points are neighbors insert them the heap 
 				weight_val = weight(data,i,j);
-				heap_insert(all_real_neighbors[i], j, weight_val);
+				min_heap_insert(all_real_neighbors[i], j, weight_val);
 			}
 		}
 	}
@@ -23,32 +24,23 @@ int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_s
 	}
 	for(int i = 0; i < data_size; i++){
 		for(int j = 0; j < k; j++){
-			real_KNN[i][j] = index_from_heap(all_real_neighbors[i], j);
+			real_KNN[i][j] = index_from_min_heap(all_real_neighbors[i], j);
 		}
 	}
 
-	printf("brute KNN weights:\n");
-	for(int i = 0; i < data_size; i++){
-		printf("%2d: ", i);
-		for(int j = 0; j < k; j++){
-			printf("%d %1.2f, ", real_KNN[i][j], weight(data, i, real_KNN[i][j]));
-		}
-		printf("\n");
-	}
+	// ?print neighbors
+	// for(int i = 0; i < data_size; i++){
+	// 	printf("%2d: ", i);
+	// 	for(int j = 0; j < k; j++){
+	// 		printf("%d ", real_KNN[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
 
     for(int i = 0; i < data_size; i++){
-        heap_destroy(all_real_neighbors[i]);
+        min_heap_destroy(all_real_neighbors[i]);
     }
     free(all_real_neighbors);
-	printf("brute KNN:\n");
-	for(int i = 0; i < data_size; i++){
-		printf("%2d: ", i);
-		for(int j = 0; j < k; j++){
-			printf("%d ", real_KNN[i][j]);
-		}
-		printf("\n");
-	}
-	
     return real_KNN;
 
 }
