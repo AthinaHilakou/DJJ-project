@@ -27,7 +27,7 @@ run: $(BIN)
 	./$(BIN)
 
 tests: $(TESTS) $(BIN)
-	$(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o $(TESTS) -o $(TESTS:.c=) -lm
+	$(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o obj/min_heap.o  $(TESTS) -lm
 	./$(TESTS:.c=)
 do:
 	./$(TESTS:.c=)

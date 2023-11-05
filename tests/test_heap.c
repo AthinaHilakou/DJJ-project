@@ -13,16 +13,15 @@ int compare_ints(int a, int b) {
 void test_heap_create(void) {
     int data_array[] = {5, 3, 8, 2, 1};
     int data_of_interest = 1;
-    int weights[5];
+    float weights[5];
     for(int i = 0; i < 5; i++){
-        weights[i] = compare_ints(data_array[i], data_of_interest);
+        weights[i] = (float)compare_ints(data_array[i], data_of_interest);
     }
     int array_size = 5;
-    Heap h = heap_create(data_array, data_of_interest, array_size, weights);
+    Heap h = heap_create(data_array, array_size, weights);
     TEST_CHECK(h != NULL);
     TEST_CHECK(h->size == 5);
     TEST_CHECK(h->capacity >= 5);
-    TEST_CHECK(h->data_of_interest == 1);
     TEST_CHECK(h->array[0].index == 8);
     TEST_CHECK(h->array[1].index == 3);
     TEST_CHECK(h->array[2].index == 5);
@@ -36,11 +35,11 @@ void test_heap_pop(void) {
     int data_array[] = {5, 3, 8, 2, 1};
     int data_of_interest = 1;
     int array_size = 5;
-    int weights[5];
+    float weights[5];
     for(int i = 0; i < 5; i++){
-        weights[i] = compare_ints(data_array[i], data_of_interest);
+        weights[i] = (float)compare_ints(data_array[i], data_of_interest);
     }
-    Heap h = heap_create(data_array, data_of_interest, array_size, weights);
+    Heap h = heap_create(data_array, array_size, weights);
     int max = heap_pop(h);
     TEST_CHECK(max == 8);
     TEST_CHECK(h->size == 4);
@@ -53,13 +52,13 @@ void test_heap_pop(void) {
 
 void test_heap_insert(void) {
     int data_array[] = {5, 3, 8, 2, 1};
-    int data_of_interest = 1;
     int array_size = 5;
-    int weights[5];
+    int data_of_interest = 1;
+    float weights[5];
     for(int i = 0; i < 5; i++){
-        weights[i] = compare_ints(data_array[i], data_of_interest);
+        weights[i] = (float)compare_ints(data_array[i], data_of_interest);
     }
-    Heap h = heap_create(data_array, data_of_interest, array_size, weights);
+    Heap h = heap_create(data_array, array_size, weights);
     heap_insert(h, 6, 4);
     TEST_CHECK(h->size == 6);
     TEST_CHECK(heap_pop(h) == 8);
@@ -76,11 +75,11 @@ void test_heap_update(void) {
     int data_array[] = {5, 3, 8, 2, 1};
     int data_of_interest = 1;
     int array_size = 5;
-    int weights[5];
+    float weights[5];
     for(int i = 0; i < 5; i++){
-        weights[i] = compare_ints(data_array[i], data_of_interest);
+        weights[i] = (float)compare_ints(data_array[i], data_of_interest);
     }
-    Heap h = heap_create(data_array, data_of_interest, array_size, weights);
+    Heap h = heap_create(data_array, array_size, weights);
     bool ret = heap_update(h, 4, 2);
     TEST_CHECK(ret == true);
     TEST_CHECK(h->size == 5);
