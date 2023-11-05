@@ -1,7 +1,6 @@
 #pragma once
 
 typedef struct myData_tri{
-    int index;
     int x;
     int y;
     int z;

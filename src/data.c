@@ -67,10 +67,27 @@ float dist_msr(Data array, int index_a, int index_b){
     return sqrt(sum);
 }
 
+
+float dist_msr_ab(data a, data b){
+    float sum = 0;
+    for(int i = 0; i < DATA_LENTH; i++){
+        sum += (a.data_array[i] - b.data_array[i])*(a.data_array[i] - b.data_array[i]);
+    }
+    return sqrt(sum);
+}
+
 float dist_manh(Data array,int index_a, int index_b){
     float sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
         sum += abs(array[index_a].data_array[i] - array[index_b].data_array[i]);
+    }
+    return sum;
+}
+
+float dist_manh_ab(data a, data b){
+    float sum = 0;
+    for(int i = 0; i < DATA_LENTH; i++){
+        sum += abs(a.data_array[i] - b.data_array[i]);
     }
     return sum;
 }
