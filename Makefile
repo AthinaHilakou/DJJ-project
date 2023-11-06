@@ -4,6 +4,7 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 TESTS_DIR = tests
+HEADERS = headers
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
@@ -26,9 +27,36 @@ $(OBJ_DIR):
 run: $(BIN)
 	./$(BIN)
 
+test_heap.o: tests/test_heap.c src/heap.c
+	gcc -c tests/test_heap.c -o tests/test_heap.o -I$(HEADERS)
+	gcc -c src/heap.c -o obj/heap.o -I$(HEADERS)
+
+
+test_heap: tests/test_heap.o obj/heap.o
+	gcc -o tests/test_heap tests/test_heap.o obj/heap.o -lm
+	./tests/test_heap
+
+test_min_heap.o: tests/test_min_heap.c src/min_heap.c
+	gcc -c tests/test_min_heap.c -o tests/test_min_heap.o -I$(HEADERS)
+	gcc -c src/min_heap.c -o obj/min_heap.o -I$(HEADERS)
+
+test_min_heap: tests/test_min_heap.o obj/min_heap.o
+	gcc -o tests/test_min_heap tests/test_min_heap.o obj/min_heap.o -lm
+	./tests/test_min_heap
+
+
+
+test_min_heap.o: tests/test_min_heap.c src/min_heap.c
+	gcc -c tests/test_min_heap.c -o tests/test_min_heap.o -I$(HEADERS)
+
+
 tests: $(TESTS) $(BIN)
-	$(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o obj/min_heap.o  $(TESTS) -lm
-	./$(TESTS:.c=)
+	gcc  -Isrc -o test_of_heap tests/test_heap.c tests/test_min_heap.c obj/heap.o obj/min_heap.o -lm
+	./test_of_heap
+
+# $(CC) $(CFLAGS) -I$(SRC_DIR) -o test_of_heap tests/test_heap.c $(OBJS) -lm
+# $(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o obj/min_heap.o  $(TESTS) -lm
+# ./$(TESTS:.c=)
 do:
 	./$(TESTS:.c=)
 

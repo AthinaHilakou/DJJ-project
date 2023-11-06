@@ -100,7 +100,7 @@ int heap_find_min(min_Heap h){
 void print_min_heap(min_Heap h){
     printf("Heap start \n");
     for(int i = 0; i < h->size; i++){
-        printf("index: %d, weight: %f\n", h->array[i].index, h->array[i].weight);
+        printf("%d index: %d, weight: %f\n", i, h->array[i].index, h->array[i].weight);
     }
     printf("Heap end \n");
 }
