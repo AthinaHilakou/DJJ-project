@@ -79,7 +79,7 @@ float dist_msr_ab(data a, data b){
 float dist_manh(Data array,int index_a, int index_b){
     float sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
-        sum += abs(array[index_a].data_array[i] - array[index_b].data_array[i]);
+        sum += fabs(array[index_a].data_array[i] - array[index_b].data_array[i]);
     }
     return sum;
 }

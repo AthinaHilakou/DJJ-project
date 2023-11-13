@@ -13,8 +13,8 @@ int main() {
     clock_t start, end;
     double cpu_time_used;
 
-    int maxNeighbors = 35;
-    float (*weight_fun)(Data,int, int) = dist_msr;
+    int maxNeighbors = 20;
+    float (*weight_fun)(Data,int, int) = dist_manh;
     // float (*weight_fun2)(Data_tri,int, int) = dist_msr2;
     int data_size;
     start = clock();
