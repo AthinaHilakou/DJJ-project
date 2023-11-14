@@ -27,7 +27,7 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 run: $(BIN)
-	./$(BIN)
+	./$(BIN) $(ARGS)
 
 runs: $(BIN)
 	./$(BIN) $(ARGS)

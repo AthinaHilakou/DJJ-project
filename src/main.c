@@ -9,35 +9,9 @@
 #include <sys/mman.h>
 #include <string.h>
 
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag);
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (*weight_fun)(void *, int, int, int), int *data_size, void* data, int* flag){
 
-    if(argc < 4){
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\n");
-        exit(1);
-    }
-    *maxNeighbors = atoi(argv[1]);
-    *flag = atoi(argv[3]);
-    
-    if(*flag == 0){  // competition data case
-        data = (Data)import_data(argv[2], data_size);
-    } else if(*flag == 1){   // ascii data case
-        data = (Data_tri)import_data_tri(argv[2], data_size);
-    } else{ // false flag case
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that flag = 0 || 1 \n");
-        exit(1);
-    }
-
-    if(strcmp(argv[2], "manh") == 0){
-        weight_fun = dist_manh;
-    } else if(strcmp(argv[2], "eucl") == 0){
-        weight_fun = dist_msr;
-    }else{
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
-        exit(1);
-    }
-
-}
 
 int main(int argc, char** argv){
     srand(time(NULL)); // seed random number generator
@@ -48,18 +22,18 @@ int main(int argc, char** argv){
     printf("Starting KNN aproximation %p\n", weight_fun);
     int data_size;
     start = clock();
-    void* data;
+    void** data_p = malloc(sizeof(void *));
     int flag;
 
-    get_arguments(argc, argv, &maxNeighbors, weight_fun, &data_size, data, &flag);
-    printf("After KNN aproximation %p\n", weight_fun);
+    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag);
+    void* data = *data_p;
     printf("Finished importing data in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
     Heap *neighbors;
     neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 
     start = clock();
-
+    printf("Starting creating random neighbors\n");
     // Sample K random neighbors for each node
     int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     int neighbors_count;
@@ -186,5 +160,33 @@ int main(int argc, char** argv){
     freegraph(myadjMatrix, data_size);
 
     return 0;
+
+}
+
+
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag){
+    if(argc < 4){
+        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag>\n");
+        exit(1);
+    }
+    *maxNeighbors = atoi(argv[1]);
+    *flag = atoi(argv[3]);
+    
+    if(*flag == 0){  // competition data case
+        *data = (Data)import_data(argv[2], data_size);
+    } else if(*flag == 1){   // ascii data case
+        *data = (Data_tri)import_data_tri(argv[2], data_size);
+    } else{ // false flag case
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that flag = 0 || 1 \n");
+        exit(1);
+    }
+    if(strcmp(argv[3], "manh") == 0){
+        *weight_fun = dist_manh;
+    } else if(strcmp(argv[3], "eucl") == 0){
+        *weight_fun = dist_msr;
+    }else{
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
+        exit(1);
+    }
 
 }
