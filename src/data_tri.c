@@ -54,12 +54,6 @@ void free_data_tri(Data_tri *data_ptr){
     free(data_ptr);
 }
 
-
-// euclidean distance
-int dist_euc_tri(Data_tri *a, Data_tri *b){
-    return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
-}
-
 // mean square root
 int dist_msr_tri(Data_tri *a, Data_tri *b){
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2) + pow(a->z - b->z, 2));

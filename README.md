@@ -1,8 +1,7 @@
 # DJJ project
-Η εργασία παραδίνεται από τους: 
+
+Η εργασία παραδίνεται από τους:
 Παναγιώτης Κεχρινιώτης(sdi2000077), Αθηνά Χειλάκου(sdi2000213)
-
-
 
 202000213 (sdi2000213@di.uoa.gr):
 υλοποίηση heap, min heap, brute force, συνεισφορά στη main
@@ -18,3 +17,15 @@ K nearest neighbors descent implementation
 
 Αλλάζουμε K από την μεταβλητή maxNeighbors στην main.
 Και το αρχείο που εχει τα δεδομένα το περνάμε στο import_data
+
+TODO
+
+compile tests
+
+command line arguments
+
+different data types as arguments
+
+update reverse neighbors directly when we add a neighbor
+
+save brute force results to a file
