@@ -2,26 +2,66 @@
 #include "../headers/data.h"
 #include "../headers/heap.h"
 #include "../headers/data.h"
-// #include "../headers/data_tri.h"
+#include "../headers/my_data_tri.h"
 #include "../headers/brute_force.h"
 #include <stdlib.h>
 #include <time.h>
 #include <sys/mman.h>
+#include <string.h>
 
-int main() {
+
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (*weight_fun)(void *, int, int), int *data_size, void* data){
+
+    if(argc < 4){
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\n");
+        exit(1);
+    }
+    *maxNeighbors = atoi(argv[1]);
+    int flag = atoi(argv[3]);
+    
+    if(flag == 0){  // competition data case
+        data = (Data)import_data(argv[2], data_size);
+        if(strcmp(argv[2], "manh") == 0){
+        weight_fun = dist_manh;
+        } else if(strcmp(argv[2], "eucl") == 0){
+            weight_fun = dist_msr;
+        }else{
+            printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
+            exit(1);
+        }
+    } else if(flag == 1){   // ascii data case
+        data = (Data_tri)import_data_tri(argv[2], data_size);
+        if(strcmp(argv[2], "manh") == 0){
+            weight_fun = dist_manh_tri;
+        } else if(strcmp(argv[2], "eucl") == 0){
+            weight_fun = dist_msr_tri;
+        }else{
+            printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
+            exit(1);
+        }
+    } else{ // false flag case
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that flag = 0 || 1 \n");
+        exit(1);
+    }
+    
+}
+
+int main(int argc, char** argv){
     srand(time(NULL)); // seed random number generator
     clock_t start, end;
     double cpu_time_used;
-
-    int maxNeighbors = 20;
-    float (*weight_fun)(Data,int, int) = dist_manh;
+    int maxNeighbors;
+    float (*weight_fun)(Data,int, int);
+    printf("Starting KNN aproximation %p\n", weight_fun);
     // float (*weight_fun2)(Data_tri,int, int) = dist_msr2;
     int data_size;
     start = clock();
-    Data data = import_data("datasets/given/00002000-1.bin", &data_size);
+    Data data;
+
+    get_arguments(argc, argv, &maxNeighbors, weight_fun, &data_size, data);
+    printf("After KNN aproximation %p\n", weight_fun);
     printf("Finished importing data in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
-    // printAdjMatrix(myadjMatrix, data_size);
     Heap *neighbors;
     neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 

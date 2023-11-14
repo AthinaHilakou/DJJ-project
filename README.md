@@ -20,8 +20,6 @@ K nearest neighbors descent implementation
 
 TODO
 
-compile tests
-
 command line arguments
 
 different data types as arguments

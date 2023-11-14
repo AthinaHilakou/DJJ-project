@@ -7,7 +7,7 @@
 #include <math.h>
 
 
-void *import_data_tri(char* filename){
+void *import_data_tri(char* filename, int* data_size){
 
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -22,8 +22,9 @@ void *import_data_tri(char* filename){
     }
     size_t size = sb.st_size;
     int lines = size / (41*sizeof(char));       // each line has 40 chars and '\n
+    *data_size = lines;
 
-    Data_tri *data_ptr = malloc(lines * sizeof(Data_tri));
+    Data_tri data_ptr = malloc(lines * sizeof(data_tri));
     if(data_ptr == NULL){
         perror("malloc");
         exit(1);
@@ -50,16 +51,16 @@ void *import_data_tri(char* filename){
     return data_ptr;
 }
 
-void free_data_tri(Data_tri *data_ptr){
+void free_data_tri(Data_tri data_ptr){
     free(data_ptr);
 }
 
 // mean square root
-int dist_msr_tri(Data_tri *a, Data_tri *b){
+int dist_msr_tri(Data_tri a, Data_tri b){
     return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2) + pow(a->z - b->z, 2));
 }
 
 // manhattan distance
-int dist_manh_tri(Data_tri *a, Data_tri *b){
+int dist_manh_tri(Data_tri a, Data_tri b){
     return abs(a->x - b->x) + abs(a->y - b->y) + abs(a->z - b->z);
 }

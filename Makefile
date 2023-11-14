@@ -5,6 +5,8 @@ OBJ_DIR = obj
 BIN_DIR = bin
 TESTS_DIR = tests
 HEADERS = headers
+# max_neighbors/k filename manh/eucl data_type_flag 
+ARGS = 20 datasets/given/00002000-1.bin eucl 0
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
@@ -26,6 +28,9 @@ $(OBJ_DIR):
 
 run: $(BIN)
 	./$(BIN)
+
+runs: $(BIN)
+	./$(BIN) $(ARGS)
 
 test_heap.o: tests/test_heap.c src/heap.c
 	gcc -c tests/test_heap.c -o tests/test_heap.o

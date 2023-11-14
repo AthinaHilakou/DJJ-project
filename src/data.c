@@ -55,10 +55,6 @@ void *import_data(char* filename, int *data_size){
     return data_ptr;
 }
 
-void free_data(Data *data_ptr){
-    free(data_ptr);
-}
-
 float dist_msr(Data array, int index_a, int index_b){
     float sum = 0;
     for(int i = 0; i < DATA_LENTH; i++){
@@ -66,7 +62,6 @@ float dist_msr(Data array, int index_a, int index_b){
     }
     return sqrt(sum);
 }
-
 
 float dist_msr_ab(data a, data b){
     float sum = 0;
