@@ -9,21 +9,34 @@
 
 #pragma once
 #define DATA_LENTH 100
+#define DATA_LENTH_TRI 3
+
+//Data float[100]
 typedef struct mydata{
     float data_array[DATA_LENTH];
 } data, *Data;
 
 
 
-float dist_msr(Data array,int index_a, int index_b);
+//Data int[3]
+typedef struct myData_tri{
+    int data_array[DATA_LENTH_TRI];
+} data_tri, *Data_tri;
 
-float dist_msr_ab(data a,data b);
 
-float dist_manh(Data array,int index_a, int index_b);
 
-float dist_manh_ab(data a,data b);
+float dist_msr(void* array,int index_a, int index_b, int data_type);
 
-void get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, 
-float (* weight)(Data, int a, int b), float *weights);
+float dist_msr_ab(void* a,void* b, int data_type);
+
+float dist_manh(void* array,int index_a, int index_b, int data_type);
+
+float dist_manh_ab(void* a,void* b, int data_type);
+
+void get_weights(int *array, int data_of_interest,void* dataset, int array_lenth, 
+float (* weight)(void *, int a, int b, int data_type), float *weights, int data_type);
 
 void *import_data(char* filename, int *size);
+
+//----------------------------------------------------------------
+void *import_data_tri(char * filename, int* data_size); // "datasets/ascii/5k.orig.tri.ascii"

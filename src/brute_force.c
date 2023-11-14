@@ -1,7 +1,7 @@
 #include "../headers/brute_force.h"
 #include "../headers/min_heap.h"
 #include "../headers/data.h"
-int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_size){
+int **brute_force(int k, float (*weight)(void* , int, int, int), void* data, int data_size, int flag){
 	min_Heap *all_real_neighbors;
     all_real_neighbors = (min_Heap *)malloc(data_size*sizeof(min_Heap)); //real nughbors of each data point
 	float weight_val;
@@ -12,7 +12,7 @@ int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_s
     for(int i = 0; i < data_size; i++){
 		for(int j = 0; j < data_size; j++){
 			if(i != j){ //if two points are neighbors insert them the heap 
-				weight_val = weight(data,i,j);
+				weight_val = weight(data, i, j, flag);
 				min_heap_insert(all_real_neighbors[i], j, weight_val);
 			}
 		}
@@ -29,14 +29,6 @@ int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_s
 		}
 	}
 
-	// ?print neighbors
-	// for(int i = 0; i < data_size; i++){
-	// 	printf("%2d: ", i);
-	// 	for(int j = 0; j < k; j++){
-	// 		printf("%d ", real_KNN[i][j]);
-	// 	}
-	// 	printf("\n");
-	// }
 
     for(int i = 0; i < data_size; i++){
         min_heap_destroy(all_real_neighbors[i]);
@@ -46,11 +38,8 @@ int **brute_force(int k, float (*weight)(Data , int, int), Data data, int data_s
 
 }
 
-
-
-
-float recall(int **aprox_KNN, int k, float (*weight)(Data , int, int), Data data, int data_size){
-    int ** real_KNN = brute_force(k, weight, data, data_size); //real neighbors of each data point
+float recall(int **aprox_KNN, int k, float (*weight)(void*, int, int, int), void* data, int data_size, int flag){
+    int ** real_KNN = brute_force(k, weight, data, data_size, flag); //real neighbors of each data point
 	int matches = 0;
 	for(int i = 0; i < data_size; i++){ //for each data point
 		for(int j = 0; j < k; j++){
@@ -70,16 +59,28 @@ float recall(int **aprox_KNN, int k, float (*weight)(Data , int, int), Data data
 	return myrecall; //accuracy measure for KNN descent algorithm
 }
 
+// returns a random float between 0 and 1
 float random_float() {
     return (float)rand() / (float)RAND_MAX;
 }
 
-void search(int **graph, float weight_fun(data a, data b), Data my_data, int data_size, int k, int**all_neighbors, int *sizes){
+// makes a random data point and searches for its k nearest neighbors on graph
+void search(int **graph, float weight_fun(void*, void*, int), void* my_data, int data_size, int k, int**all_neighbors, int *sizes, int flag){
 	// create random search point
 	srand(time(NULL));
-	data search_point;
-	for(int i = 0; i < DATA_LENTH; i++){
-		search_point.data_array[i] = random_float();
+	void *search_point;
+	if(flag == 0){
+		Data S_Point = (Data) malloc(sizeof(data));
+		search_point = S_Point;
+		for(int i = 0; i < DATA_LENTH; i++){
+			S_Point->data_array[i] = random_float();
+		}
+	} else{
+		Data_tri S_Point = (Data_tri) malloc(sizeof(data_tri));
+		search_point = S_Point;
+		for(int i = 0; i < DATA_LENTH_TRI; i++){
+			S_Point->data_array[i] = rand() % 1000;
+		}
 	}
 
 	// k nearest neighbors indexes
@@ -98,8 +99,17 @@ void search(int **graph, float weight_fun(data a, data b), Data my_data, int dat
         }
     }
 	// initialize heap
-    for(int i = 0; i < k; i++){
-		weights[i] = weight_fun(my_data[neighbor_indexes[i]], search_point);
+
+	if(flag == 0){
+		Data data_array = (Data)my_data;
+		for(int i = 0; i < k; i++){
+			weights[i] = weight_fun((void *) &data_array[neighbor_indexes[i]], search_point, flag);
+		}
+	} else{
+		Data_tri data_array = (Data_tri)my_data;
+		for(int i = 0; i < k; i++){
+			weights[i] = weight_fun((void *) &data_array[neighbor_indexes[i]], search_point, flag);
+		}
 	}
 
 	Heap neighbors = heap_create(neighbor_indexes, k, weights);
@@ -126,7 +136,13 @@ void search(int **graph, float weight_fun(data a, data b), Data my_data, int dat
 
 				float weight;
 				if(weights_array[neighbor_neighbor_index] - 1 != 0){
-					weight = weight_fun(my_data[neighbor_neighbor_index], search_point);
+					if(flag == 0){
+						Data data_array = (Data)my_data;
+						weight = weight_fun((void *) &data_array[neighbor_neighbor_index], search_point, flag);
+					} else{
+						Data_tri data_array = (Data_tri)my_data;
+						weight = weight_fun((void *) &data_array[neighbor_neighbor_index], search_point, flag);
+					}
 				} else{
 					weight = weights_array[neighbor_neighbor_index];
 				}
@@ -158,9 +174,18 @@ void search(int **graph, float weight_fun(data a, data b), Data my_data, int dat
 	all_real_neighbors = min_heap_create(NULL, 0, NULL);
 	float *all_weights = malloc(sizeof(float)*data_size);
 	int *real_neighbor_indexes = malloc(sizeof(int)*k);
-	for(int i = 0; i < data_size; i++){
-		all_weights[i] = weight_fun(my_data[i], search_point);
+	if(flag == 0){
+		Data data_array = (Data)my_data;
+		for(int i = 0; i < data_size; i++){
+			all_weights[i] = weight_fun((void *) &data_array[i], search_point, flag);
+		}
+	} else{
+		Data_tri data_array = (Data_tri)my_data;
+		for(int i = 0; i < data_size; i++){
+			all_weights[i] = weight_fun((void *) &data_array[i], search_point, flag);
+		}
 	}
+
 	for(int i = 0; i < data_size; i++){
 		min_heap_insert(all_real_neighbors, i, all_weights[i]);
 	}
@@ -174,25 +199,6 @@ void search(int **graph, float weight_fun(data a, data b), Data my_data, int dat
 		}
 	}
 	printf("recall of search is %1.3f\n", ((float)matches/(float)k));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// free memory
 	free(all_weights);

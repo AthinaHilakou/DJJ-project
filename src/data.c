@@ -1,17 +1,4 @@
 #include "../headers/data.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <math.h>
-
-// reminder
-// #define DATA_LENTH 100
-// typedef struct mydata{
-//     float data_array[DATA_LENTH];
-// } data, *Data;
-
 
 float readfloat(FILE *f) {
   float v;
@@ -55,41 +42,121 @@ void *import_data(char* filename, int *data_size){
     return data_ptr;
 }
 
-float dist_msr(Data array, int index_a, int index_b){
+
+void *import_data_tri(char* filename, int* data_size){
+
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        perror("fopen");
+        exit(1);
+    }
+
+    struct stat sb;
+    if (fstat(fileno(fp), &sb) == -1) {
+        perror("fstat");
+        exit(1);
+    }
+    size_t size = sb.st_size;
+    int lines = size / (41*sizeof(char));       // each line has 40 chars and '\n
+    *data_size = lines;
+
+    Data_tri data_ptr = malloc(lines * sizeof(data_tri));
+    if(data_ptr == NULL){
+        perror("malloc");
+        exit(1);
+    }
+
+    int a, b, c, d;
+    for(int i  = 1; i < lines; i++){
+        if (fseek(fp, (i - 1) * 41 * sizeof(char), SEEK_SET) != 0) {
+            perror("fseek");
+            exit(1);
+        }
+        if (fscanf(fp, "%d %d %d %d", &a, &b, &c, &d) != 4) {
+            perror("fscanf");
+            exit(1);
+        }
+        // a is the index, we dont need it
+        data_ptr[i].data_array[0] = b;
+        data_ptr[i].data_array[1] = c;
+        data_ptr[i].data_array[2] = d;
+    }
+
+    return data_ptr;
+}
+
+float dist_msr(void* array, int index_a, int index_b, int data_type){
     float sum = 0;
-    for(int i = 0; i < DATA_LENTH; i++){
-        sum += (array[index_a].data_array[i] - array[index_b].data_array[i])*(array[index_a].data_array[i] - array[index_b].data_array[i]);
+    if(data_type == 0){
+        Data d_array = (Data)array;
+        for(int i = 0; i < DATA_LENTH; i++){
+            sum += (d_array[index_a].data_array[i] - d_array[index_b].data_array[i])*(d_array[index_a].data_array[i] - d_array[index_b].data_array[i]);
+        }
+    } else{
+        Data_tri d_array = (Data_tri)array;
+        for(int i = 0; i < DATA_LENTH_TRI; i++){
+            sum += (d_array[index_a].data_array[i] - d_array[index_b].data_array[i])*(d_array[index_a].data_array[i] - d_array[index_b].data_array[i]);
+        }
     }
     return sqrt(sum);
 }
 
-float dist_msr_ab(data a, data b){
+float dist_msr_ab(void* a, void* b, int data_type){
     float sum = 0;
-    for(int i = 0; i < DATA_LENTH; i++){
-        sum += (a.data_array[i] - b.data_array[i])*(a.data_array[i] - b.data_array[i]);
+    if(data_type == 0){
+        Data d_a = (Data)a;
+        Data d_b = (Data)b;
+        for(int i = 0; i < DATA_LENTH; i++){
+            sum += (d_a->data_array[i] - d_b->data_array[i])*(d_a->data_array[i] - d_b->data_array[i]);
+        }
+    } else {
+        Data_tri d_a = (Data_tri)a;
+        Data_tri d_b = (Data_tri)b;
+        for(int i = 0; i < DATA_LENTH_TRI; i++){
+            sum += (d_a->data_array[i] - d_b->data_array[i])*(d_a->data_array[i] - d_b->data_array[i]);
+        }    
     }
+
     return sqrt(sum);
 }
 
-float dist_manh(Data array,int index_a, int index_b){
+float dist_manh(void* array,int index_a, int index_b, int data_type){
     float sum = 0;
-    for(int i = 0; i < DATA_LENTH; i++){
-        sum += fabs(array[index_a].data_array[i] - array[index_b].data_array[i]);
+    if(data_type == 0){
+        Data d_array = (Data)array;
+        for(int i = 0; i < DATA_LENTH; i++){
+            sum += fabs(d_array[index_a].data_array[i] - d_array[index_b].data_array[i]);
+        }    
+    } else {
+        Data_tri d_array = (Data_tri)array;
+        for(int i = 0; i < DATA_LENTH_TRI; i++){
+            sum += fabs(d_array[index_a].data_array[i] - d_array[index_b].data_array[i]);
+        }
     }
     return sum;
 }
 
-float dist_manh_ab(data a, data b){
+float dist_manh_ab(void* a, void* b, int data_type){
     float sum = 0;
-    for(int i = 0; i < DATA_LENTH; i++){
-        sum += fabs(a.data_array[i] - b.data_array[i]);
+    if(data_type == 0){
+        Data d_a = (Data)a;
+        Data d_b = (Data)b;
+        for(int i = 0; i < DATA_LENTH; i++){
+            sum += fabs(d_a->data_array[i] - d_b->data_array[i]);
+        }
+    } else {
+        Data_tri d_a = (Data_tri)a;
+        Data_tri d_b = (Data_tri)b;
+        for(int i = 0; i < DATA_LENTH_TRI; i++){
+            sum += fabs(d_a->data_array[i] - d_b->data_array[i]);
+        }
     }
     return sum;
 }
 
-void get_weights(int *array, int data_of_interest, Data dataset, int array_lenth, 
-float (* weight)(Data, int a, int b), float *weights){
+void get_weights(int *array, int data_of_interest, void* dataset, int array_lenth, 
+float (* weight)(void* data, int a, int b, int data_type), float *weights, int data_type){
     for(int i = 0; i < array_lenth; i++){
-        weights[i] = weight(dataset, data_of_interest, array[i]);
+        weights[i] = weight(dataset, data_of_interest, array[i], data_type);
     }
 }

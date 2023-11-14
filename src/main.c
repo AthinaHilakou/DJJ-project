@@ -10,40 +10,33 @@
 #include <string.h>
 
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (*weight_fun)(void *, int, int), int *data_size, void* data){
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (*weight_fun)(void *, int, int, int), int *data_size, void* data, int* flag){
 
     if(argc < 4){
         printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\n");
         exit(1);
     }
     *maxNeighbors = atoi(argv[1]);
-    int flag = atoi(argv[3]);
+    *flag = atoi(argv[3]);
     
-    if(flag == 0){  // competition data case
+    if(*flag == 0){  // competition data case
         data = (Data)import_data(argv[2], data_size);
-        if(strcmp(argv[2], "manh") == 0){
-        weight_fun = dist_manh;
-        } else if(strcmp(argv[2], "eucl") == 0){
-            weight_fun = dist_msr;
-        }else{
-            printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
-            exit(1);
-        }
-    } else if(flag == 1){   // ascii data case
+    } else if(*flag == 1){   // ascii data case
         data = (Data_tri)import_data_tri(argv[2], data_size);
-        if(strcmp(argv[2], "manh") == 0){
-            weight_fun = dist_manh_tri;
-        } else if(strcmp(argv[2], "eucl") == 0){
-            weight_fun = dist_msr_tri;
-        }else{
-            printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
-            exit(1);
-        }
     } else{ // false flag case
         printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that flag = 0 || 1 \n");
         exit(1);
     }
-    
+
+    if(strcmp(argv[2], "manh") == 0){
+        weight_fun = dist_manh;
+    } else if(strcmp(argv[2], "eucl") == 0){
+        weight_fun = dist_msr;
+    }else{
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
+        exit(1);
+    }
+
 }
 
 int main(int argc, char** argv){
@@ -51,14 +44,14 @@ int main(int argc, char** argv){
     clock_t start, end;
     double cpu_time_used;
     int maxNeighbors;
-    float (*weight_fun)(Data,int, int);
+    float (*weight_fun)(void*, int, int, int);
     printf("Starting KNN aproximation %p\n", weight_fun);
-    // float (*weight_fun2)(Data_tri,int, int) = dist_msr2;
     int data_size;
     start = clock();
-    Data data;
+    void* data;
+    int flag;
 
-    get_arguments(argc, argv, &maxNeighbors, weight_fun, &data_size, data);
+    get_arguments(argc, argv, &maxNeighbors, weight_fun, &data_size, data, &flag);
     printf("After KNN aproximation %p\n", weight_fun);
     printf("Finished importing data in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
@@ -78,7 +71,7 @@ int main(int argc, char** argv){
         // get real and reverse neighbors
         getNeighbors(myadjMatrix, j, data_size, &neighbors_count, neighbor_indexes);
         // create heap from the neighbors & reverse neighbors
-        get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights);
+        get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights, flag);
         for(int i = 0; i < neighbors_count; i++){
             weights_array[j][neighbor_indexes[i]] = weights[i];
         }
@@ -129,7 +122,7 @@ int main(int argc, char** argv){
 
                     float weight;
                     if(weights_array[i][neighbor_neighbor_index] - 1 != 0){
-                        weight = weight_fun(data, i, neighbor_neighbor_index);
+                        weight = weight_fun(data, i, neighbor_neighbor_index, flag);
                     } else{
                         weight = weights_array[i][neighbor_neighbor_index];
                     }
@@ -160,7 +153,7 @@ int main(int argc, char** argv){
     // printAdjMatrix(myadjMatrix, data_size);
     // printf("KNN brute force:\n");
     start = clock();
-    printf("recall of graph is %1.3f\n", recall(myadjMatrix, 10, weight_fun, data, data_size));
+    printf("recall of graph is %1.3f\n", recall(myadjMatrix, 10, weight_fun, data, data_size, flag));
     printf("Brute force ended in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     for(int j = 0; j < data_size; j++) {
@@ -171,11 +164,9 @@ int main(int argc, char** argv){
 
 
     // search here
-    search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes);
-
+    search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
 
     //Free resources
-
     for(int i = 0; i < data_size; i++){
         free(weights_array[i]);
     }
