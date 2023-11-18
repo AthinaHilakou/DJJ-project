@@ -20,10 +20,6 @@ K nearest neighbors descent implementation
 
 TODO
 
-command line arguments
-
-different data types as arguments
-
 update reverse neighbors directly when we add a neighbor
 
 save brute force results to a file
