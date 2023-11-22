@@ -61,14 +61,14 @@ test_map.o: tests/test_map.c src/map.c
 	./tests/test_map
 
 tests: $(TESTS) $(BIN)
-	gcc  -o test_of_heap tests/test_heap.c obj/heap.o -lm
-	gcc  -o test_of_min_heap tests/test_min_heap.c obj/min_heap.o -lm
-	gcc  -o test_map tests/test_map.c obj/map.o -lm
-	gcc -o tests/test_graph obj/test_graph.o obj/graph.o -lm
+	gcc  -o tests/test_of_heap tests/test_heap.c obj/heap.o -lm
+	gcc  -o tests/test_of_min_heap tests/test_min_heap.c obj/min_heap.o -lm
+	gcc  -o tests/test_map tests/test_map.c obj/map.o -lm
+	gcc  -o tests/test_graph tests/test_graph.c obj/graph.o -lm
 	./tests/test_graph 
-	./test_of_heap
-	./test_of_min_heap
-	./test_map
+	./tests/test_of_heap
+	./tests/test_of_min_heap
+	./tests/test_map
 
 test_map: tests/test_map.c src/map.c
 	gcc -c src/map.c -o obj/map.o -I$(HEADERS)

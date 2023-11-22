@@ -116,6 +116,7 @@ void test_getAllNeighbors(void) {
     freegraph(adjMatrix, numVertices);
 }
 
+
 void test_printAdjMatrix(void) {
     int numVertices = 5;
     int** adjMatrix = createAdjMatrix(numVertices, 2);
