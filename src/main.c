@@ -35,8 +35,8 @@ int main(int argc, char** argv){
     start = clock();
     printf("Starting creating random neighbors\n");
     // Sample K random neighbors for each node
-    int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     int neighbors_count;
+    int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     float *weights = (float *)malloc(maxNeighbors*sizeof(float));
     float **weights_array = (float **)malloc(data_size*sizeof(float *));
     for(int j = 0; j < data_size; j++) {
@@ -74,13 +74,13 @@ int main(int argc, char** argv){
    
     start = clock();
     // main loop
-    while(1){
-        int update_counter = 0;
         for(int j = 0; j < data_size; j++) {
             // get real and reverse neighbors
             getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, all_neighbors[j]);
             sizes[j] = all_neighbors_count;
         }
+    while(1){
+        int update_counter = 0;
         // for each node
         for(int i = 0; i < data_size; i++){
             // for each neighbor            

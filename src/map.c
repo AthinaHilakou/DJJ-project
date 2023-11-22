@@ -5,10 +5,11 @@ Map map_init(int capacity){
     Map mymap = malloc(sizeof(map));
     mymap->capacity = capacity;
     mymap->size = 0;
-    mymap->array = malloc(capacity*sizeof(map_node));
+    mymap->array = malloc(capacity*sizeof(Map_node));
     for(int i = 0; i < capacity; i++){
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
+        mymap->array[i]->weight = -1;
     }
 }
 
@@ -17,16 +18,16 @@ unsigned int hash(int key, int capacity){
     return key % capacity;
 }
 
-void mapify(Map map, int* array, int size){
+void mapify(Map map, int* array, float* weights, int size){
     for(int i = 0; i < size; i++){
-        map_add(map, array[i]);
+        map_add(map, array[i], weights[i]);
     }
 }
 
 //find: look for node corresponding to s in map
-bool map_update(Map map, int key_add, int key_remove){
+bool map_update(Map map, int key_add, float weight, int key_remove){
     if(map_remove(map, key_remove)){
-        if(map_add(map, key_add))
+        if(map_add(map, key_add, weight))
             return 1;
         else
             return 0;
@@ -35,9 +36,10 @@ bool map_update(Map map, int key_add, int key_remove){
 }
 
 //add: put (key, value) in map 
-bool map_add(Map map, int key){
+bool map_add(Map map, int key, float weight){
     Map_node node = malloc(sizeof(map_node));
     node->key = key;
+    node->weight = weight;
     node->next = NULL;
     unsigned hashval = hash(key, map->capacity);
     Map_node mynode;
@@ -49,29 +51,33 @@ bool map_add(Map map, int key){
     }
     mynode->next = node;
     map->size++;  
-    
+    rehash(map);
 }
-// {
-//     struct map_node *node;
-//     unsigned hashval;
-//     if ((node = find(key, map)) == NULL) { //not found 
-//         node = (struct map_node *) malloc(sizeof(*node));
-//         if (node == NULL || ((node->key = strdup(key)) == NULL)){
-//           fprintf(stderr, "Could not allocate memory");
-//           exit(EXIT_FAILURE);
-//         }
-//         hashval = hash(key);
-//         node->next = map[hashval];
-//         map[hashval] = node;
-//     } else //already there
-//         free(node->value); //free previous value
-//     if ((node->value= strdup(value)) == NULL){
-//         fprintf(stderr, "Could not allocate memory");
-//         exit(EXIT_FAILURE); 
-//     }
-//     return node;
-// }
 
+void map_rehash(Map map){
+    if(map->size > map->capacity){
+        map->capacity = map->capacity*2;
+        Map_node *new_array = malloc(map->capacity*sizeof(Map_node));
+        for(int i = 0; i < map->capacity; i++){
+            new_array[i]->next = NULL;
+            new_array[i]->key = -1;
+            new_array[i]->weight = -1;
+        }
+        for(int i = 0; i < map->capacity/2; i++){
+            Map_node node;
+            Map_node next = NULL;
+            for (node = map->array[i]->next; node != NULL; node = next){
+                next = node->next;
+                unsigned hashval = hash(node->key, map->capacity);
+                Map_node mynode;
+                for(mynode = new_array[hashval]; mynode->next != NULL; mynode = mynode->next);
+                mynode->next = node;
+            }
+        }
+        free(map->array);
+        map->array = new_array;
+    }
+}
 
 //remove: remove node corresponding to key from map
 bool map_remove(Map map, int key){
@@ -83,13 +89,14 @@ bool map_remove(Map map, int key){
         if (key == node->key){
             //printf("Removed key: %s value: %s\n", node->key, node->value);
             free(node);
+            map->size--;
             if(prev == NULL){
                 map->array[hash(key, map->capacity)] = next;
-                return;
+                return 1;
             }
             else{
                 prev->next = next;
-                return;
+                return 1;
             }
         }
         prev = node;
@@ -100,10 +107,11 @@ bool map_remove(Map map, int key){
 //destroy: free map
 void map_destroy(Map map){
 
-    for(int i = 0; i < map.capacity; i++){
+    // free all nodes, not the ones in the array (dummy nodes)
+    for(int i = 0; i < map->capacity; i++){
         map_node *node;
         map_node *next = NULL;
-        for (node = map->array[i]; node != NULL; node = next){
+        for (node = map->array[i]->next; node != NULL; node = next){
             next = node->next;
             free(node);
         }
@@ -112,14 +120,29 @@ void map_destroy(Map map){
     free(map);
 }
 
-int *map_get(Map map){
+float map_get(Map map, int key){
+    unsigned hashval = hash(key, map->capacity);
+    Map_node mynode;
+    for(mynode = map->array[hashval]->next; mynode->next != NULL; mynode = mynode->next){
+        if(mynode->key == key){
+            return mynode->weight;
+        }
+    }
+    // if not found
+    return -1;
+}
+
+// Map to array
+int *map_to_array(Map map, int* size){
     int *array = malloc(map->size*sizeof(int));
+    *size = map->size;
     int i = 0;
     for(int j = 0; j < map->capacity; j++){
-        map_node *node;
-        for (node = map->array[j]; node != NULL; node = node->next){
-            array[i] = node->key;
+        Map_node mynode;
+        for(mynode = map->array[j]->next; mynode->next != NULL; mynode = mynode->next){
+            array[i] = mynode->key;
             i++;
         }
     }
+    return array;
 }
