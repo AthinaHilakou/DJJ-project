@@ -46,14 +46,14 @@ test_min_heap: tests/test_min_heap.o obj/min_heap.o
 	gcc -o tests/test_min_heap tests/test_min_heap.o obj/min_heap.o -lm
 	./tests/test_min_heap
 
-
-
 test_min_heap.o: tests/test_min_heap.c src/min_heap.c
 	gcc -c tests/test_min_heap.c -o tests/test_min_heap.o -I$(HEADERS)
 
 
 test_map.o: tests/test_map.c src/map.c
+	gcc -c src/map.c -o obj/map.o -I$(HEADERS)
 	gcc -c tests/test_map.c -o tests/test_map.o -I$(HEADERS)
+	./tests/test_map
 
 tests: $(TESTS) $(BIN)
 	gcc  -o test_of_heap tests/test_heap.c obj/heap.o -lm

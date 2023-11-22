@@ -14,12 +14,9 @@ void test_hash(){
 
 void test_map_init(void) {
     Map m = map_init(10);
-    printf("map was initialized\n");
     TEST_CHECK(m != NULL);
     TEST_CHECK(m->size == 0);
-    printf("size ok\n");
     TEST_CHECK(m->capacity == 10);
-    printf("capacity ok\n");
     map_destroy(m);
 }
 
@@ -37,6 +34,12 @@ void test_map_add(void) {
     map_add(m, 3, 4);
     TEST_CHECK(m->size == 3);
     TEST_CHECK(m->capacity == 4);
+
+    TEST_CHECK(map_get(m, 1) == 2);
+    TEST_CHECK(map_get(m, 2) == 3);
+    TEST_CHECK(map_get(m, 3) == 4);
+    TEST_CHECK(map_get(m, 4) == -1);
+
     map_destroy(m);
 }
 

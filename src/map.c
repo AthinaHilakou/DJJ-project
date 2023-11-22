@@ -7,6 +7,7 @@ Map map_init(int capacity){
     mymap->size = 0;
     mymap->array = malloc(capacity*sizeof(Map_node));
     for(int i = 0; i < capacity; i++){
+        mymap->array[i] = malloc(sizeof(map_node));
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
         mymap->array[i]->weight = -1;
@@ -40,18 +41,19 @@ bool map_update(Map map, int key_add, float weight, int key_remove){
 
 //add: put (key, value) in map 
 bool map_add(Map map, int key, float weight){
-    Map_node node = malloc(sizeof(map_node));
-    node->key = key;
-    node->weight = weight;
-    node->next = NULL;
+    //check if key is already in map
     unsigned hashval = hash(key, map->capacity);
     Map_node mynode;
     for(mynode = map->array[hashval]; mynode->next != NULL; mynode = mynode->next){
         if(mynode->key == key){
-            free(node);
             return 0;
         }
     }
+    Map_node node = malloc(sizeof(map_node));
+    node->key = key;
+    node->weight = weight;
+    node->next = NULL;
+    // put node at end of list
     mynode->next = node;
     map->size++;  
     map_rehash(map);
@@ -59,9 +61,11 @@ bool map_add(Map map, int key, float weight){
 
 void map_rehash(Map map){
     if(map->size > map->capacity){
+        Map_node *old_array = map->array;   // save old array for free later
         map->capacity = map->capacity*2;
         Map_node *new_array = malloc(map->capacity*sizeof(Map_node));
         for(int i = 0; i < map->capacity; i++){
+            new_array[i] = malloc(sizeof(map_node));
             new_array[i]->next = NULL;
             new_array[i]->key = -1;
             new_array[i]->weight = -1;
@@ -72,13 +76,33 @@ void map_rehash(Map map){
             for (node = map->array[i]->next; node != NULL; node = next){
                 next = node->next;
                 unsigned hashval = hash(node->key, map->capacity);
-                Map_node mynode;
+                Map_node mynode = new_array[hashval];
+                // put node at end of list
                 for(mynode = new_array[hashval]; mynode->next != NULL; mynode = mynode->next);
-                mynode->next = node;
+                mynode->next = malloc(sizeof(map_node));
+                mynode->next->key = node->key;
+                mynode->next->weight = node->weight;
+                mynode->next->next = NULL;
             }
         }
-        free(map->array);
+        for(int i = 0; i < map->capacity/2; i++){
+            Map_node node;
+            Map_node next = NULL;
+            for (node = old_array[i]->next; node != NULL; node = next){
+                next = node->next;
+                free(node);
+            }
+        }
+        free(old_array);
         map->array = new_array;
+
+        for(int i = 0; i < map->capacity; i++){
+            Map_node node;
+            Map_node next = NULL;
+            for (node = map->array[i]->next; node != NULL; node = next){
+                next = node->next;
+            }
+        }
     }
 }
 
@@ -104,7 +128,6 @@ bool map_remove(Map map, int key){
         }
         prev = node;
     }
-    printf("%d is not an index\n", key);
 }
 
 //destroy: free map
@@ -114,7 +137,7 @@ void map_destroy(Map map){
     for(int i = 0; i < map->capacity; i++){
         map_node *node;
         map_node *next = NULL;
-        for (node = map->array[i]->next; node != NULL; node = next){
+        for (node = map->array[i]; node != NULL; node = next){
             next = node->next;
             free(node);
         }
@@ -126,7 +149,7 @@ void map_destroy(Map map){
 float map_get(Map map, int key){ // returns -1 if not found
     unsigned hashval = hash(key, map->capacity);
     Map_node mynode;
-    for(mynode = map->array[hashval]->next; mynode->next != NULL; mynode = mynode->next){
+    for(mynode = map->array[hashval]->next; mynode != NULL; mynode = mynode->next){
         if(mynode->key == key){
             return mynode->weight;
         }
