@@ -33,7 +33,7 @@ void mapify(Map map, int* array, float* weights, int size);
 bool map_update(Map map, int key, float weight, int key_remove);
 
 // Map Add
-bool map_add(Map map, int key, float weight,);
+bool map_add(Map map, int key, float weight);
 
 // Map Update
 bool map_remove(Map map, int key);
@@ -48,4 +48,4 @@ void map_rehash(Map map);
 float map_get(Map map, int key);
 
 // demapify
-int *map_to_array(Map map);
+int *map_to_array(Map map, int* size);

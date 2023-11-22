@@ -11,6 +11,7 @@ Map map_init(int capacity){
         mymap->array[i]->key = -1;
         mymap->array[i]->weight = -1;
     }
+    return mymap;
 }
 
 //hash: hash value for string s
@@ -24,15 +25,17 @@ void mapify(Map map, int* array, float* weights, int size){
     }
 }
 
-//find: look for node corresponding to s in map
+//if key_remove is in map and key_add is not in map, update map
+//if key_add is in map with different weight, map is NOT updated
 bool map_update(Map map, int key_add, float weight, int key_remove){
-    if(map_remove(map, key_remove)){
-        if(map_add(map, key_add, weight))
+    if(map_get(map, key_remove) != -1){
+        if(map_get(map, key_add) == -1){
+            map_remove(map, key_remove);
+            map_add(map, key_add, weight);
             return 1;
-        else
-            return 0;
-    } else
-        return 0;
+        }
+    }
+    return 0;
 }
 
 //add: put (key, value) in map 
@@ -51,7 +54,7 @@ bool map_add(Map map, int key, float weight){
     }
     mynode->next = node;
     map->size++;  
-    rehash(map);
+    map_rehash(map);
 }
 
 void map_rehash(Map map){
@@ -120,7 +123,7 @@ void map_destroy(Map map){
     free(map);
 }
 
-float map_get(Map map, int key){
+float map_get(Map map, int key){ // returns -1 if not found
     unsigned hashval = hash(key, map->capacity);
     Map_node mynode;
     for(mynode = map->array[hashval]->next; mynode->next != NULL; mynode = mynode->next){
