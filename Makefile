@@ -41,6 +41,11 @@ test_heap: tests/test_heap.o obj/heap.o
 	gcc -o tests/test_heap tests/test_heap.o obj/heap.o -lm
 	./tests/test_heap
 
+test_graph: tests/test_graph.c obj/graph.o
+	gcc -c src/graph.c -o obj/graph.o -I$(HEADERS)
+	gcc -c tests/test_graph.c -o obj/test_graph.o -I$(HEADERS)
+	gcc -o tests/test_graph obj/test_graph.o obj/graph.o -lm
+	./tests/test_graph
 
 test_min_heap: tests/test_min_heap.o obj/min_heap.o
 	gcc -o tests/test_min_heap tests/test_min_heap.o obj/min_heap.o -lm
@@ -59,6 +64,8 @@ tests: $(TESTS) $(BIN)
 	gcc  -o test_of_heap tests/test_heap.c obj/heap.o -lm
 	gcc  -o test_of_min_heap tests/test_min_heap.c obj/min_heap.o -lm
 	gcc  -o test_map tests/test_map.c obj/map.o -lm
+	gcc -o tests/test_graph obj/test_graph.o obj/graph.o -lm
+	./tests/test_graph 
 	./test_of_heap
 	./test_of_min_heap
 	./test_map
