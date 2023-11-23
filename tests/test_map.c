@@ -21,19 +21,19 @@ void test_map_init(void) {
 }
 
 void test_map_add(void) {
-    Map m = map_init(2);
+    Map m = map_init(3);
     // add first element
     map_add(m, 1, 2);
     TEST_CHECK(m->size == 1);
-    TEST_CHECK(m->capacity == 2);
-    // add second element
+    TEST_CHECK(m->capacity == 3);
+    // add second element, forcing reshashing
     map_add(m, 2, 3);
     TEST_CHECK(m->size == 2);
-    TEST_CHECK(m->capacity == 2);
-    // add third element, forcing reshashing
+    TEST_CHECK(m->capacity == 6);
+    // add third element
     map_add(m, 3, 4);
     TEST_CHECK(m->size == 3);
-    TEST_CHECK(m->capacity == 4);
+    TEST_CHECK(m->capacity == 6);
 
     TEST_CHECK(map_get(m, 1) == 2);
     TEST_CHECK(map_get(m, 2) == 3);

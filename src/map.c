@@ -11,6 +11,7 @@ Map map_init(int capacity){
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
         mymap->array[i]->weight = -1;
+        mymap->array[i]->count = 1; //count how many times key has been added
     }
     return mymap;
 }
@@ -18,6 +19,10 @@ Map map_init(int capacity){
 //hash: hash value for string s
 unsigned int hash(int key, int capacity){
     return key % capacity;
+}
+
+int get_map_size(Map map){
+    return map->size;
 }
 
 void mapify(Map map, int* array, float* weights, int size){
@@ -46,6 +51,12 @@ bool map_add(Map map, int key, float weight){
     Map_node mynode;
     for(mynode = map->array[hashval]; mynode->next != NULL; mynode = mynode->next){
         if(mynode->key == key){
+            if(mynode->count == 2){
+                printf("Key already in map\n");
+            }
+            if(mynode->count ==1){
+                mynode->count++;
+            }
             return 0;
         }
     }
@@ -53,15 +64,18 @@ bool map_add(Map map, int key, float weight){
     node->key = key;
     node->weight = weight;
     node->next = NULL;
+    node->count = 1;
     // put node at end of list
     mynode->next = node;
     map->size++;  
     map_rehash(map);
+    return 1;
 }
 
 void map_rehash(Map map){
-    if(map->size > map->capacity){
+    if(map->size > map->capacity/2){
         Map_node *old_array = map->array;   // save old array for free later
+        int old_capacity = map->capacity;   // save old capacity for rehash loop later
         map->capacity = map->capacity*2;
         Map_node *new_array = malloc(map->capacity*sizeof(Map_node));
         for(int i = 0; i < map->capacity; i++){
@@ -69,8 +83,10 @@ void map_rehash(Map map){
             new_array[i]->next = NULL;
             new_array[i]->key = -1;
             new_array[i]->weight = -1;
+            new_array[i]->count = 1; //count how many times key has been added
         }
-        for(int i = 0; i < map->capacity/2; i++){
+        // rehash
+        for(int i = 0; i < old_capacity; i++){
             Map_node node;
             Map_node next = NULL;
             for (node = map->array[i]->next; node != NULL; node = next){
@@ -83,9 +99,11 @@ void map_rehash(Map map){
                 mynode->next->key = node->key;
                 mynode->next->weight = node->weight;
                 mynode->next->next = NULL;
+                mynode->next->count = 1;
             }
         }
-        for(int i = 0; i < map->capacity/2; i++){
+        // free old array
+        for(int i = 0; i < old_capacity; i++){
             Map_node node;
             Map_node next = NULL;
             for (node = old_array[i]->next; node != NULL; node = next){
@@ -114,6 +132,10 @@ bool map_remove(Map map, int key){
     for (node = map->array[hash(key, map->capacity)]; node != NULL; node = next){
         next = node->next;
         if (key == node->key){
+            if(node->count == 2){
+                node->count--;
+                return 0;
+            }
             //printf("Removed key: %s value: %s\n", node->key, node->value);
             free(node);
             map->size--;
@@ -128,6 +150,7 @@ bool map_remove(Map map, int key){
         }
         prev = node;
     }
+    return 0;
 }
 
 //destroy: free map
@@ -165,10 +188,21 @@ int *map_to_array(Map map, int* size){
     int i = 0;
     for(int j = 0; j < map->capacity; j++){
         Map_node mynode;
-        for(mynode = map->array[j]->next; mynode->next != NULL; mynode = mynode->next){
+        for(mynode = map->array[j]->next; mynode != NULL; mynode = mynode->next){
             array[i] = mynode->key;
             i++;
         }
     }
     return array;
+}
+
+void map_print(Map map){
+    int *array;
+    int size;
+    array = map_to_array(map, &size);
+    for(int i = 0; i < size; i++){
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+    free(array);
 }
