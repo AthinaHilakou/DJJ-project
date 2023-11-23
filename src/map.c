@@ -11,7 +11,7 @@ Map map_init(int capacity){
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
         mymap->array[i]->weight = -1;
-        mymap->array[i]->count = 1; //count how many times key has been added
+        // mymap->array[i]->count = 1; //count how many times key has been added
     }
     return mymap;
 }
@@ -51,12 +51,12 @@ bool map_add(Map map, int key, float weight){
     Map_node mynode;
     for(mynode = map->array[hashval]; mynode->next != NULL; mynode = mynode->next){
         if(mynode->key == key){
-            if(mynode->count == 2){
-                printf("Key already in map\n");
-            }
-            if(mynode->count ==1){
-                mynode->count++;
-            }
+            // if(mynode->count == 2){
+            //     printf("Key already in map\n");
+            // }
+            // if(mynode->count ==1){
+            //     mynode->count++;
+            // }
             return 0;
         }
     }
@@ -64,7 +64,7 @@ bool map_add(Map map, int key, float weight){
     node->key = key;
     node->weight = weight;
     node->next = NULL;
-    node->count = 1;
+    // node->count = 1;
     // put node at end of list
     mynode->next = node;
     map->size++;  
@@ -83,7 +83,7 @@ void map_rehash(Map map){
             new_array[i]->next = NULL;
             new_array[i]->key = -1;
             new_array[i]->weight = -1;
-            new_array[i]->count = 1; //count how many times key has been added
+            // new_array[i]->count = 1; //count how many times key has been added
         }
         // rehash
         for(int i = 0; i < old_capacity; i++){
@@ -99,7 +99,7 @@ void map_rehash(Map map){
                 mynode->next->key = node->key;
                 mynode->next->weight = node->weight;
                 mynode->next->next = NULL;
-                mynode->next->count = 1;
+                // mynode->next->count = 1;
             }
         }
         // free old array
@@ -132,10 +132,10 @@ bool map_remove(Map map, int key){
     for (node = map->array[hash(key, map->capacity)]; node != NULL; node = next){
         next = node->next;
         if (key == node->key){
-            if(node->count == 2){
-                node->count--;
-                return 0;
-            }
+            // if(node->count == 2){
+            //     node->count--;
+            //     return 0;
+            // }
             //printf("Removed key: %s value: %s\n", node->key, node->value);
             free(node);
             map->size--;

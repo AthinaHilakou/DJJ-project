@@ -8,7 +8,7 @@ typedef struct my_map_node{ /* table entry: */
     struct my_map_node *next; /* next entry in chain */
     int key; /* defined key */
     float weight; /* defined weight */
-    int count; /* number of times key has been added */
+   // int count; /* number of times key has been added */
 }map_node, *Map_node;
 
 

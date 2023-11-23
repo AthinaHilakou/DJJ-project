@@ -62,14 +62,14 @@ int main(int argc, char** argv){
 
     printf("Finished creating random neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
-    
+
     // Find K real and ALL reverse neighbors for each node
     // all_neighbors = (int **) malloc(data_size * sizeof(int *));
     // for(int i = 0; i < data_size; i++) { //k plus the max number of reverse neighbors
     //     all_neighbors[i] = (int *) malloc((data_size + maxNeighbors)* sizeof(int));
     // }
 
-   
+
     start = clock();
     // main loop
         // for(int j = 0; j < data_size; j++) {
@@ -86,36 +86,59 @@ int main(int argc, char** argv){
         for(int i = 0; i < data_size; i++){
             all_neighbors[i] = map_to_array(map_all_neigbors[i], &sizes[i]); 
             if( i < 3){
-                printf("Neibhors %d\n", i);   
-                map_print(map_all_neigbors[i]);    
+                printf("Neibhors %d\n", i);
+                map_print(map_all_neigbors[i]);
             }
         }
         // for each node
         for(int i = 0; i < data_size; i++){
             // printf("Checking %d point\n", i);
-            // for each neighbor    
+            // for each neighbor
             int all_neighbors_count;
             for(int j = 0; j < sizes[i]; j++){
                 int neighbor1 = all_neighbors[i][j];
-                // for all neighbor pairs               
+                // for all neighbor pairs
                 for(int k = j + 1; k < sizes[i]; k++){
                     int neighbor2 = all_neighbors[i][k];
                     float weight;
+                   
+                    if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
+                        continue;
+                    }
+                
                     if(weights_array[neighbor1][neighbor2] - 1 != 0){
                         weight = weight_fun(data,neighbor1,neighbor2, flag);
+                        weights_array[neighbor1][neighbor2] = weight;
                     } else{
                         weight = weights_array[neighbor1][neighbor2];
                     }
-                    
+
+                    int ret;
                     int old_neighbor1 = index_from_heap(neighbors[neighbor1],0);
                     int old_neighbor2 = index_from_heap(neighbors[neighbor2],0);
+                    if(update_counter < 2){
+                        if(i < 2){
+                            printf("------------- heap of %d\n", neighbor1);
+                            print_heap(neighbors[neighbor1]);
+                            printf("------------- map of %d\n", neighbor1);
+                            map_print(map_all_neigbors[neighbor1]);
+                        }
+
+                    }
                     if(heap_update(neighbors[neighbor1],neighbor2, weight) == true){
+                        printf("heap neihbor1 = %d, removed %d, added %d\n", neighbor1, old_neighbor1, neighbor2);
                         update_counter++;
-                        map_update(map_all_neigbors[neighbor1], neighbor1, weight,old_neighbor1);
+                        ret = map_update(map_all_neigbors[neighbor1], neighbor2, weight,old_neighbor1);
+                        if(ret){
+                            printf("map update neihbor1 = %d, removed %d, added %d\n\n\n", neighbor1, old_neighbor1, neighbor2);
+                        }
                     }
                     if(heap_update(neighbors[neighbor2],neighbor1, weight) == true){
                         update_counter++;
-                        map_update(map_all_neigbors[neighbor2],neighbor1, weight, old_neighbor2);
+                        ret = map_update(map_all_neigbors[neighbor2],neighbor1, weight, old_neighbor2);
+                        if(ret){
+                            printf("neighbor2 = %d, removed %d, added %d\n", neighbor2, old_neighbor2, neighbor1);
+                        }
                     }
 
 
@@ -139,7 +162,7 @@ int main(int argc, char** argv){
     printf("Brute force ended in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
      for(int i = 0; i < data_size; i++){
-        all_neighbors[i] = map_to_array(map_all_neigbors[i], sizes + i);        
+        all_neighbors[i] = map_to_array(map_all_neigbors[i], sizes + i);
     }
     // for(int j = 0; j < data_size; j++) {
     //     // get real and reverse neighbors
@@ -184,7 +207,7 @@ void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun
     }
     *maxNeighbors = atoi(argv[1]);
     *flag = atoi(argv[3]);
-    
+
     if(*flag == 0){  // competition data case
         *data = (Data)import_data(argv[2], data_size);
     } else if(*flag == 1){   // ascii data case
