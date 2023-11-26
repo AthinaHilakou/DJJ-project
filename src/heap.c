@@ -85,17 +85,17 @@ bool heap_update(Heap h, int index, float weight){
     //printf("index = %d, weight = %f\n", index, weight);
     //printf("h->array[0].index = %d, h->array[0].weight = %f\n", h->array[0].index, h->array[0].weight);
    bool ret_value = false;  
-   if(weight < h->array[0].weight){
-        h->array[0].index = index;
-        h->array[0].weight = weight;
+//    if(weight < h->array[0].weight){
+//         h->array[0].index = index;
+//         h->array[0].weight = weight;
+//         ret_value = true;
+//         bubble_down(h, 0); //bubble down from root to maintain heap property
+//    }
+    if(weight < h->array[0].weight){
+        int old_top = heap_pop(h);
+        heap_insert(h, index, weight);
         ret_value = true;
-        bubble_down(h, 0); //bubble down from root to maintain heap property
-   }
-    // if(weight < h->array[0].weight){
-    //     int old_top = heap_pop(h);
-    //     heap_insert(h, index, weight);
-    //     ret_value = true;
-    // }
+    }
    return ret_value;
 }
 

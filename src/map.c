@@ -34,10 +34,13 @@ void mapify(Map map, int* array, float* weights, int size){
 //if key_remove is in map and key_add is not in map, update map
 //if key_add is in map with different weight, map is NOT updated
 bool map_update(Map map, int key_add, float weight, int key_remove){
-    if(map_get(map, key_remove) != -1){
-        if(map_get(map, key_add) == -1){
-            map_remove(map, key_remove);
-            map_add(map, key_add, weight);
+    if(map_get(map, key_remove) != -1){     // if key_remove is in map
+        if(map_get(map, key_add) == -1){    // if key_add is not in map
+            if(map_remove(map, key_remove) == false){
+                printf("Error in map_update\n");
+                exit(1);
+            }    // remove key_remove
+            map_add(map, key_add, weight);  // add key_add
             return 1;
         }
     }
@@ -51,15 +54,15 @@ bool map_add(Map map, int key, float weight){
     Map_node mynode;
     for(mynode = map->array[hashval]; mynode->next != NULL; mynode = mynode->next){
         if(mynode->key == key){
-            // if(mynode->count == 2){
-            //     printf("Key already in map\n");
-            // }
-            // if(mynode->count ==1){
-            //     mynode->count++;
-            // }
             return 0;
         }
     }
+    // printf("Key: %d\n", mynode->key);
+    // printf("Key to add: %d\n", key);
+    if(mynode->key == key){
+        return 0;
+    }
+
     Map_node node = malloc(sizeof(map_node));
     node->key = key;
     node->weight = weight;
@@ -132,18 +135,14 @@ bool map_remove(Map map, int key){
     for (node = map->array[hash(key, map->capacity)]; node != NULL; node = next){
         next = node->next;
         if (key == node->key){
-            // if(node->count == 2){
-            //     node->count--;
-            //     return 0;
-            // }
-            //printf("Removed key: %s value: %s\n", node->key, node->value);
+            printf("Key: %d\n", node->key);
             free(node);
             map->size--;
             if(prev == NULL){
                 map->array[hash(key, map->capacity)] = next;
                 return 1;
-            }
-            else{
+            } else{
+                printf("Prev: %d\n", prev->key);
                 prev->next = next;
                 return 1;
             }

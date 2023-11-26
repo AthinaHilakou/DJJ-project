@@ -32,11 +32,6 @@ run: $(BIN)
 runs: $(BIN)
 	./$(BIN) $(ARGS)
 
-test_heap.o: tests/test_heap.c src/heap.c
-	gcc -c tests/test_heap.c -o tests/test_heap.o
-	gcc -c src/heap.c -o obj/heap.o -I$(HEADERS)
-
-
 test_heap: tests/test_heap.o obj/heap.o
 	gcc -o tests/test_heap tests/test_heap.o obj/heap.o -lm
 	./tests/test_heap
@@ -51,13 +46,11 @@ test_min_heap: tests/test_min_heap.o obj/min_heap.o
 	gcc -o tests/test_min_heap tests/test_min_heap.o obj/min_heap.o -lm
 	./tests/test_min_heap
 
-test_min_heap.o: tests/test_min_heap.c src/min_heap.c
-	gcc -c tests/test_min_heap.c -o tests/test_min_heap.o -I$(HEADERS)
 
-
-test_map.o: tests/test_map.c src/map.c
+test_map: tests/test_map.c src/map.c
 	gcc -c src/map.c -o obj/map.o -I$(HEADERS)
-	gcc -c tests/test_map.c -o tests/test_map.o -I$(HEADERS)
+	gcc -c tests/test_map.c -o obj/test_map.o -I$(HEADERS)
+	gcc -o tests/test_map obj/test_map.o obj/map.o -lm
 	./tests/test_map
 
 tests: $(TESTS) $(BIN)
@@ -70,15 +63,6 @@ tests: $(TESTS) $(BIN)
 	./tests/test_of_min_heap
 	./tests/test_map
 
-test_map: tests/test_map.c src/map.c
-	gcc -c src/map.c -o obj/map.o -I$(HEADERS)
-	gcc -c tests/test_map.c -o obj/test_map.o -I$(HEADERS)
-	gcc -o tests/test_map obj/test_map.o obj/map.o -lm
-	./tests/test_map
-
-# $(CC) $(CFLAGS) -I$(SRC_DIR) -o test_of_heap tests/test_heap.c $(OBJS) -lm
-# $(CC) $(CFLAGS) -I$(SRC_DIR) obj/heap.o obj/min_heap.o  $(TESTS) -lm
-# ./$(TESTS:.c=)
 do:
 	./$(TESTS:.c=)
 
