@@ -125,23 +125,31 @@ int main(int argc, char** argv){
                         }
 
                     }
-                    if(heap_update(neighbors[neighbor1],neighbor2, weight) == true){
-                        printf("heap neihbor1 = %d, removed %d, added %d\n", neighbor1, old_neighbor1, neighbor2);
-                        update_counter++;
-                        ret = map_update(map_all_neigbors[neighbor1], neighbor2, weight,old_neighbor1);
-                        if(ret){
-                            printf("map update neihbor1 = %d, removed %d, added %d\n\n\n", neighbor1, old_neighbor1, neighbor2);
+                    int flag1 = false;
+                    int flag2 = false;
+                    if(myadjMatrix[neighbor1][neighbor2] == 0){ 
+                        if(heap_update(neighbors[neighbor1],neighbor2, weight) == true){
+                            printf("heap neihbor1 = %d, removed %d, added %d\n", neighbor1, old_neighbor1, neighbor2);
+                            update_counter++;
+                            myadjMatrix[neighbor1][neighbor2] = 1;
+                            flag1 = true;
                         }
                     }
-                    if(heap_update(neighbors[neighbor2],neighbor1, weight) == true){
-                        update_counter++;
-                        ret = map_update(map_all_neigbors[neighbor2],neighbor1, weight, old_neighbor2);
-                        if(ret){
-                            printf("neighbor2 = %d, removed %d, added %d\n", neighbor2, old_neighbor2, neighbor1);
+                    if (myadjMatrix[neighbor2][neighbor1] == 0){
+                        if(heap_update(neighbors[neighbor2],neighbor1, weight) == true){
+                            update_counter++;
+                            myadjMatrix[neighbor2][neighbor1] = 1;
+                            flag2 = true;
                         }
                     }
-
-
+                    if(flag1 == true){
+                        map_update(map_all_neigbors[neighbor1], neighbor2, weight, old_neighbor1);
+                        map_add(map_all_neigbors[neighbor2], neighbor1, weight);
+                    }
+                    if(flag2 == true){
+                        map_update(map_all_neigbors[neighbor2], neighbor1, weight, old_neighbor2);
+                        map_add(map_all_neigbors[neighbor1], neighbor2, weight);
+                    }
                 }
             }
         }
