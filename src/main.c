@@ -85,11 +85,8 @@ int main(int argc, char** argv){
         for(int i = 0; i < data_size; i++){
             all_neighbors[i] = map_to_array(map_all_neigbors[i], &sizes[i]); 
             if( i < 2){
-                printf("Neibhors %d\n", i);
-                printf("map size %d\n", map_all_neigbors[i]->size);
+                printf("for %d: ", i);
                 map_print(map_all_neigbors[i]);
-                printf("Neibhors %d\n", i);
-                print_heap(neighbors[i]);
             }
         }
         // for each node
@@ -125,12 +122,18 @@ int main(int argc, char** argv){
                             update_counter++;
                             removeEdge(myadjMatrix, neighbor1, old_neighbor1);
                             addEdge(myadjMatrix, neighbor1, neighbor2);
-                            if(neighbor1 == 0 || neighbor1 == 1){
-                                printf("Map update %d, with %d, old %d\n", neighbor1, neighbor2, old_neighbor1);
-                                map_update(map_all_neigbors[neighbor1], neighbor2, weight, old_neighbor1);
+                            if(map_remove(map_all_neigbors[neighbor1], old_neighbor1) == false){
+                                printf("Error in map_remove\n");
+                                exit(1);
                             }
-                            //map_remove(map_all_neigbors[neighbor1], old_neighbor1);
-                            //map_add(map_all_neigbors[neighbor1], neighbor2, weight);
+
+                            if(myadjMatrix[old_neighbor1][neighbor1] == 0 && myadjMatrix[neighbor1][old_neighbor1] == 0){
+                                map_remove(map_all_neigbors[old_neighbor1], neighbor1);
+                            }
+
+                            if(myadjMatrix[neighbor2][neighbor1] == 0){
+                                map_add(map_all_neigbors[neighbor1], neighbor2, weight);
+                            }
                             map_add(map_all_neigbors[neighbor2], neighbor1, weight);
                         }
                     }
@@ -139,12 +142,20 @@ int main(int argc, char** argv){
                         if(heap_update(neighbors[neighbor2],neighbor1, weight) == true){
                             update_counter++;
                             removeEdge(myadjMatrix, neighbor2, old_neighbor2);
-                            addEdge(myadjMatrix, neighbor2, neighbor1);
-                            if(neighbor2 == 0 || neighbor2 == 1)
-                            printf("Map update %d, with %d, old %d\n", neighbor1, neighbor2, old_neighbor1);
-                            map_update(map_all_neigbors[neighbor2], neighbor1, weight, old_neighbor2);
-                            //map_remove(map_all_neigbors[neighbor2], old_neighbor2);
-                            //map_add(map_all_neigbors[neighbor2], neighbor1, weight);
+                            addEdge(myadjMatrix, neighbor2, neighbor1);               
+                         
+                            if(map_remove(map_all_neigbors[neighbor2], old_neighbor2) == false){
+                                printf("Error in map_remove\n");
+                                exit(1);
+                            }
+
+                            if(myadjMatrix[old_neighbor2][neighbor2] == 0 && myadjMatrix[neighbor2][old_neighbor2] == 0){
+                                map_remove(map_all_neigbors[old_neighbor2], neighbor2);
+                            }
+
+                            if(myadjMatrix[neighbor1][neighbor2] == 0){
+                                map_add(map_all_neigbors[neighbor2], neighbor1, weight);
+                            }
                             map_add(map_all_neigbors[neighbor1], neighbor2, weight);
                         }
                     }

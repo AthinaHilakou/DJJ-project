@@ -135,14 +135,12 @@ bool map_remove(Map map, int key){
     for (node = map->array[hash(key, map->capacity)]; node != NULL; node = next){
         next = node->next;
         if (key == node->key){
-            printf("Key: %d\n", node->key);
             free(node);
             map->size--;
             if(prev == NULL){
                 map->array[hash(key, map->capacity)] = next;
                 return 1;
             } else{
-                printf("Prev: %d\n", prev->key);
                 prev->next = next;
                 return 1;
             }
