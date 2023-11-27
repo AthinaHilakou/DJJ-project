@@ -15,7 +15,7 @@ void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun
 
 
 int main(int argc, char** argv){
-    srand(time(NULL)); // seed random number generator
+    srand(time(NULL)* getpid()); // seed random number generator
     clock_t start, end;
     double cpu_time_used;
     int maxNeighbors;
@@ -79,15 +79,10 @@ int main(int argc, char** argv){
     // main loop
 
     while(1){
-        printf("Out loop\n\n\n");
         int update_counter = 0;
-        printAdjMatrix(myadjMatrix, data_size);
+        // printAdjMatrix(myadjMatrix, data_size);
         for(int i = 0; i < data_size; i++){
             all_neighbors[i] = map_to_array(map_all_neigbors[i], &sizes[i]); 
-            if( i < 2){
-                printf("for %d: ", i);
-                map_print(map_all_neigbors[i]);
-            }
         }
         // for each node
         for(int i = 0; i < data_size; i++){
@@ -99,12 +94,12 @@ int main(int argc, char** argv){
                 // for all neighbor pairs
                 for(int k = j + 1; k < sizes[i]; k++){
                     int neighbor2 = all_neighbors[i][k];
-                    float weight;
                    
                     if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
                         continue;
                     }
                 
+                    float weight;
                     if(weights_array[neighbor1][neighbor2] - 1 != 0){
                         weight = weight_fun(data,neighbor1,neighbor2, flag);
                         weights_array[neighbor1][neighbor2] = weight;
@@ -113,8 +108,8 @@ int main(int argc, char** argv){
                     }
 
                     int ret;
-                    int old_neighbor1 = index_from_heap(neighbors[neighbor1],0);
-                    int old_neighbor2 = index_from_heap(neighbors[neighbor2],0);
+                    int old_neighbor1 = heap_find_max(neighbors[neighbor1]);
+                    int old_neighbor2 = heap_find_max(neighbors[neighbor2]);
                     // if neighbor2 is not in neighbor1's neighbors
                     if(myadjMatrix[neighbor1][neighbor2] == 0){
                         if(heap_update(neighbors[neighbor1],neighbor2, weight) == true){
@@ -122,19 +117,14 @@ int main(int argc, char** argv){
                             update_counter++;
                             removeEdge(myadjMatrix, neighbor1, old_neighbor1);
                             addEdge(myadjMatrix, neighbor1, neighbor2);
-                            if(map_remove(map_all_neigbors[neighbor1], old_neighbor1) == false){
-                                printf("Error in map_remove\n");
-                                exit(1);
-                            }
-
-                            if(myadjMatrix[old_neighbor1][neighbor1] == 0 && myadjMatrix[neighbor1][old_neighbor1] == 0){
+                            // if neighbor1 is not in old_neighbor1's neighbors
+                            if(myadjMatrix[old_neighbor1][neighbor1] == 0){
                                 map_remove(map_all_neigbors[old_neighbor1], neighbor1);
+                                map_remove(map_all_neigbors[neighbor1], old_neighbor1);
                             }
-
-                            if(myadjMatrix[neighbor2][neighbor1] == 0){
-                                map_add(map_all_neigbors[neighbor1], neighbor2, weight);
-                            }
+                            // if neighbor2 is not in neighbor1's neighbors
                             map_add(map_all_neigbors[neighbor2], neighbor1, weight);
+                            map_add(map_all_neigbors[neighbor1], neighbor2, weight);
                         }
                     }
 
@@ -142,21 +132,17 @@ int main(int argc, char** argv){
                         if(heap_update(neighbors[neighbor2],neighbor1, weight) == true){
                             update_counter++;
                             removeEdge(myadjMatrix, neighbor2, old_neighbor2);
-                            addEdge(myadjMatrix, neighbor2, neighbor1);               
+                            addEdge(myadjMatrix, neighbor2, neighbor1);
                          
-                            if(map_remove(map_all_neigbors[neighbor2], old_neighbor2) == false){
-                                printf("Error in map_remove\n");
-                                exit(1);
-                            }
-
+                            // if neighbor2 is not in old_neighbor2's neighbors
                             if(myadjMatrix[old_neighbor2][neighbor2] == 0 && myadjMatrix[neighbor2][old_neighbor2] == 0){
                                 map_remove(map_all_neigbors[old_neighbor2], neighbor2);
+                                map_remove(map_all_neigbors[neighbor2], old_neighbor2);
                             }
-
-                            if(myadjMatrix[neighbor1][neighbor2] == 0){
-                                map_add(map_all_neigbors[neighbor2], neighbor1, weight);
-                            }
+                            // if neighbor1 is not in neighbor2's neighbors
                             map_add(map_all_neigbors[neighbor1], neighbor2, weight);
+                            map_add(map_all_neigbors[neighbor2], neighbor1, weight);
+                            
                         }
                     }
                 }
@@ -166,42 +152,21 @@ int main(int argc, char** argv){
             break;
         }
         // free(all_neighbors);
-        // break;
     }
 
-    // delete
-    printAdjMatrix(myadjMatrix, data_size);
-    for(int i = 0; i < data_size; i++){
-        all_neighbors[i] = map_to_array(map_all_neigbors[i], &sizes[i]); 
-        if( i < 3){
-            printf("Neibhors %d\n", i);
-            printf("map size %d\n", map_all_neigbors[i]->size);
-            map_print(map_all_neigbors[i]);
-            printf("Neibhors %d\n", i);
-            print_heap(neighbors[i]);
-        }
-    }
-
+    
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("KNN aproximation done in %3.2f seconds\n", cpu_time_used);
     start = clock();
-    printf("recall of graph is %1.3f\n", recall(myadjMatrix, 10, weight_fun, data, data_size, flag));
+    printf("recall of graph is %1.3f\n", recall(myadjMatrix, maxNeighbors, weight_fun, data, data_size, flag));
     printf("Brute force ended in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
      for(int i = 0; i < data_size; i++){
         all_neighbors[i] = map_to_array(map_all_neigbors[i], sizes + i);
     }
-    // for(int j = 0; j < data_size; j++) {
-    //     // get real and reverse neighbors
-    //     int all_neighbors_count;
-    //     getAllNeighbors(myadjMatrix, j, data_size, &all_neighbors_count, all_neighbors[j]);
-    //     sizes[j] = all_neighbors_count;
-    // }
-
-
     // search here
-    // search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
+    search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
 
     //Free resources
     for(int i = 0; i < data_size; i++){

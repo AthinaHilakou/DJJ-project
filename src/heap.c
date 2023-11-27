@@ -117,6 +117,13 @@ void heap_destroy(Heap h){
     free(h);
 }
 
+void heap_to_array(Heap h, int *ret_array){
+    for(int i = 0; i < h->size; i++){
+        ret_array[i] = h->array[i].index;
+    }
+    // return ret_array;
+}
+
 void bubble_down(Heap h, int root){
     //left child 2*(pos+1)-1, right child 2*(pos+1) 
     int left = (2*(root+1)-1);

@@ -45,6 +45,8 @@ void print_heap(Heap h);
 
 void heap_destroy(Heap h);
 
+void heap_to_array(Heap h, int *ret_array);
+
 
 //Helper functions
 void heapify(Heap h);

@@ -3,10 +3,10 @@
 //init: initialise map
 Map map_init(int capacity){
     Map mymap = malloc(sizeof(map));
-    mymap->capacity = capacity;
+    mymap->capacity = 9 * capacity;
     mymap->size = 0;
-    mymap->array = malloc(capacity*sizeof(Map_node));
-    for(int i = 0; i < capacity; i++){
+    mymap->array = malloc(mymap->capacity*sizeof(Map_node));
+    for(int i = 0; i < mymap->capacity; i++){
         mymap->array[i] = malloc(sizeof(map_node));
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
@@ -18,6 +18,10 @@ Map map_init(int capacity){
 
 //hash: hash value for string s
 unsigned int hash(int key, int capacity){
+
+    // key = ((key >> 16) ^ key) * 0x45d9f3b;
+    // key = ((key >> 16) ^ key) * 0x45d9f3b;
+    // key = (key >> 16) ^ key;
     return key % capacity;
 }
 
@@ -77,6 +81,7 @@ bool map_add(Map map, int key, float weight){
 
 void map_rehash(Map map){
     if(map->size > map->capacity/2){
+        printf("Rehashing\n");
         Map_node *old_array = map->array;   // save old array for free later
         int old_capacity = map->capacity;   // save old capacity for rehash loop later
         map->capacity = map->capacity*2;
@@ -124,6 +129,7 @@ void map_rehash(Map map){
                 next = node->next;
             }
         }
+        printf("Rehashing done\n");
     }
 }
 

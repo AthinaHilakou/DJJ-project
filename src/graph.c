@@ -82,10 +82,15 @@ void getAllNeighbors(int** adjMatrix, int vertex, int numVertices, int* numNeigh
 
 void printAdjMatrix(int** adjMatrix, int numVertices) {
     printf("Adjacency Matrix:\n");
+
+    printf("     ");
+    for(int i = 0; i < numVertices; i++)
+        printf("%2d ", i);
+    printf("\n");
     for (int i = 0; i < numVertices; i++) {
         printf("%3d: ", i);
         for (int j = 0; j < numVertices; j++) {
-            printf("%d ", adjMatrix[i][j]);
+            printf("%2d ", adjMatrix[i][j]);
         }
         printf("\n");
     }
