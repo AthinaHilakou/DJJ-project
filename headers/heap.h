@@ -7,6 +7,7 @@
 typedef struct{
     int index; //index of item in data array 
     float weight; //dist of item from data_of_interest, a positive integer
+    int flag; //flag for incremental search
 }node ,*Node;
 
 typedef struct{
@@ -45,8 +46,9 @@ void print_heap(Heap h);
 
 void heap_destroy(Heap h);
 
-void heap_to_array(Heap h, int *ret_array);
+void heap_to_array(Heap h, int *ret_array,int *size,int flag);
 
+int *join_arrays(int * array1, int size1, int *array2, int size2);
 
 //Helper functions
 void heapify(Heap h);

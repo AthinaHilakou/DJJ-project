@@ -8,6 +8,7 @@ typedef struct my_map_node{ /* table entry: */
     struct my_map_node *next; /* next entry in chain */
     int key; /* defined key */
     float weight; /* defined weight */
+    int flag; /*flag for incremental search*/
    // int count; /* number of times key has been added */
 }map_node, *Map_node;
 
@@ -53,7 +54,6 @@ void map_rehash(Map map);
 float map_get(Map map, int key);
 
 // demapify
-int *map_to_array(Map map, int* size);
-
+int *map_to_array(Map map, int* size,int flag);
 // print
-void map_print(Map map);
+// void map_print(Map map);

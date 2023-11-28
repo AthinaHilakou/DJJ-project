@@ -109,6 +109,7 @@ void test_map_update(void){
     TEST_CHECK(map_update(m, 4, 4, 4) == false);
     TEST_CHECK(m->size == 3);
     map_destroy(m);
+    
 }
 
 

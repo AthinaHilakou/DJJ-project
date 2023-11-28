@@ -29,6 +29,7 @@ Heap heap_create(int *data_array, int array_size, float *weights){
         // printf("\nindex: %d\n", h->array[i].index);
         h->array[i].weight = weights[i];
         // printf("weight: %d\n", h->array[i].weight);
+        h->array[i].flag = 1;
     }
 
 
@@ -42,6 +43,7 @@ void heap_insert(Heap h, int index, float weight){
    if(h->size < h->capacity){
         h->array[h->size].index = index;  // insert item
         h->array[h->size].weight = weight; // insert weight
+        h->array[h->size].flag = 1;
         h->size++;                  // update size of heap
         bubble_up(h,(h->size-1));   // restore heap property
    }
@@ -51,6 +53,7 @@ void heap_insert(Heap h, int index, float weight){
         h->capacity = new_capacity; // update capacity
         h->array[h->size].index = index; // insert item
         h->array[h->size].weight = weight; // insert weight
+        h->array[h->size].flag = 1;
         h->size++;  // update size of heap
         bubble_up(h,(h->size-1)); // restore heap property
    }
@@ -68,6 +71,7 @@ int heap_pop(Heap h){
     ret = h->array[0].index;
     h->array[0].index = h->array[(h->size-1)].index;
     h->array[0].weight = h->array[(h->size-1)].weight;
+    h->array[0].flag = h->array[(h->size-1)].flag;
     h->size--;
     bubble_down(h,0);
     return ret;
@@ -117,9 +121,15 @@ void heap_destroy(Heap h){
     free(h);
 }
 
-void heap_to_array(Heap h, int *ret_array){
+void heap_to_array(Heap h, int *ret_array,int *size,int flag){
+    *size = 0;
     for(int i = 0; i < h->size; i++){
-        ret_array[i] = h->array[i].index;
+        if(h->array[i].flag == flag){
+            if(flag == 1) // Mark all items with true flag as false
+                h->array[i].flag = 0;
+            ret_array[*size] = h->array[i].index;
+            (*size)++;
+        }
     }
     // return ret_array;
 }
@@ -150,13 +160,17 @@ void bubble_down(Heap h, int root){
     int temp;
     float temp_weight;
     int temp_index;
+    int temp_flag;
     if ((h->array[root].weight) < (h->array[max].weight)){
         temp = h->array[root].index;
         temp_weight = h->array[root].weight;
+        temp_flag = h->array[root].flag;
         h->array[root].index = h->array[max].index;
         h->array[root].weight = h->array[max].weight;
+        h->array[root].flag = h->array[max].flag;
         h->array[max].index = temp;
         h->array[max].weight = temp_weight;
+        h->array[max].flag = temp_flag;
         bubble_down(h,max);
     }
 }
@@ -168,19 +182,23 @@ void bubble_up(Heap h, int child){
     int temp;
     float temp_weight;
     int temp_index;
-
+    int temp_flag;
     // swap if parent node distance is greater than child node distance
     if(h->array[parent].weight < h->array[child].weight){
         temp = h->array[parent].index;
         temp_weight = h->array[parent].weight;
+        temp_flag = h->array[parent].flag;
         h->array[parent].index = h->array[child].index;
         h->array[parent].weight = h->array[child].weight;
+        h->array[parent].flag = h->array[child].flag;
         h->array[child].index = temp;
         h->array[child].weight = temp_weight;
+        h->array[child].flag = temp_flag;
         bubble_up(h,parent);
     }
     return;
 }
+
 
 void heapify(Heap h){
     int root = (((h->size)/2) - 1);
@@ -188,4 +206,17 @@ void heapify(Heap h){
         bubble_down(h, root);
         root--;
     }
+}
+//todo no duplicates
+// joins array1, and array2, returns joined array
+int *join_arrays(int * array1, int size1, int *array2, int size2){
+    int *joined_array = malloc((size1+size2)*sizeof(int));
+    for(int i = 0; i < size1; i++){
+        joined_array[i] = array1[i];
+    }
+    for(int i = 0; i < size2; i++){
+        joined_array[size1+i] = array2[i];
+    }
+    return joined_array;
+
 }

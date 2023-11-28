@@ -11,6 +11,7 @@ Map map_init(int capacity){
         mymap->array[i]->next = NULL;
         mymap->array[i]->key = -1;
         mymap->array[i]->weight = -1;
+        mymap->array[i]->flag = 0;
         // mymap->array[i]->count = 1; //count how many times key has been added
     }
     return mymap;
@@ -70,6 +71,7 @@ bool map_add(Map map, int key, float weight){
     Map_node node = malloc(sizeof(map_node));
     node->key = key;
     node->weight = weight;
+    node->flag = 1;
     node->next = NULL;
     // node->count = 1;
     // put node at end of list
@@ -91,6 +93,7 @@ void map_rehash(Map map){
             new_array[i]->next = NULL;
             new_array[i]->key = -1;
             new_array[i]->weight = -1;
+            new_array[i]->flag = 0;
             // new_array[i]->count = 1; //count how many times key has been added
         }
         // rehash
@@ -107,6 +110,7 @@ void map_rehash(Map map){
                 mynode->next->key = node->key;
                 mynode->next->weight = node->weight;
                 mynode->next->next = NULL;
+                mynode->next->flag = node->flag;
                 // mynode->next->count = 1;
             }
         }
@@ -122,13 +126,6 @@ void map_rehash(Map map){
         free(old_array);
         map->array = new_array;
 
-        for(int i = 0; i < map->capacity; i++){
-            Map_node node;
-            Map_node next = NULL;
-            for (node = map->array[i]->next; node != NULL; node = next){
-                next = node->next;
-            }
-        }
         printf("Rehashing done\n");
     }
 }
@@ -185,27 +182,30 @@ float map_get(Map map, int key){ // returns -1 if not found
 }
 
 // Map to array
-int *map_to_array(Map map, int* size){
+int *map_to_array(Map map, int* size,int flag){
     int *array = malloc(map->size*sizeof(int));
     *size = map->size;
     int i = 0;
     for(int j = 0; j < map->capacity; j++){
         Map_node mynode;
         for(mynode = map->array[j]->next; mynode != NULL; mynode = mynode->next){
-            array[i] = mynode->key;
-            i++;
+            if(mynode->flag == flag){
+                array[i] = mynode->key;
+                i++;
+            }
         }
     }
+    *size = i;
     return array;
 }
 
-void map_print(Map map){
-    int *array;
-    int size;
-    array = map_to_array(map, &size);
-    for(int i = 0; i < size; i++){
-        printf("%d ", array[i]);
-    }
-    printf("\n");
-    free(array);
-}
+// void map_print(Map map){
+//     int *array;
+//     int size;
+//     array = map_to_array(map, &size);
+//     for(int i = 0; i < size; i++){
+//         printf("%d ", array[i]);
+//     }
+//     printf("\n");
+//     free(array);
+// }
