@@ -20,6 +20,8 @@ K nearest neighbors descent implementation
 
 TODO
 
+η δεν εχει ενημερωθει το flag σωστα ή δεν γινονται ελεγχοι στο reverse set 
+
 update reverse neighbors directly when we add a neighbor
 
 save brute force results to a file

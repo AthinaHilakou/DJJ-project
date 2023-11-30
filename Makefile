@@ -5,8 +5,8 @@ OBJ_DIR = obj
 BIN_DIR = bin
 TESTS_DIR = tests
 HEADERS = headers
-# max_neighbors/k filename manh/eucl data_type_flag 
-ARGS = 100 datasets/given/00001000-1.bin eucl 0
+# max_neighbors/k filename manh/eucl data_type_flag delta
+ARGS = 100 datasets/given/00001000-1.bin eucl 0 0.01 0.9
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
