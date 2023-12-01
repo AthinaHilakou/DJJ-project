@@ -119,15 +119,22 @@ void heap_destroy(Heap h){
     free(h);
 }
 
-void heap_to_array(Heap h, int *ret_array,int *size,int flag, int* insert_flags){
+void heap_to_array(Heap h, int *ret_array,int *size,int flag, int* insert_flags, double sampling_rate){
     *size = 0;
-    for(int i = 0; i < h->size; i++){
-        if(insert_flags[h->array[i].index] == flag){                
-            ret_array[*size] = h->array[i].index;
-            (*size)++;
+    int samples = (int) h->size*sampling_rate;
+    int sampled = 0;
+    for(int i = 0; i < (int) h->size; i++){
+        if(insert_flags[h->array[i].index] == flag){
+            if(sampled < samples){
+                ret_array[*size] = h->array[i].index;
+                (*size)++;
+                sampled++;
+            }
+            else{
+                break;
+            }
         }
     }
-    // return ret_array;
 }
 
 void bubble_down(Heap h, int root){

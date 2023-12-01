@@ -45,7 +45,7 @@ void print_heap(Heap h);
 
 void heap_destroy(Heap h);
 
-void heap_to_array(Heap h, int *ret_array,int *size,int flag, int* insert_flags);
+void heap_to_array(Heap h, int *ret_array,int *size,int flag, int* insert_flags, double sampling_rate);
 
 int *join_arrays(int * array1, int size1, int *array2, int size2);
 

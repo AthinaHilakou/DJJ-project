@@ -176,16 +176,23 @@ float map_get(Map map, int key){ // returns -1 if not found
 }
 
 // Map to array
-int *map_to_array(Map map, int* size,int flag, int* insert_flag){
+int *map_to_array(Map map, int* size,int flag, int* insert_flag, double sampling_rate){
     int *array = malloc(map->size*sizeof(int));
     *size = map->size;
     int i = 0;
+    int samples = (int) map->size*sampling_rate;
+    int sampled = 0;
     for(int j = 0; j < map->capacity; j++){
         Map_node mynode;
         for(mynode = map->array[j]->next; mynode != NULL; mynode = mynode->next){
             if(insert_flag[mynode->key] == flag){
-                array[i] = mynode->key;
-                i++;
+                if(sampled < samples){
+                    array[i] = mynode->key;
+                    i++;
+                    sampled++;
+                } else{
+                    break;
+                }
             }
         }
     }

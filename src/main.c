@@ -47,7 +47,6 @@ int main(int argc, char** argv){
     neighbors = (Heap *) malloc(data_size * sizeof(Heap));
 
     start = clock();
-    printf("Starting creating random neighbors\n");
     // Sample K random neighbors for each node
     int neighbors_count;
     int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
@@ -126,16 +125,16 @@ int main(int argc, char** argv){
         // printAdjMatrix(myadjMatrix, data_size);
         for(int i = 0; i < data_size; i++){
             // get normal neighbors with false flag
-            heap_to_array(neighbors[i],old[i],&sizes_f_flags[i], 0, insert_flags[i]);
+            heap_to_array(neighbors[i],old[i],&sizes_f_flags[i], 0, insert_flags[i], sampling_rate);
             // get normal neighbors with true flag
-            heap_to_array(neighbors[i],new[i],&sizes_t_flags[i], 1,  insert_flags[i]);
+            heap_to_array(neighbors[i],new[i],&sizes_t_flags[i], 1,  insert_flags[i], sampling_rate);
             for(int j = 0; j < sizes_t_flags[i]; j++){
                 insert_flags[i][new[i][j]] = 0;
             }
             // get reverse neighbors with false flag
-            old_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_f_flags_r[i], 0,  insert_flags[i]);
+            old_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_f_flags_r[i], 0,  insert_flags[i], sampling_rate);
             // get reverse neighbors with true flag
-            new_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_t_flags_r[i], 1,  insert_flags[i]);
+            new_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_t_flags_r[i], 1,  insert_flags[i], sampling_rate);
             for(int j = 0; j < sizes_t_flags_r[i]; j++){
                 insert_flags[i][new_reverse[i][j]] = 0;
             }
@@ -143,6 +142,7 @@ int main(int argc, char** argv){
             // join normal neighbors with reverse neighbors
             joined_old_arrays[i] = join_arrays(old[i], sizes_f_flags[i], old_reverse[i], sizes_f_flags_r[i]);            
             joined_new_arrays[i] = join_arrays(new[i], sizes_t_flags[i], new_reverse[i], sizes_t_flags_r[i]);
+            // printf("Size of new array is %d\n", sizes_t_flags[i] + sizes_t_flags_r[i]);
             // printf("Sizes are heap f: %d, map f %d, heap t %d, map t %d\n", sizes_f_flags[i], sizes_f_flags_r[i], sizes_t_flags[i], sizes_t_flags_r[i]);
         
         }
@@ -270,7 +270,7 @@ int main(int argc, char** argv){
             }
         }
         // Early termination of algorithm if updates are less than the delta*KN threshold 
-        printf("Update counter: %d, delta * K * N %d\n", update_counter, (int)(delta*maxNeighbors*data_size));
+        printf("Update counter: %d of %d\n", update_counter, (int)(delta*maxNeighbors*data_size));
         if(update_counter  < delta*maxNeighbors*data_size){
             break;
         }

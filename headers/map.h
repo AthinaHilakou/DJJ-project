@@ -53,6 +53,6 @@ void map_rehash(Map map);
 float map_get(Map map, int key);
 
 // demapify
-int *map_to_array(Map map, int* size,int flag, int* insert_flag);
+int *map_to_array(Map map, int* size,int flag, int* insert_flag, double sampling_rate);
 // print
 // void map_print(Map map);
