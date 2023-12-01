@@ -54,6 +54,7 @@ int main(int argc, char** argv){
     float **weights_array = (float **)malloc(data_size*sizeof(float *));
     Map *reverse_neighbors = (Map *)malloc(data_size*sizeof(Map));
 
+
     //create empty maps for all neighbors save
     for(int i = 0; i < data_size; i++){
         reverse_neighbors[i] = map_init(4*maxNeighbors);
@@ -83,13 +84,6 @@ int main(int argc, char** argv){
 
     printf("Finished creating random neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
-    // Find K real and ALL reverse neighbors for each node
-    // all_neighbors = (int **) malloc(data_size * sizeof(int *));
-    // for(int i = 0; i < data_size; i++) { //k plus the max number of reverse neighbors
-    //     all_neighbors[i] = (int *) malloc((data_size + maxNeighbors)* sizeof(int));
-    // }
-
-
     start = clock();
 
     //for handling flags in search
@@ -106,17 +100,15 @@ int main(int argc, char** argv){
 
     int ** joined_old_arrays = (int **) malloc(data_size * sizeof(int *));
     int ** joined_new_arrays = (int **) malloc(data_size * sizeof(int *));
-    for(int i = 0; i < data_size; i++){
-        joined_old_arrays[i] = (int *) malloc((data_size)* sizeof(int));
-        joined_new_arrays[i] = (int *) malloc((data_size)* sizeof(int));
-    }
 
 
 
+    printf("Finished creating reverse neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     int sizes_t_flags[data_size]; 
     int sizes_f_flags[data_size];
     int sizes_t_flags_r[data_size];
     int sizes_f_flags_r[data_size];
+    printf("Starting KNN aproximation\n");
     // main loop
 
     while(1){
@@ -221,7 +213,7 @@ int main(int argc, char** argv){
                     if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
                         continue;
                     }
-                
+
                     float weight;
                     if(weights_array[neighbor1][neighbor2] - 1 != 0){
                         weight = weight_fun(data,neighbor1,neighbor2, flag);
@@ -269,6 +261,14 @@ int main(int argc, char** argv){
                 }
             }
         }
+
+        for(int i = 0; i < data_size; i++){
+            free(joined_old_arrays[i]);
+            free(joined_new_arrays[i]);
+            free(old_reverse[i]);
+            free(new_reverse[i]);
+        }
+
         // Early termination of algorithm if updates are less than the delta*KN threshold 
         printf("Update counter: %d of %d\n", update_counter, (int)(delta*maxNeighbors*data_size));
         if(update_counter  < delta*maxNeighbors*data_size){
@@ -298,22 +298,45 @@ int main(int argc, char** argv){
     // search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
 
     //Free resources
+    free(data_p);
+    free(data);
+
+    for(int i = 0; i < data_size; i++){
+        free(insert_flags[i]);
+    }
+    free(insert_flags);
+
+    for(int i = 0; i < data_size; i++){
+        heap_destroy(neighbors[i]);
+        map_destroy(reverse_neighbors[i]);
+        free(old[i]);
+        free(new[i]);
+    }
+    free(neighbors);
+    free(reverse_neighbors);
+    free(old);
+    free(new);
+
+    free(neighbor_indexes);
+
     for(int i = 0; i < data_size; i++){
         free(weights_array[i]);
     }
     free(weights_array);
+    free(weights);
 
-    for(int i = 0; i < data_size; i++){
-        heap_destroy(neighbors[i]);
-    }
-    free(neighbors);
-    free(neighbor_indexes);
+
+
+    free(old_reverse);
+    free(new_reverse);
+    free(joined_old_arrays);
+    free(joined_new_arrays);
+
+
     for(int i = 0; i < data_size; i++){
         free(all_neighbors[i]);
     }
     free(all_neighbors);
-    free(data);
-    free(weights);
     freegraph(myadjMatrix, data_size);
 
     return 0;
