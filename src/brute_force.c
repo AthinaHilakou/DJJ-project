@@ -1,9 +1,91 @@
 #include "../headers/brute_force.h"
 #include "../headers/min_heap.h"
 #include "../headers/data.h"
-int **brute_force(int k, float (*weight)(void* , int, int, int), void* data, int data_size, int flag){
+int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int, int), void* data, int data_size, int flag){
+	int **real_KNN = (int **)malloc(data_size * sizeof(int *)); //return array of KNN real neighbors
+	if(real_KNN == NULL){
+		printf("Error allocating memory!\n");
+		exit(1);
+	}
+	for(int i = 0; i < data_size; i++){
+		real_KNN[i] = (int *)malloc(k * sizeof(int));
+		if(real_KNN[i] == NULL){
+			printf("Error allocating memory!\n");
+			exit(1);
+		}
+	}
+
+
+	//Create string from command line arguments
+	char command_line_args[300];
+	for(int i = 0; i < 300; i++){
+		command_line_args[i] = '\0';
+	}
+	for(int i = 0; i < argc; i++){
+		strcat(command_line_args, argv[i]);
+		strcat(command_line_args, " ");
+	}
+	strcat(command_line_args, "\n");
+	//printf("command line args in bute force: %s\n", command_line_args);
+	//Create a file to store the real neighbors of each data point or open it if it already exists
+	FILE *fp;
+ 	if (access("bin/real_neighbors.txt", F_OK) == 0){
+    //results file exists, open for reading and writing
+		fp = fopen("bin/real_neighbors.txt", "r+");
+		if(fp == NULL){
+			printf("Error opening file!\n");
+			exit(1);
+		}
+		//read real neighbors from file
+		char *line = malloc(sizeof(char)*k*3);
+		if(line == NULL){
+			printf("Error allocating memory!\n");
+			exit(1);
+		}
+	
+		size_t len = k*3;
+		ssize_t read;
+		int i = 0;
+		read = getline(&line, &len, fp);
+		//printf("command line args from file: %s\n", line);
+		if(strcmp(line, command_line_args) == 0){ //if the command line arguments are the same as the ones in the file
+			while ((read = getline(&line, &len, fp)) > 0){
+				int j = 0;
+				char *token = strtok(line, " ");
+				while(token != NULL){
+					if(j != 0){
+						real_KNN[i][j-1] = atoi(token);
+					}
+					token = strtok(NULL, " ");
+					j++;
+					if(j > k) break; //VERY IMPORTANT
+				}
+				i++;
+				if(i > data_size) break; //VERY IMPORTANT
+			}
+			fclose(fp);
+			free(line);
+			// for(int i = 0; i < data_size; i++){
+			// 	printf("%d: ", i);
+			// 	for(int j = 0; j < k; j++){
+			// 		printf("%d ", real_KNN[i][j]);
+			// 	}
+			// 	printf("\n");
+			// }
+			return real_KNN;
+		}
+		free(line);
+		fclose(fp);
+	}
+    
+	//results file doesn't exist (or we changed command line args), create it (or truncate it) and open it for reading and writing 
+	fp = fopen("bin/real_neighbors.txt", "w+");
+	if(fp == NULL){
+		printf("Error opening file!\n");
+		exit(1);
+	}
 	min_Heap *all_real_neighbors;
-    all_real_neighbors = (min_Heap *)malloc(data_size*sizeof(min_Heap)); //real nughbors of each data point
+    all_real_neighbors = (min_Heap *)malloc(data_size*sizeof(min_Heap)); //real neighbors of each data point
 	float weight_val;
 	for(int i = 0; i < data_size; i++){ //initialize heaps 
 		all_real_neighbors[i] = min_heap_create(NULL, 0, NULL);
@@ -19,10 +101,6 @@ int **brute_force(int k, float (*weight)(void* , int, int, int), void* data, int
 	}
 
 
-	int **real_KNN = (int **)malloc(data_size * sizeof(int *)); //array of KNN real neighbors
-	for(int i = 0; i < data_size; i++){
-		real_KNN[i] = (int *)malloc(k * sizeof(int));
-	}
 	for(int i = 0; i < data_size; i++){
 		for(int j = 0; j < k; j++){
 			real_KNN[i][j] = index_from_min_heap(all_real_neighbors[i], j);
@@ -34,12 +112,31 @@ int **brute_force(int k, float (*weight)(void* , int, int, int), void* data, int
         min_heap_destroy(all_real_neighbors[i]);
     }
     free(all_real_neighbors);
-    return real_KNN;
+   
+
+	
+	//write real_KNN to file ---------------------------------------
+	//print argv to file
+	for(int i = 0; i < argc; i++){
+		fprintf(fp, "%s ", argv[i]);
+	}
+	fprintf(fp, "\n");
+	for(int i = 0; i < data_size; i++){
+		fprintf(fp, "%d: ", i);
+		for(int j = 0; j < k; j++){
+			fprintf(fp, "%d ", real_KNN[i][j]);
+		}
+		fprintf(fp, "\n");
+	}
+	fclose(fp);	
+	//--------------------------------------------------------------
+	
+	return real_KNN;
 
 }
 
-float recall(int **aprox_KNN, int k, float (*weight)(void*, int, int, int), void* data, int data_size, int flag){
-    int ** real_KNN = brute_force(k, weight, data, data_size, flag); //real neighbors of each data point
+float recall(int argc, char** argv,int **aprox_KNN, int k, float (*weight)(void*, int, int, int), void* data, int data_size, int flag){
+    int ** real_KNN = brute_force( argc, argv, k, weight, data, data_size, flag); //real neighbors of each data point
 	int matches = 0;
 	for(int i = 0; i < data_size; i++){ //for each data point
 		for(int j = 0; j < k; j++){

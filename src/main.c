@@ -282,7 +282,7 @@ int main(int argc, char** argv){
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("KNN aproximation done in %3.2f seconds\n", cpu_time_used);
     start = clock();
-    printf("recall of graph is %1.3f\n", recall(myadjMatrix, maxNeighbors, weight_fun, data, data_size, flag));
+    printf("recall of graph is %1.3f\n", recall(argc,argv,myadjMatrix, maxNeighbors, weight_fun, data, data_size, flag));
     printf("Brute force ended in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     int **all_neighbors = (int **) malloc(data_size * sizeof(int *));
