@@ -257,17 +257,16 @@ int *merge_arrays(int *array1, int size1, int *array2, int size2, int *joined_si
 }
 
 // Join two arrays using mergesort and remove duplicates
-int *join_arrays(int *array1, int size1, int *array2, int size2) {
+int *join_arrays(int *array1, int size1, int *array2, int size2, int *joined_size) {
     mergeSort(array1, 0, size1 - 1);
     mergeSort(array2, 0, size2 - 1);
 
     // Merge the sorted arrays and remove duplicates
-    int joined_size = 0;
-    int *joined_array = merge_arrays(array1, size1, array2, size2, &joined_size);
-
+    int temp = 0;
+    int *joined_array = merge_arrays(array1, size1, array2, size2, &temp);
+    *joined_size = temp;
     return joined_array;
 }
-
 
 // Merge two subarrays of arr[]
 // First subarray is arr[l..m]

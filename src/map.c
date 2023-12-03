@@ -79,8 +79,7 @@ bool map_add(Map map, int key, float weight){
 }
 
 void map_rehash(Map map){
-    if(map->size > map->capacity/2){
-        printf("Rehashing\n");
+    if(map->size > map->capacity*0.6){
         Map_node *old_array = map->array;   // save old array for free later
         int old_capacity = map->capacity;   // save old capacity for rehash loop later
         map->capacity = map->capacity*2;
@@ -120,7 +119,6 @@ void map_rehash(Map map){
         free(old_array);
         map->array = new_array;
 
-        printf("Rehashing done\n");
     }
 }
 
