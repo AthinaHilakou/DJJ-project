@@ -54,3 +54,5 @@ void heapify(Heap h);
 void bubble_down(Heap h, int root);
 void bubble_up(Heap h, int child);
 int get_heap_size(Heap h);
+
+void mergeSort(int arr[], int l, int r);

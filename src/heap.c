@@ -204,14 +204,128 @@ void heapify(Heap h){
 }
 //todo no duplicates
 // joins array1, and array2, returns joined array
-int *join_arrays(int * array1, int size1, int *array2, int size2){
-    int *joined_array = malloc((size1+size2)*sizeof(int));
-    for(int i = 0; i < size1; i++){
-        joined_array[i] = array1[i];
-    }
-    for(int i = 0; i < size2; i++){
-        joined_array[size1+i] = array2[i];
-    }
-    return joined_array;
 
+// Merge two sorted arrays and remove duplicates
+int *merge_arrays(int *array1, int size1, int *array2, int size2, int *joined_size) {
+    int *joined_array = malloc((size1 + size2) * sizeof(int));
+    int i = 0, j = 0, k = 0;
+
+    // Merge the two arrays while removing duplicates
+    while (i < size1 && j < size2) {
+        if (array1[i] < array2[j]) {
+            if (k == 0 || joined_array[k - 1] != array1[i]) {
+                joined_array[k] = array1[i];
+                k++;
+            }
+            i++;
+        } else if (array2[j] < array1[i]) {
+            if (k == 0 || joined_array[k - 1] != array2[j]) {
+                joined_array[k] = array2[j];
+                k++;
+            }
+            j++;
+        } else {
+            if (k == 0 || joined_array[k - 1] != array1[i]) {
+                joined_array[k] = array1[i];
+                k++;
+            }
+            i++;
+            j++;
+        }
+    }
+
+    // Copy remaining elements from array1
+    while (i < size1) {
+        if (k == 0 || joined_array[k - 1] != array1[i]) {
+            joined_array[k] = array1[i];
+            k++;
+        }
+        i++;
+    }
+
+    // Copy remaining elements from array2
+    while (j < size2) {
+        if (k == 0 || joined_array[k - 1] != array2[j]) {
+            joined_array[k] = array2[j];
+            k++;
+        }
+        j++;
+    }
+
+    *joined_size = k;
+    return joined_array;
+}
+
+// Join two arrays using mergesort and remove duplicates
+int *join_arrays(int *array1, int size1, int *array2, int size2) {
+    mergeSort(array1, 0, size1 - 1);
+    mergeSort(array2, 0, size2 - 1);
+
+    // Merge the sorted arrays and remove duplicates
+    int joined_size = 0;
+    int *joined_array = merge_arrays(array1, size1, array2, size2, &joined_size);
+
+    return joined_array;
+}
+
+
+// Merge two subarrays of arr[]
+// First subarray is arr[l..m]
+// Second subarray is arr[m+1..r]
+void merge(int arr[], int l, int m, int r) {
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    // Create temporary arrays
+    int L[n1], R[n2];
+
+    // Copy data to temporary arrays L[] and R[]
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    // Merge the temporary arrays back into arr[l..r]
+    i = 0; // Initial index of first subarray
+    j = 0; // Initial index of second subarray
+    k = l; // Initial index of merged subarray
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of L[], if there are any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of R[], if there are any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// l is for left index and r is right index of the sub-array of arr to be sorted
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        // Same as (l+r)/2, but avoids overflow for large l and h
+        int m = l + (r - l) / 2;
+
+        // Sort first and second halves
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+
+        merge(arr, l, m, r);
+    }
 }

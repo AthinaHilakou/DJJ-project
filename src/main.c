@@ -136,7 +136,16 @@ int main(int argc, char** argv){
             joined_new_arrays[i] = join_arrays(new[i], sizes_t_flags[i], new_reverse[i], sizes_t_flags_r[i]);
             // printf("Size of new array is %d\n", sizes_t_flags[i] + sizes_t_flags_r[i]);
             // printf("Sizes are heap f: %d, map f %d, heap t %d, map t %d\n", sizes_f_flags[i], sizes_f_flags_r[i], sizes_t_flags[i], sizes_t_flags_r[i]);
-        
+            printf("Joined arrays for node %d are:\n", i);
+            for(int j = 0; j < sizes_t_flags[i] + sizes_t_flags_r[i]; j++){
+                printf("%d ", joined_new_arrays[i][j]);
+            }
+            printf("\n");
+            printf("Joined arrays for node %d are:\n", i);
+            for(int j = 0; j < sizes_f_flags[i] + sizes_f_flags_r[i]; j++){
+                printf("%d ", joined_old_arrays[i][j]);
+            }
+            printf("\n");
         }
 
         //-----------------------------------------------------------------------------------//
@@ -271,7 +280,7 @@ int main(int argc, char** argv){
 
         // Early termination of algorithm if updates are less than the delta*KN threshold 
         printf("Update counter: %d of %d\n", update_counter, (int)(delta*maxNeighbors*data_size));
-        if(update_counter  < delta*maxNeighbors*data_size){
+        if((float) update_counter < delta*maxNeighbors*data_size){
             break;
         }
         // free(all_neighbors);

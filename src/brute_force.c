@@ -21,7 +21,7 @@ int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int,
 	for(int i = 0; i < 300; i++){
 		command_line_args[i] = '\0';
 	}
-	for(int i = 0; i < argc; i++){
+	for(int i = 0; i < 5; i++){
 		strcat(command_line_args, argv[i]);
 		strcat(command_line_args, " ");
 	}
@@ -117,7 +117,7 @@ int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int,
 	
 	//write real_KNN to file ---------------------------------------
 	//print argv to file
-	for(int i = 0; i < argc; i++){
+	for(int i = 0; i < 5; i++){
 		fprintf(fp, "%s ", argv[i]);
 	}
 	fprintf(fp, "\n");
