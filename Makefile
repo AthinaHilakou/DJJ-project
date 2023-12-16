@@ -6,7 +6,7 @@ BIN_DIR = bin
 TESTS_DIR = tests
 HEADERS = headers
 # max_neighbors/k filename manh/eucl data_type_flag delta sampling_rate
-ARGS = 200 datasets/given/00001000-1.bin manh 0 0.01 0.4
+ARGS = 4 datasets/given/00000020.bin eucl 0 0.001 1
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
@@ -53,6 +53,12 @@ test_map: tests/test_map.c src/map.c
 	gcc -o tests/test_map obj/test_map.o obj/map.o -lm
 	./tests/test_map
 
+test_avl: tests/test_avl_tree.c src/avl_tree.c
+	gcc -c src/avl_tree.c -o obj/avl_tree.o -I$(HEADERS)
+	gcc -c tests/test_avl_tree.c -o obj/test_avl_tree.o -I$(HEADERS)
+	gcc -o tests/test_avl obj/test_avl_tree.o obj/avl_tree.o -lm
+	./tests/test_avl
+
 tests: $(TESTS) $(BIN)
 	gcc  -o tests/test_of_heap tests/test_heap.c obj/heap.o -lm
 	gcc  -o tests/test_of_min_heap tests/test_min_heap.c obj/min_heap.o -lm
@@ -67,4 +73,4 @@ do:
 	./$(TESTS:.c=)
 
 clean:
-	rm -rf $(OBJS) $(BIN)
+	rm -rf $(OBJS) $(BIN) $(BIN_DIR)/real_neighbors.txt

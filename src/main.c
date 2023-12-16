@@ -149,7 +149,20 @@ int main(int argc, char** argv){
             // join normal neighbors with reverse neighbors
             joined_old_arrays = join_arrays(old[i], sizes_f_flags[i], old_reverse[i], sizes_f_flags_r[i], &total_old_size);            
             joined_new_arrays = join_arrays(new[i], sizes_t_flags[i], new_reverse[i], sizes_t_flags_r[i], &total_new_size);
-                        
+            printf("i is %d\n", i);
+            printf("Joined new arrays: \n");
+            for(int i = 0; i < total_new_size; i++){
+                printf("%d ", joined_new_arrays[i]);
+            }
+            printf("\n");
+
+            printf("i is %d\n", i);
+            printf("Joined old arrays: \n");
+            for(int i = 0; i < total_old_size; i++){
+                printf("%d ", joined_old_arrays[i]);
+            }
+            printf("\n");
+            // printf("total_new_size = %d, total_old_size = %d\n", total_new_size, total_old_size);
             //for j , k in joined_new_arrays[i], j < k--------------------------------------
             for(int j = 0; j < total_new_size; j++){
                 int neighbor1 = joined_new_arrays[j];
@@ -160,7 +173,7 @@ int main(int argc, char** argv){
                     if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
                         continue;
                     }
-                
+                    printf("neighbor1 = %d, neighbor2 = %d\n", neighbor1, neighbor2);
                     float weight;
                     if(weights_array[neighbor1][neighbor2] - 1 != 0){
                         weight = weight_fun(data,neighbor1,neighbor2, flag);
@@ -176,7 +189,7 @@ int main(int argc, char** argv){
                     update_and_compute(myadjMatrix, neighbors, reverse_neighbors, insert_flags, weights_array, neighbor1, neighbor2, old_neighbor1, old_neighbor2, weight, &update_counter);
 
                     update_and_compute(myadjMatrix, neighbors, reverse_neighbors, insert_flags, weights_array, neighbor2, neighbor1, old_neighbor2, old_neighbor1, weight, &update_counter);
-
+                    // printf("end of computation\n");
                 }
 
                 // for j in joined_new_arrays, k in joined_old_arrays--------------------------------------
@@ -198,6 +211,7 @@ int main(int argc, char** argv){
                     int old_neighbor1 = heap_find_max(neighbors[neighbor1]);
                     int old_neighbor2 = heap_find_max(neighbors[neighbor2]);
                     // if neighbor2 is not in neighbor1's neighbors
+                    printf("neighbor1 = %d, neighbor2 = %d\n", neighbor1, neighbor2);
                     update_and_compute(myadjMatrix, neighbors, reverse_neighbors, insert_flags, weights_array, neighbor1, neighbor2, old_neighbor1, old_neighbor2, weight, &update_counter);
 
                     update_and_compute(myadjMatrix, neighbors, reverse_neighbors, insert_flags, weights_array, neighbor2, neighbor1, old_neighbor2, old_neighbor1, weight, &update_counter);
