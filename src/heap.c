@@ -44,6 +44,7 @@ void heap_insert(Heap h, int index, float weight){
    if(h->size < h->capacity){
         h->array[h->size].index = index;  // insert item
         h->array[h->size].weight = weight; // insert weight
+        h->array[h->size].flag = 1;
         h->size++;                  // update size of heap
         bubble_up(h,(h->size-1));   // restore heap property
    }
@@ -53,6 +54,7 @@ void heap_insert(Heap h, int index, float weight){
         h->capacity = new_capacity; // update capacity
         h->array[h->size].index = index; // insert item
         h->array[h->size].weight = weight; // insert weight
+        h->array[h->size].flag = 1;
         h->size++;  // update size of heap
         bubble_up(h,(h->size-1)); // restore heap property
    }
@@ -70,6 +72,7 @@ int heap_pop(Heap h){
     ret = h->array[0].index;
     h->array[0].index = h->array[(h->size-1)].index;
     h->array[0].weight = h->array[(h->size-1)].weight;
+    h->array[0].flag = h->array[(h->size-1)].flag;
     h->size--;
     bubble_down(h,0);
     return ret;
@@ -119,13 +122,15 @@ void heap_destroy(Heap h){
     free(h);
 }
 
-void heap_to_array(Heap h, int *ret_array,int *size,int flag, int* insert_flags, double sampling_rate){
+void heap_to_array(Heap h, int *ret_array,int *size,int flag, double sampling_rate){
     *size = 0;
     int samples = (int) h->size*sampling_rate;
     int sampled = 0;
     for(int i = 0; i < (int) h->size; i++){
-        if(insert_flags[h->array[i].index] == flag){
+        if(h->array[i].flag == flag){
             if(sampled < samples){
+                if(flag == true)
+                    h->array[i].flag = false;
                 ret_array[*size] = h->array[i].index;
                 (*size)++;
                 sampled++;
@@ -163,13 +168,17 @@ void bubble_down(Heap h, int root){
     int temp;
     float temp_weight;
     int temp_index;
+    int temp_flag;
     if ((h->array[root].weight) < (h->array[max].weight)){
         temp = h->array[root].index;
         temp_weight = h->array[root].weight;
+        temp_flag = h->array[root].flag;
         h->array[root].index = h->array[max].index;
         h->array[root].weight = h->array[max].weight;
+        h->array[root].flag = h->array[max].flag;
         h->array[max].index = temp;
         h->array[max].weight = temp_weight;
+        h->array[max].flag = temp_flag;
         bubble_down(h,max);
     }
 }
@@ -181,14 +190,18 @@ void bubble_up(Heap h, int child){
     int temp;
     float temp_weight;
     int temp_index;
+    int temp_flag;
     // swap if parent node distance is greater than child node distance
     if(h->array[parent].weight < h->array[child].weight){
         temp = h->array[parent].index;
         temp_weight = h->array[parent].weight;
+        temp_flag = h->array[parent].flag;
         h->array[parent].index = h->array[child].index;
         h->array[parent].weight = h->array[child].weight;
+        h->array[parent].flag = h->array[child].flag;
         h->array[child].index = temp;
         h->array[child].weight = temp_weight;
+        h->array[child].flag = temp_flag;
         bubble_up(h,parent);
     }
     return;

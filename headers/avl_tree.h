@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Create Node
 typedef struct Node {
@@ -11,7 +12,6 @@ typedef struct Node {
     int flag;   //flag for update
 
 }avl_node, *Avl_node;
-//TODO implement flag for update
 typedef struct my_avl_tree {
     struct Node *root;
     int size;
@@ -41,7 +41,7 @@ void printPreOrder(struct Node *root);
 
 Avl_tree avl_create();
 void avl_insert(Avl_tree tree, int key, float value);
-void avl_delete(Avl_tree tree, int key);
+void avl_remove(Avl_tree tree, int key);
 void avl_from_array(Avl_tree root, int *array, float *weights, int size);
 int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int maxNeighbors);
 void avl_destroy(Avl_tree root);

@@ -195,7 +195,7 @@ void avl_to_array_helper(Avl_node node, int *array, int *array_index, int flag, 
         return;
     }
     if(node != NULL){
-        avl_to_array_helper(node->left, array, array_index);
+        avl_to_array_helper(node->left, array, array_index, flag, max_samples);
         if(node->flag == flag){
             array[*array_index] = node->key;
             *array_index++;
@@ -204,11 +204,10 @@ void avl_to_array_helper(Avl_node node, int *array, int *array_index, int flag, 
                 node->flag = false;
             }
         }
-        avl_to_array_helper(node->right, array, array_index);
+        avl_to_array_helper(node->right, array, array_index, flag, max_samples);
     }
 }
 
-//todo add flags
 int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int maxNeighbors){
     int *array = malloc(tree->size*sizeof(int));
     int array_index = 0;
