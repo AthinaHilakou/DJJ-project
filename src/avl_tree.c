@@ -27,6 +27,7 @@ struct Node *newNode(int key, float value) {
     node->right = NULL;
     node->weight = 1;
     node->value = value;
+    node->flag = 1;
     return (node);
 }
 
@@ -181,29 +182,41 @@ void printPreOrder(struct Node *root) {
     }
 }
 
-void avl_from_array(Avl_tree root, int *array, float *weights, int size){
+void avl_from_array(Avl_tree tree, int *array, float *weights, int size){
     for(int i = 0; i < size; i++){
-        root = insertNode(root, array[i], weights[i]);
+        tree->root = insertNode(tree->root, array[i], weights[i]);
     }
 }
 
-int *avl_to_array(Avl_tree tree, int *size){
+
+void avl_to_array_helper(Avl_node node, int *array, int *array_index, int flag, int max_samples){
+    // if we have reached the max number of samples, return
+    if(*array_index >= max_samples){
+        return;
+    }
+    if(node != NULL){
+        avl_to_array_helper(node->left, array, array_index);
+        if(node->flag == flag){
+            array[*array_index] = node->key;
+            *array_index++;
+
+            if(flag == true){
+                node->flag = false;
+            }
+        }
+        avl_to_array_helper(node->right, array, array_index);
+    }
+}
+
+//todo add flags
+int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int maxNeighbors){
     int *array = malloc(tree->size*sizeof(int));
     int array_index = 0;
-    avl_to_array_helper(tree, array, &array_index);
+    int max_samples = (int) maxNeighbors*sampling_rate;
+    avl_to_array_helper(tree->root, array, &array_index, flag, max_samples);
     *size = tree->size;
     return array;
 }
-
-void avl_to_array_helper(Avl_tree tree, int *array, int *array_index){
-    if(tree != NULL){
-        avl_to_array_helper(tree->left, array, array_index);
-        array[*array_index] = tree->key;
-        *array_index++;
-        avl_to_array_helper(tree->right, array, array_index);
-    }
-}
-
 
 void avl_insert(Avl_tree tree, int key, float value){
     tree->root = insertNode(tree->root, key, value);
@@ -213,16 +226,25 @@ void avl_remove(Avl_tree tree, int key){
     tree->root = deleteNode(tree->root, key);
 }
 
-
-
-void avl_destroy(Avl_tree tree){
+void avl_destroy_helper(Avl_node tree){
     if(tree != NULL){
-        avl_destroy(tree->left);
-        avl_destroy(tree->right);
+        avl_destroy_helper(tree->left);
+        avl_destroy_helper(tree->right);
         free(tree);
     }
 }
 
+void avl_destroy(Avl_tree tree){
+    avl_destroy_helper(tree->root);
+    free(tree);
+}
+
+Avl_tree avl_create(){
+    Avl_tree tree = malloc(sizeof(avl_tree));
+    tree->root = NULL;
+    tree->size = 0;
+    return tree;
+}
 
 // int main() {
 //   struct Node *root = NULL;

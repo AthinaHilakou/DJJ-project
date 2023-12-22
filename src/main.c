@@ -1,6 +1,7 @@
 #include "../headers/graph.h"
 #include "../headers/data.h"
 #include "../headers/heap.h"
+#include "../headers/avl_tree.h"
 #include "../headers/map.h"
 #include "../headers/data.h"
 #include "../headers/my_data_tri.h"
@@ -12,7 +13,7 @@
 
 void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate);
 void update_insert_flag(int *);
-void update_and_compute(int **myadjMatrix, Heap *neighbors, Map *reverse_neighbors, int **insert_flags, float **weights_array, int neighbor1,
+void update_and_compute(int **myadjMatrix, Heap *neighbors, Avl_tree *reverse_neighbors, int **insert_flags, float **weights_array, int neighbor1,
                         int neighbor2, int old_neighbor1, int old_neighbor2, float weight, int *update_counter);
 
 
@@ -55,12 +56,15 @@ int main(int argc, char** argv){
     int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     float *weights = (float *)malloc(data_size*sizeof(float));
     float **weights_array = (float **)malloc(data_size*sizeof(float *));
-    Map *reverse_neighbors = (Map *)malloc(data_size*sizeof(Map));
+    // Map *reverse_neighbors = (Map *)malloc(data_size*sizeof(Map));
+    Avl_tree *reverse_neighbors = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
+
 
     printf("Finished creating empty neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     //create empty maps for all neighbors save
     for(int i = 0; i < data_size; i++){
-        reverse_neighbors[i] = map_init(maxNeighbors);
+        // reverse_neighbors[i] = map_init(maxNeighbors);
+        reverse_neighbors[i] = avl_create();
     }
     for(int j = 0; j < data_size; j++) {
         // printf("%d\n", j);
@@ -82,7 +86,8 @@ int main(int argc, char** argv){
         }
         getReverseNeighbors(myadjMatrix, j, data_size, &neighbors_count, neighbor_indexes);
         get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights, flag);
-        mapify(reverse_neighbors[j], neighbor_indexes, weights, neighbors_count);
+        // mapify(reverse_neighbors[j], neighbor_indexes, weights, neighbors_count);
+        avl_from_array(reverse_neighbors[j], neighbor_indexes, weights, neighbors_count);
         for(int i = 0; i < neighbors_count; i++){
             if(insert_flags[j][neighbor_indexes[i]] == -1)
                 insert_flags[j][neighbor_indexes[i]] = 1;
@@ -127,9 +132,11 @@ int main(int argc, char** argv){
                 insert_flags[i][new[i][j]] = 0;
             }
             // get reverse neighbors with false flag
-            old_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_f_flags_r[i], 0,  insert_flags[i], sampling_rate);
+            // old_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_f_flags_r[i], 0,  insert_flags[i], sampling_rate);
+            old_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_f_flags_r[i]);
             // get reverse neighbors with true flag
-            new_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_t_flags_r[i], 1,  insert_flags[i], sampling_rate);
+            // new_reverse[i] = map_to_array(reverse_neighbors[i],&sizes_t_flags_r[i], 1,  insert_flags[i], sampling_rate);
+            new_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_t_flags_r[i]);
             for(int j = 0; j < sizes_t_flags_r[i]; j++){
                 insert_flags[i][new_reverse[i][j]] = 0;
             }
