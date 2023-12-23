@@ -31,6 +31,7 @@ Heap heap_create(int *data_array, int array_size, float *weights){
         // printf("\nindex: %d\n", h->array[i].index);
         h->array[i].weight = weights[i];
         // printf("weight: %d\n", h->array[i].weight);
+        h->array[i].flag = 1;
     }
 
 
@@ -122,9 +123,9 @@ void heap_destroy(Heap h){
     free(h);
 }
 
-void heap_to_array(Heap h, int *ret_array,int *size,int flag, double sampling_rate){
+void heap_to_array(Heap h, int *ret_array,int *size,int flag, double sampling_rate, int maxNeighbors){
     *size = 0;
-    int samples = (int) h->size*sampling_rate;
+    int samples = (int) maxNeighbors*sampling_rate;
     int sampled = 0;
     for(int i = 0; i < (int) h->size; i++){
         if(h->array[i].flag == flag){

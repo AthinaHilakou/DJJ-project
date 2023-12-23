@@ -20,14 +20,14 @@ int max(int a, int b) {
 }
 
 // Create a node
-struct Node *newNode(int key, float value) {
+struct Node *newNode(int key, float value, int flag) {
     struct Node *node = (struct Node *)malloc(sizeof(struct Node));
     node->key = key;
     node->left = NULL;
     node->right = NULL;
     node->weight = 1;
     node->value = value;
-    node->flag = 1;
+    node->flag = flag;
     return (node);
 }
 
@@ -67,15 +67,15 @@ int getBalance(struct Node *N) {
 }
 
 // Insert node
-struct Node *insertNode(struct Node *node, int key, float value) {
+struct Node *insertNode(struct Node *node, int key, float value, int flag) {
     // Find the correct position to insertNode the node and insertNode it
     if (node == NULL)
-        return (newNode(key, value));
+        return (newNode(key, value, flag));
 
     if (key < node->key)
-        node->left = insertNode(node->left, key, value);
+        node->left = insertNode(node->left, key, value, flag);
     else if (key > node->key)
-        node->right = insertNode(node->right, key, value);
+        node->right = insertNode(node->right, key, value, flag);
     else
         return node;
 
@@ -184,7 +184,7 @@ void printPreOrder(struct Node *root) {
 
 void avl_from_array(Avl_tree tree, int *array, float *weights, int size){
     for(int i = 0; i < size; i++){
-        tree->root = insertNode(tree->root, array[i], weights[i]);
+        tree->root = insertNode(tree->root, array[i], weights[i], 1);
     }
 }
 
@@ -217,8 +217,8 @@ int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int 
     return array;
 }
 
-void avl_insert(Avl_tree tree, int key, float value){
-    tree->root = insertNode(tree->root, key, value);
+void avl_insert(Avl_tree tree, int key, float value, int flag){
+    tree->root = insertNode(tree->root, key, value, flag);
 }
 
 void avl_remove(Avl_tree tree, int key){
@@ -243,6 +243,62 @@ Avl_tree avl_create(){
     tree->root = NULL;
     tree->size = 0;
     return tree;
+}
+
+void avl_set_flag_helper(Avl_node node,int key, int flag){
+    if(node != NULL){
+        if(node->key == key){
+            node->flag = flag;
+        }
+        else if(key < node->key){
+            avl_set_flag_helper(node->left, key, flag);
+        }
+        else{
+            avl_set_flag_helper(node->right, key, flag);
+        }
+    }
+}
+
+void avl_set_flag(Avl_tree tree,int key, int flag){
+    avl_set_flag_helper(tree->root, key, flag);
+}
+
+int avl_get_flag_helper(Avl_node node, int key){
+    if(node != NULL){
+        if(node->key == key){
+            return node->flag;
+        }
+        else if(key < node->key){
+            return avl_get_flag_helper(node->left, key);
+        }
+        else{
+            return avl_get_flag_helper(node->right, key);
+        }
+    }
+    return -1;
+}
+
+int avl_get_flag(Avl_tree tree, int key){
+    return avl_get_flag_helper(tree->root, key);
+}
+
+float avl_get_weight_helper(Avl_node node, int key){
+    if(node != NULL){
+        if(node->key == key){
+            return node->value;
+        }
+        else if(key < node->key){
+            return avl_get_weight_helper(node->left, key);
+        }
+        else{
+            return avl_get_weight_helper(node->right, key);
+        }
+    }
+    return -1;
+}
+
+float avl_get_weight(Avl_tree tree, int key){
+    return avl_get_weight_helper(tree->root, key);
 }
 
 // int main() {

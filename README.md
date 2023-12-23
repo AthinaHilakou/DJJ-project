@@ -27,11 +27,8 @@ Tρέχει με τα δεδομένα του διαγωνισμού στον φ
 
 TODO
 
-add flags to avl, heap!!
 fix the damn code
-replace all_weights, all_flags
+replace all_weights
 remove graph n\*n
 
-avl to array flag fix
-
-add flag size (true & false) to avl to reduce mapp to array space
+(add flag size (true & false) to avl to reduce mapp to array space)
