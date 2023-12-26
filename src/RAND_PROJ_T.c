@@ -1,30 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <data.h>
 #include <omp.h>
 
-#define NUM_DIMENSIONS 2
-#define NUM_POINTS 100
 
 typedef struct rpt_Node {
-    double *data;
-    int *indices;
+    double *data;//TODO change to fit our implementation
+    int *indices; 
     struct Node *left;
     struct Node *right;
 } rpt_Node;
 
 typedef struct RandomProjectionTree {
     rpt_Node *root;
-    int depth_limit;
+    int depth_limit;//TODO change to fit our implementation
+    int min_leaf_size; //Stop dividing leafs when they reach this size, must be smaller than max_neighbors
+    int data_type_flag; //0 for do
 } RandomProjectionTree;
 
-// ... (rest of the code remains the same)
+// returns midplane between two points at mid_plane
+void find_mid_vertical_plane(double *point1, double *point2, double *mid_plane, int num_dimensions) {
+    for (int i = 0; i < num_dimensions; ++i) {
+        mid_plane[i] = (point1[i] + point2[i]) / 2.0;
+    }
+}
 
-double* generate_random_hyperplane(int num_dimensions) {
-    double *random_hyperplane = (double *)malloc(num_dimensions * sizeof(double));
+
+double* generate_random_hyperplane(int flag, void *data, int size) {
+    if(flag == 0){ //Is of type data
+        double *random_hyperplane = (double *)malloc(100 *sizeof(double));
+        Data d_array = (Data)data;
+        int index_a = rand() % size;
+        int index_b = rand() % size;
+        while(index_a == index_b){      // ensure that the two points are different
+            index_b = rand() % size;
+        }
+        data rpoint_a = data[index_a];
+        data rpoint_b = data[index_b];
+        find_mid_vertical_plane(rpoint_a, rpoint_b, random_hyperplane, 100);
+
+    }
+    else if(flag == 1){ //Is of type data_tri
+        double *random_hyperplane = (double *)malloc(3*sizeof(double));
+        Data_tri d_array = (Data_tri)data;
+
+    }
     for (int i = 0; i < num_dimensions; ++i) {
         random_hyperplane[i] = ((double)rand() / RAND_MAX) * 2.0 - 1.0;  // Random values between -1 and 1
     }
+    
     return random_hyperplane;
 }
 

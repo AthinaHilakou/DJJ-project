@@ -12,6 +12,7 @@ typedef struct Node {
     int flag;   //flag for update
 
 }avl_node, *Avl_node;
+
 typedef struct my_avl_tree {
     struct Node *root;
     int size;
