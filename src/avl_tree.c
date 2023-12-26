@@ -67,15 +67,17 @@ int getBalance(struct Node *N) {
 }
 
 // Insert node
-struct Node *insertNode(struct Node *node, int key, float value, int flag) {
+struct Node *insertNode(struct Node *node, int key, float value, int flag, int *size) {
     // Find the correct position to insertNode the node and insertNode it
-    if (node == NULL)
+    if (node == NULL){
+        *size = *size + 1;
         return (newNode(key, value, flag));
+    }
 
     if (key < node->key)
-        node->left = insertNode(node->left, key, value, flag);
+        node->left = insertNode(node->left, key, value, flag, size);
     else if (key > node->key)
-        node->right = insertNode(node->right, key, value, flag);
+        node->right = insertNode(node->right, key, value, flag, size);
     else
         return node;
 
@@ -114,16 +116,18 @@ struct Node *minValueNode(struct Node *node) {
 }
 
 // Delete a node
-struct Node *deleteNode(struct Node *root, int key) {
+struct Node *deleteNode(struct Node *root, int key, int *size) {
     // Find the node and delete it
-    if (root == NULL)
+    if (root == NULL){
+        *size = *size - 1;
         return root;
+    }
 
     if (key < root->key)
-        root->left = deleteNode(root->left, key);
+        root->left = deleteNode(root->left, key, size);
 
     else if (key > root->key)
-        root->right = deleteNode(root->right, key);
+        root->right = deleteNode(root->right, key, size);
 
     else {
         if ((root->left == NULL) || (root->right == NULL)) {
@@ -140,7 +144,7 @@ struct Node *deleteNode(struct Node *root, int key) {
 
         root->key = temp->key;
 
-        root->right = deleteNode(root->right, temp->key);
+        root->right = deleteNode(root->right, temp->key, size);
         }
     }
 
@@ -184,7 +188,7 @@ void printPreOrder(struct Node *root) {
 
 void avl_from_array(Avl_tree tree, int *array, float *weights, int size){
     for(int i = 0; i < size; i++){
-        tree->root = insertNode(tree->root, array[i], weights[i], 1);
+        tree->root = insertNode(tree->root, array[i], weights[i], 1, &tree->size);
     }
 }
 
@@ -198,7 +202,7 @@ void avl_to_array_helper(Avl_node node, int *array, int *array_index, int flag, 
         avl_to_array_helper(node->left, array, array_index, flag, max_samples);
         if(node->flag == flag){
             array[*array_index] = node->key;
-            *array_index++;
+            *array_index = *array_index + 1;
 
             if(flag == true){
                 node->flag = false;
@@ -213,16 +217,16 @@ int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int 
     int array_index = 0;
     int max_samples = (int) maxNeighbors*sampling_rate;
     avl_to_array_helper(tree->root, array, &array_index, flag, max_samples);
-    *size = tree->size;
+    *size = array_index;
     return array;
 }
 
 void avl_insert(Avl_tree tree, int key, float value, int flag){
-    tree->root = insertNode(tree->root, key, value, flag);
+    tree->root = insertNode(tree->root, key, value, flag, &tree->size);
 }
 
 void avl_remove(Avl_tree tree, int key){
-    tree->root = deleteNode(tree->root, key);
+    tree->root = deleteNode(tree->root, key, &tree->size);
 }
 
 void avl_destroy_helper(Avl_node tree){

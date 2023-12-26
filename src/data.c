@@ -85,6 +85,52 @@ void *import_data_tri(char* filename, int* data_size){
     return data_ptr;
 }
 
+//Eucledian distance, optimisation--------------------------------------------------------------------------------
+//calculate the squared norms of all the data points, store them in an array
+void norms_sqred(void* array, int data_size, int data_type, float *norms){
+    if(data_type == 0){
+        Data d_array = (Data)array;
+        for(int i = 0; i < data_size; i++){
+            norms[i] = 0;
+            for(int j = 0; j < DATA_LENTH; j++){
+                norms[i] += d_array[i].data_array[j]*d_array[i].data_array[j];
+            }
+        }
+    } else {
+        Data_tri d_array = (Data_tri)array;
+        for(int i = 0; i < data_size; i++){
+            norms[i] = 0;
+            for(int j = 0; j < DATA_LENTH_TRI; j++){
+                norms[i] += d_array[i].data_array[j]*d_array[i].data_array[j];
+            }
+        }
+    }
+}
+
+
+float dist_msr_opt(void* array, int index_a, int index_b, int data_type, float *norms){
+    float sum = 0;
+    if(data_type == 0){
+        Data d_array = (Data)array;
+        for(int i = 0; i < DATA_LENTH; i++){
+            sum += (d_array[index_b].data_array[i])*(d_array[index_a].data_array[i]);
+        }           
+        
+    } else{
+        Data_tri d_array = (Data_tri)array;
+        for(int i = 0; i < DATA_LENTH_TRI; i++){
+            sum += (d_array[index_b].data_array[i])*(d_array[index_a].data_array[i]);
+        }
+
+    }
+    float dist = norms[index_a] + norms[index_b] - 2*sum;
+    return dist;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+
+
 float dist_msr(void* array, int index_a, int index_b, int data_type){
     float sum = 0;
     if(data_type == 0){

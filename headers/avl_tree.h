@@ -30,11 +30,11 @@ struct Node *leftRotate(struct Node *x);
 
 int getBalance(struct Node *N);
 
-struct Node *insertNode(struct Node *node, int key, float value, int flag);
+struct Node *insertNode(struct Node *node, int key, float value, int flag, int *size);
 
 struct Node *minValueNode(struct Node *node);
 
-struct Node *deleteNode(struct Node *root, int key);
+struct Node *deleteNode(struct Node *root, int key, int *size);
 
 void printPreOrder(struct Node *root);
 

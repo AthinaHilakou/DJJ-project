@@ -43,6 +43,8 @@ int main(int argc, char** argv){
     int neighbors_count;
     int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     float *weights = (float *)malloc(data_size*sizeof(float));
+    float *norms = (float *)malloc(data_size*sizeof(float)); //norms of data points, for optimizing euclidean distance
+    norms_sqred(data, data_size, flag, norms); //calculate norms of data points, for optimizing euclidean distance 
     // Map *reverse_neighbors = (Map *)malloc(data_size*sizeof(Map));
     Avl_tree *reverse_neighbors = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
     // store all comparisons so far between nodes and potential neighbors
@@ -184,7 +186,7 @@ int main(int argc, char** argv){
                 }
 
                 // for j in joined_new_arrays, k in joined_old_arrays--------------------------------------
-                for(int k = 1; k < total_old_size; k++){
+                for(int k = 0; k < total_old_size; k++){
                     int neighbor2 = joined_old_arrays[k];
 
                     if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
@@ -273,6 +275,8 @@ int main(int argc, char** argv){
     free(all_neighbors);
     freegraph(myadjMatrix, data_size);
 
+    free(norms);
+
     return 0;
 
 }
@@ -306,8 +310,10 @@ void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun
         *weight_fun = dist_manh;
     } else if(strcmp(argv[3], "eucl") == 0){
         *weight_fun = dist_msr;
+    } else if(strcmp(argv[3], "eucl_opt") == 0){
+        *weight_fun = dist_msr_opt;
     }else{
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl \n");
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl || eucl_opt\n");
         exit(1);
     }
 
