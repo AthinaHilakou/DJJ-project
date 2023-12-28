@@ -21,9 +21,20 @@ typedef struct RandomProjectionTree {
 
 // returns midplane between two points at mid_plane
 void find_mid_vertical_plane(double *point1, double *point2, double *mid_plane, int num_dimensions) {
+    //find vector of two points
+    double *vector = (double *)malloc(num_dimensions * sizeof(double));
+    for (int i = 0; i < num_dimensions; ++i) {
+        vector[i] = point2[i] - point1[i];
+    }
+    //find midplane
     for (int i = 0; i < num_dimensions; ++i) {
         mid_plane[i] = (point1[i] + point2[i]) / 2.0;
     }
+    //find a vector whose dot product with vector is 0, and has midplane as a point    
+    double *perpendicular_vector = (double *)malloc(num_dimensions * sizeof(double));
+   
+
+
 }
 
 
