@@ -1,67 +1,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <data.h>
+#include "../headers/data.h"
 #include <omp.h>
 
 
-typedef struct rpt_Node {
-    double *data;//TODO change to fit our implementation
-    int *indices; 
+typedef struct my_rpt_Node {
+    void *data;     //this is the data of file
+    int *indices;   // we want to split this data into two groups
+    int num_points_limit; // stop when we reach this number of points
     struct Node *left;
     struct Node *right;
 } rpt_Node;
 
 typedef struct RandomProjectionTree {
     rpt_Node *root;
-    int depth_limit;//TODO change to fit our implementation
-    int min_leaf_size; //Stop dividing leafs when they reach this size, must be smaller than max_neighbors
-    int data_type_flag; //0 for do
+    int num_points_limit;
+    int data_type_flag; //TODO 0 for data, 1 for data_tri
 } RandomProjectionTree;
 
 // returns midplane between two points at mid_plane
-void find_mid_vertical_plane(double *point1, double *point2, double *mid_plane, int num_dimensions) {
+double *find_mid_vertical_plane(void *points, int num_points, int num_dimensions){
+
+    if(num_points <= 2){
+        printf("Error: no points to find midplane\n");
+        exit(9);
+    }
+
+    Data d_array = (Data)points;
+
+    int index_a = rand() % num_points;
+    int index_b = rand() % num_points;
+    while(index_a == index_b){
+        index_b = rand() % num_points;
+    }
+
+    double *point1 = points[index_a].data_array;
+    double *point2 = points[index_b].data_array;
+
+    // we will return this
+    double *hyperplane = (double *)malloc((num_dimensions + 1) * sizeof(double));
     //find vector of two points
-    double *vector = (double *)malloc(num_dimensions * sizeof(double));
     for (int i = 0; i < num_dimensions; ++i) {
-        vector[i] = point2[i] - point1[i];
+        hyperplane[i] = point2[i] - point1[i];
     }
     //find midplane
+    double mid_plane[num_dimensions];
     for (int i = 0; i < num_dimensions; ++i) {
         mid_plane[i] = (point1[i] + point2[i]) / 2.0;
     }
     //find a vector whose dot product with vector is 0, and has midplane as a point    
-    double *perpendicular_vector = (double *)malloc(num_dimensions * sizeof(double));
-   
-
-
-}
-
-
-double* generate_random_hyperplane(int flag, void *data, int size) {
-    if(flag == 0){ //Is of type data
-        double *random_hyperplane = (double *)malloc(100 *sizeof(double));
-        Data d_array = (Data)data;
-        int index_a = rand() % size;
-        int index_b = rand() % size;
-        while(index_a == index_b){      // ensure that the two points are different
-            index_b = rand() % size;
-        }
-        data rpoint_a = data[index_a];
-        data rpoint_b = data[index_b];
-        find_mid_vertical_plane(rpoint_a, rpoint_b, random_hyperplane, 100);
-
-    }
-    else if(flag == 1){ //Is of type data_tri
-        double *random_hyperplane = (double *)malloc(3*sizeof(double));
-        Data_tri d_array = (Data_tri)data;
-
-    }
+    double constant = 0;
     for (int i = 0; i < num_dimensions; ++i) {
-        random_hyperplane[i] = ((double)rand() / RAND_MAX) * 2.0 - 1.0;  // Random values between -1 and 1
+        constant += mid_plane[i] * vector[i];
     }
+    hyperplane[num_dimensions] = constant;
     
-    return random_hyperplane;
+    return hyperplane;
 }
 
 double dot_product(double *vector1, double *vector2, int num_dimensions) {
@@ -69,21 +64,38 @@ double dot_product(double *vector1, double *vector2, int num_dimensions) {
     for (int i = 0; i < num_dimensions; ++i) {
         result += vector1[i] * vector2[i];
     }
+
     return result;
 }
-
-int* find_indices(double *projections, double median_projection, int num_points) {
-    int *indices = (int *)malloc(num_points * sizeof(int));
-    int count = 0;
+//find indices of points that belong in one of the two spaces in which the hyperplane divides the whole
+//any indeces left out belong to the other space
+void find_indices(double *projections, double constant int num_points, int *left_indices, int *right_indices, int *left_count, int *right_count) {
+    int *right_indices = (int *)malloc(num_points * sizeof(int));
+    int *left_indices = (int *)malloc(num_points * sizeof(int));
     for (int i = 0; i < num_points; ++i) {
-        if (projections[i] <= median_projection) {
-            indices[count++] = i;
+        if (projections[i] <= constant) {
+            right_indices[(*right_count)++] = i;
+        } else{
+            left_indices[(*left_count)++] = i;
         }
     }
-    indices = (int *)realloc(indices, count * sizeof(int));
-    return indices;
+
+    if(*left_count == 0 || *right_count == 0){
+        for(int i = 0; i < num_points; i++){
+            if(rand() % 2 == 0){
+                left_indices[(*left_count)++] = i;
+            } else{
+                right_indices[(*right_count)++] = i;
+            }
+        }
+    }
+    
+    left_indices = (int *)realloc(indices, left_count * sizeof(int));
+    right_indices = (int *)realloc(indices, right_count * sizeof(int));
 }
 
+
+//Create a
 rpt_Node* create_node(double *data, int *indices) {
     rpt_Node *node = (rpt_Node *)malloc(sizeof(rpt_Node));
     node->data = data;
@@ -93,27 +105,45 @@ rpt_Node* create_node(double *data, int *indices) {
     return node;
 }
 
-void build_tree_parallel(rpt_Node *node, double *points, int num_points, int num_dimensions, int current_depth, int depth_limit) {
-    if (num_points == 0 || current_depth == depth_limit) {
+
+void build_tree_parallel(rpt_Node *node, void *points, int num_points, int num_dimensions, int current_depth, int num_point_limit) {
+    //TODO add flag for data tri and handle then differently
+
+    // this is all points, everything
+    Data d_array = (Data)points;
+
+    if (num_points < num_point_limit) {
         return;
     }
 
-    double *random_hyperplane = generate_random_hyperplane(num_dimensions);
-
+    // find perpendicular bisector hyperplane
+    double *random_hyperplane = find_mid_vertical_plane(points,num_points,num_dimensions);
+    
+    // find projections of all points on this hyperplane(dot products)
     double *projections = (double *)malloc(num_points * sizeof(double));
 
     #pragma omp parallel for schedule(dynamic) // Use dynamic scheduling
     for (int i = 0; i < num_points; ++i) {
-        projections[i] = dot_product(&points[i * num_dimensions], random_hyperplane, num_dimensions);
+        projections[i] = dot_product(d_array[i].data_array, random_hyperplane, num_dimensions);
     }
 
-    double median_projection;
-    int median_index = num_points / 2;
-    nth_element(projections, projections + median_index, projections + num_points);
-    median_projection = projections[median_index];
+    double constant = random_hyperplane[num_points];
 
-    int *left_indices = find_indices(projections, median_projection, num_points);
-    int *right_indices = find_indices(projections, median_projection, num_points - left_count);
+    // // nth_element(projections, projections + median_index, projections + num_points);
+    // median_projection = projections[median_index];
+
+    // int *left_indices = find_indices(projections, median_projection, num_points);
+    // int *right_indices = find_indices(projections, median_projection, num_points - left_count);
+
+    int left_count = 0;
+    int right_count = 0;
+
+    int *left_indices;
+    int *right_indices;
+    find_indices(projections,consant, num_points, left_indices, right_indices, &left_count, &right_count);
+    if(left_count == 0 || right_count == 0){
+            //DO Stuff
+    }
 
     free(projections);
 
@@ -125,13 +155,13 @@ void build_tree_parallel(rpt_Node *node, double *points, int num_points, int num
         #pragma omp section
         {
             node->left = create_node(NULL, NULL);  // Left child
-            build_tree_parallel(node->left, points, left_count, num_dimensions, current_depth + 1, depth_limit);
+            build_tree_parallel(node->left, points(dataset), left point group,  left_count, num_dimensions, current_depth + 1, depth_limit);
         }
 
         #pragma omp section
         {
             node->right = create_node(NULL, NULL);  // Right child
-            build_tree_parallel(node->right, points + left_count * num_dimensions, right_count, num_dimensions, current_depth + 1, depth_limit);
+            build_tree_parallel(node->right, points (dataset), right point group, right_count, num_dimensions, current_depth + 1, depth_limit);
         }
     }
 }
@@ -141,19 +171,19 @@ void build_parallel(RandomProjectionTree *tree, double *points, int num_points, 
     build_tree_parallel(tree->root, points, num_points, num_dimensions, 0, tree->depth_limit);
 }
 
-int main() {
-    // ... (rest of the code remains the same)
+// int main() {
+//     // ... (rest of the code remains the same)
 
-    RandomProjectionTree tree;
-    tree.depth_limit = 3;
+//     RandomProjectionTree tree;
+//     tree.depth_limit = 3;
 
-    double start_time = omp_get_wtime();
-    build_parallel(&tree, (double *)points, NUM_POINTS, NUM_DIMENSIONS);
-    double end_time = omp_get_wtime();
+//     double start_time = omp_get_wtime();
+//     build_parallel(&tree, (double *)points, NUM_POINTS, NUM_DIMENSIONS);
+//     double end_time = omp_get_wtime();
 
-    printf("Time taken: %f seconds\n", end_time - start_time);
+//     printf("Time taken: %f seconds\n", end_time - start_time);
 
-    // ... (rest of the code remains the same)
+//     // ... (rest of the code remains the same)
 
-    return 0;
-}
+//     return 0;
+// }
