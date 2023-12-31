@@ -138,15 +138,40 @@ int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int,
 float recall(int argc, char** argv,int **aprox_KNN, int k, float (*weight)(void*, int, int, int), void* data, int data_size, int flag){
     int ** real_KNN = brute_force( argc, argv, k, weight, data, data_size, flag); //real neighbors of each data point
 	int matches = 0;
+	int missmatches = 0;
+	printf("data_size: %d\n", data_size);
 	for(int i = 0; i < data_size; i++){ //for each data point
+		int inside_matches = 0;
 		for(int j = 0; j < k; j++){
 			if( aprox_KNN[i][real_KNN[i][j]] == 1){
+				inside_matches++;
 				matches++;
 			}
 		}
+		if(inside_matches < k){
+			printf("%d : %d of %d\n", i, inside_matches, k);
+			missmatches++;
+		}
 	}
 
-	printf("matches: %d of %d\n", matches, data_size * k);
+	printf("Normal KNN\n");
+	for(int i = 0; i < data_size; i++){ //free real_KNN
+		printf("%2d real:", i);
+		for(int j = 0; j < k; j++){
+			printf("%2d ", real_KNN[i][j]);
+		}
+		printf("||aprox : ");
+		for(int l = 0; l < data_size; l++){
+			if(aprox_KNN[i][l] == 1){
+				printf("%2d ", l);
+			}
+		}
+		
+		printf("\n");
+	}
+
+	printf("matches:     %d of %d\n", matches, data_size * k);
+	printf("missmatches: %d of %d\n", missmatches, data_size);
 
 	for(int i = 0; i < data_size; i++){ //free real_KNN
 		free(real_KNN[i]);

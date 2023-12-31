@@ -15,7 +15,7 @@ Heap heap_create(int *data_array, int array_size, float *weights){
     }
     //set the value of size
     h->size = array_size;   // size of input array
-    h->capacity = 3*array_size/2 + 10; // current max size of heap
+    h->capacity = h->size; // current max size of heap
     //Allocating memory for items
     h->array = (Node)malloc((h->capacity)*sizeof(node));
 
@@ -28,9 +28,7 @@ Heap heap_create(int *data_array, int array_size, float *weights){
     //Put items in heap
     for(int i = 0; i < array_size; i++){
         h->array[i].index = data_array[i];
-        // printf("\nindex: %d\n", h->array[i].index);
         h->array[i].weight = weights[i];
-        // printf("weight: %d\n", h->array[i].weight);
         h->array[i].flag = 1;
     }
 
@@ -64,11 +62,6 @@ void heap_insert(Heap h, int index, float weight){
 int heap_pop(Heap h){
     if(h->size == 0)
         return -1;
-    else if(h->size*4 == h->capacity){
-        int new_capacity = h->capacity/2;
-        h->array = (Node)realloc(h->array, new_capacity*sizeof(node));
-        h->capacity = new_capacity;
-    }
     int ret;
     ret = h->array[0].index;
     h->array[0].index = h->array[(h->size-1)].index;
@@ -91,17 +84,23 @@ bool heap_update(Heap h, int index, float weight){
     //printf("index = %d, weight = %f\n", index, weight);
     //printf("h->array[0].index = %d, h->array[0].weight = %f\n", h->array[0].index, h->array[0].weight);
    bool ret_value = false;  
-//    if(weight < h->array[0].weight){
-//         h->array[0].index = index;
-//         h->array[0].weight = weight;
-//         ret_value = true;
-//         bubble_down(h, 0); //bubble down from root to maintain heap property
-//    }
-    if(weight < h->array[0].weight){
-        int old_top = heap_pop(h);
-        heap_insert(h, index, weight);
+   if(weight < h->array[0].weight){
+        // printf("weight = %f, h->array[0].weight = %f\n", weight, h->array[0].weight);
+        h->array[0].index = index;
+        h->array[0].weight = weight;
+        h->array[0].flag = 1;
         ret_value = true;
-    }
+        bubble_down(h, 0); //bubble down from root to maintain heap property
+   }
+//     return ret_value;
+    // if(weight < h->array[0].weight){
+    //     int old_top = heap_pop(h);
+    //     heap_insert(h, index, weight);
+    //     ret_value = true;
+    // }
+    // printf("ret value = %d\n", ret_value);
+    // print_heap(h);
+
    return ret_value;
 }
 
@@ -113,7 +112,7 @@ int heap_find_max(Heap h){
 void print_heap(Heap h){
     printf("Heap start \n");
     for(int i = 0; i < h->size; i++){
-        printf("index: %d, weight: %f\n", h->array[i].index, h->array[i].weight);
+        printf("(%d) index: %d, weight: %f\n", i, h->array[i].index, h->array[i].weight);
     }
     printf("Heap end \n");
 }
@@ -216,6 +215,18 @@ void heapify(Heap h){
         root--;
     }
 }
+
+void heap_check(Heap h){
+    float root_weight = h->array[0].weight; 
+    for(int i = 1; i < h->size; i++){
+        if(root_weight < h->array[i].weight){
+            printf("Heap property violated at %d, %f < %f\n", i, root_weight, h->array[i].weight);
+            print_heap(h);
+            return;
+        }
+    }
+}
+
 //todo no duplicates
 // joins array1, and array2, returns joined array
 

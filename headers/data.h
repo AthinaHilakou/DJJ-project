@@ -27,9 +27,9 @@ typedef struct myData_tri{
 
 void norms_sqred(void* array, int data_size, int data_type, float *norms);
 
-float dist_msr_opt(void* array, int index_a, int index_b, int data_type, float *norms);
+float dist_msr_opt(void* array, int index_a, int index_b, int data_type);
 
-float dist_msr_ab_opt(void* a, void* b, int data_type, float *norms);
+float dist_msr_ab_opt(void* a, void* b, int data_type);
 
 float dist_msr(void* array,int index_a, int index_b, int data_type);
 

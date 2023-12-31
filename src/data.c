@@ -6,7 +6,8 @@ float readfloat(FILE *f) {
   return v;
 }
 
-
+int global_data_size = -1;
+extern float *norms;
 
 void *import_data(char* filename, int *data_size){
 
@@ -21,6 +22,7 @@ void *import_data(char* filename, int *data_size){
 
     fread(&lines, sizeof(__uint32_t), 1, fp);
     *data_size = lines;
+    global_data_size = lines;
 
     Data data_ptr = malloc(lines * sizeof(struct mydata));
     if(data_ptr == NULL){
@@ -59,6 +61,7 @@ void *import_data_tri(char* filename, int* data_size){
     size_t size = sb.st_size;
     int lines = size / (41*sizeof(char));       // each line has 40 chars and '\n
     *data_size = lines;
+    global_data_size = lines;
 
     Data_tri data_ptr = malloc(lines * sizeof(data_tri));
     if(data_ptr == NULL){
@@ -108,7 +111,7 @@ void norms_sqred(void* array, int data_size, int data_type, float *norms){
 }
 
 
-float dist_msr_opt(void* array, int index_a, int index_b, int data_type, float *norms){
+float dist_msr_opt(void* array, int index_a, int index_b, int data_type){    
     float sum = 0;
     if(data_type == 0){
         Data d_array = (Data)array;
@@ -123,6 +126,7 @@ float dist_msr_opt(void* array, int index_a, int index_b, int data_type, float *
         }
 
     }
+    // x^2 + y^2 - 2xy = (x-y)^2
     float dist = norms[index_a] + norms[index_b] - 2*sum;
     return dist;
 }
@@ -144,6 +148,7 @@ float dist_msr(void* array, int index_a, int index_b, int data_type){
             sum += (d_array[index_a].data_array[i] - d_array[index_b].data_array[i])*(d_array[index_a].data_array[i] - d_array[index_b].data_array[i]);
         }
     }
+    // printf("sum = %f\n", sqrt(sum));
     return sqrt(sum);
 }
 
