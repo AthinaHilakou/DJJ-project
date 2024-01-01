@@ -20,7 +20,7 @@ float *norms;
 // #define OUTPUT
 
 int main(int argc, char** argv){
-    srand(time(NULL) * 348); // seed random number generator
+    srand(348); // seed random number generator
     clock_t start, end;
     double cpu_time_used;
     int maxNeighbors;
@@ -85,6 +85,10 @@ int main(int argc, char** argv){
         getReverseNeighbors(myadjMatrix, j, data_size, &neighbors_count, neighbor_indexes);
         get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights, flag);
         avl_from_array(reverse_neighbors[j], neighbor_indexes, weights, neighbors_count);
+        // if(heap_check(neighbors[j])){
+        //     printf("-------------Heap %d is not a heap\n",j);
+            
+        // }
     }
     free(neighbor_indexes);
     free(weights);

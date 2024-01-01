@@ -58,4 +58,4 @@ int get_heap_size(Heap h);
 
 void mergeSort(int arr[], int l, int r);
 
-void heap_check(Heap h);
+int heap_check(Heap h);

@@ -123,7 +123,7 @@ void min_bubble_down(min_Heap h, int root){
     
     l_weight = (h->array[left].weight); // we know this exists
     r_weight = INT_MAX;
-    if(right < last){                       // check if right child exists
+    if(right <= last){                       // check if right child exists
         r_weight = (h->array[right].weight);
     }
 

@@ -167,6 +167,7 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
             build_tree_parallel(node->right, points, right_indices, right_count, num_dimensions, num_point_limit);
         }
     }
+    
 }
 
 void build_parallel(RandomProjectionTree *tree, float *points, int num_points, int num_dimensions, int num_point_limit) {

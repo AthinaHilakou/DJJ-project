@@ -18,7 +18,7 @@ int** createAdjMatrix(int numVertices, int maxNeighbors) {
         printf("Error: maxNeighbors cannot be greater than numVertices\n");
         return NULL;
     }
-    srand(time(NULL) * 3490); // seed random number generator
+    srand(3490); // seed random number generator
     int** adjMatrix = (int**) malloc(numVertices * sizeof(int*));
     for (int i = 0; i < numVertices; i++) {
         adjMatrix[i] = (int*) calloc(numVertices, sizeof(int));

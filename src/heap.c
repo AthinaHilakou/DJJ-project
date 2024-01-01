@@ -32,9 +32,14 @@ Heap heap_create(int *data_array, int array_size, float *weights){
         h->array[i].flag = 1;
     }
 
+    // printf("Heap created\n");
+    // print_heap(h);
+
 
     //Heapify
     heapify(h);
+    // printf("Heapified\n");
+    // print_heap(h);
     return h;
 }
 
@@ -92,7 +97,7 @@ bool heap_update(Heap h, int index, float weight){
         ret_value = true;
         bubble_down(h, 0); //bubble down from root to maintain heap property
    }
-//     return ret_value;
+    // return ret_value;
     // if(weight < h->array[0].weight){
     //     int old_top = heap_pop(h);
     //     heap_insert(h, index, weight);
@@ -155,7 +160,7 @@ void bubble_down(Heap h, int root){
     
     l_weight = (h->array[left].weight); // we know this exists
     r_weight = INT_MIN;
-    if(right < last){                       // check if right child exists
+    if(right <= last){                       // check if right child exists
         r_weight = (h->array[right].weight);
     }
 
@@ -216,15 +221,19 @@ void heapify(Heap h){
     }
 }
 
-void heap_check(Heap h){
+
+int heap_check(Heap h){
+    int flag = 0;
     float root_weight = h->array[0].weight; 
     for(int i = 1; i < h->size; i++){
         if(root_weight < h->array[i].weight){
+            flag++;
             printf("Heap property violated at %d, %f < %f\n", i, root_weight, h->array[i].weight);
             print_heap(h);
-            return;
+            return flag;
         }
     }
+    return flag;
 }
 
 //todo no duplicates
