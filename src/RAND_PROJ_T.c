@@ -182,6 +182,16 @@ void build_parallel(RandomProjectionTree *tree, float *points, int num_points, i
 // int main() {
 //     // ... (rest of the code remains the same)
 
+    // srand(42);  // Seed for reproducibility
+
+    // double points[NUM_POINTS][NUM_DIMENSIONS];
+    // for (int i = 0; i < NUM_POINTS; ++i) {
+    //     for (int j = 0; j < NUM_DIMENSIONS; ++j) {
+    //         points[i][j] = ((double)rand() / RAND_MAX);  // Random values between 0 and 1
+    //     }
+    // }
+
+
 //     RandomProjectionTree tree;
 //     tree.depth_limit = 3;
 

@@ -128,15 +128,18 @@ struct Node *deleteNode(struct Node *root, int key, int *size) {
         root->right = deleteNode(root->right, key, size);
 
     else {
-        *size = *size - 1;
+        // *size = *size - 1;
         if ((root->left == NULL) || (root->right == NULL)) {
             struct Node *temp = root->left ? root->left : root->right;
 
-            if (temp == NULL){
+            if (temp == NULL){ //if both children are null
                 temp = root;
                 root = NULL;
-            } else
+                *size = *size - 1;//decrement size, node found
+            } else{
                 *root = *temp;
+                *size = *size - 1;//decrement size, node found
+            }
             free(temp);
         } else {
             struct Node *temp = minValueNode(root->right);

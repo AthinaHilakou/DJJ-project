@@ -29,9 +29,10 @@ $(OBJ_DIR):
 
 run: $(BIN)
 	./$(BIN) $(ARGS)
+	
 
-runs: $(BIN)
-	./$(BIN) $(ARGS)
+#run_projection: $(BIN)
+#	./$(BIN) $(ARGS)
 
 test_heap: tests/test_heap.o obj/heap.o
 	gcc -o obj/test_heap tests/test_heap.o obj/heap.o -lm
