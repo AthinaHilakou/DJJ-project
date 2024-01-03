@@ -6,7 +6,8 @@
     "stdio.h": "c",
     "stdlib.h": "c",
     "mman.h": "c",
-    "heap.h": "c"
+    "heap.h": "c",
+    "brute_force.h": "c"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

@@ -59,3 +59,5 @@ int get_heap_size(Heap h);
 void mergeSort(int arr[], int l, int r);
 
 int heap_check(Heap h);
+
+void sort_two_arrays(int *indexes, float *weights, int size);

@@ -1,6 +1,9 @@
 #include "../headers/brute_force.h"
 #include "../headers/min_heap.h"
 #include "../headers/data.h"
+
+// #define OUTPUT
+
 int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int, int), void* data, int data_size, int flag){
 	int **real_KNN = (int **)malloc(data_size * sizeof(int *)); //return array of KNN real neighbors
 	if(real_KNN == NULL){
@@ -103,7 +106,8 @@ int **brute_force(int argc, char** argv,int k, float (*weight)(void* , int, int,
 
 	for(int i = 0; i < data_size; i++){
 		for(int j = 0; j < k; j++){
-			real_KNN[i][j] = index_from_min_heap(all_real_neighbors[i], j);
+			// real_KNN[i][j] = index_from_min_heap(all_real_neighbors[i], j);
+			real_KNN[i][j] = min_heap_pop(all_real_neighbors[i]);
 		}
 	}
 
@@ -152,7 +156,9 @@ float recall(int argc, char** argv,int **aprox_KNN, int k, float (*weight)(void*
 			}
 		}
 		if(inside_matches < k){
+			#ifdef OUTPUT
 			printf("%d : %d of %d\n", i, inside_matches, k);
+			#endif
 			missmatches++;
 		}
 	}

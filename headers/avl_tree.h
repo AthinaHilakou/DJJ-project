@@ -51,3 +51,5 @@ void avl_from_array(Avl_tree root, int *array, float *weights, int size);
 int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int maxNeighbors);
 void avl_destroy(Avl_tree root);
 float avl_get_weight(Avl_tree tree, int key);
+
+int *avl_to_whole_array(Avl_tree tree, int *size, float *weights);

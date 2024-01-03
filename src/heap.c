@@ -131,20 +131,32 @@ void heap_to_array(Heap h, int *ret_array,int *size,int flag, double sampling_ra
     *size = 0;
     int samples = (int) maxNeighbors*sampling_rate;
     int sampled = 0;
-    for(int i = 0; i < (int) h->size; i++){
-        if(h->array[i].flag == flag){
-            if(sampled < samples){
-                if(flag == true)
-                    h->array[i].flag = false;
+
+    if(flag == false){  // then we need to return all items
+        for(int i = 0; i < (int) h->size; i++){
+            if(h->array[i].flag == flag){
                 ret_array[*size] = h->array[i].index;
                 (*size)++;
-                sampled++;
-            }
-            else{
-                break;
             }
         }
+    } else {    /*flag == true, so we return pK sampled items*/
+        for(int i = 0; i < (int) h->size; i++){
+            if(h->array[i].flag == flag){
+                if(sampled < samples){
+                    if(flag == true)                // mark sampled items as false!
+                        h->array[i].flag = false;
+                    ret_array[*size] = h->array[i].index;
+                    (*size)++;
+                    sampled++;
+                }
+                else{   // sampled >= samples
+                    break;
+                }
+            }
+        }
+
     }
+    
 }
 
 void bubble_down(Heap h, int root){
@@ -361,4 +373,23 @@ void mergeSort(int arr[], int l, int r) {
 
         merge(arr, l, m, r);
     }
+}
+
+
+void sort_two_arrays(int *indexes, float *weights, int size){
+
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            if(weights[j] > weights[i]){
+                int temp = indexes[i];
+                float temp_weight = weights[i];
+                indexes[i] = indexes[j];
+                weights[i] = weights[j];
+
+                indexes[j] = temp;
+                weights[j] = temp_weight;
+            }
+        }
+    }
+
 }

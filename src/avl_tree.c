@@ -180,7 +180,7 @@ struct Node *deleteNode(struct Node *root, int key, int *size) {
 // Print the tree
 void printPreOrder(struct Node *root) {
     if (root != NULL) {
-        printf("%d ", root->key);
+        printf("%d (%f)\n", root->key, root->value);
         printPreOrder(root->left);
         printPreOrder(root->right);
     }
@@ -217,6 +217,27 @@ int *avl_to_array(Avl_tree tree, int *size, int flag, double sampling_rate, int 
     int array_index = 0;
     int max_samples = (int) maxNeighbors*sampling_rate;
     avl_to_array_helper(tree->root, array, &array_index, flag, max_samples);
+    *size = array_index;
+    return array;
+}
+
+
+
+void avl_to_whole_array_helper(Avl_node node, int *array, int *array_index, float *weights){
+    // if we have reached the max number of samples, return
+    if(node != NULL){
+        avl_to_whole_array_helper(node->left, array, array_index, weights);
+        array[*array_index] = node->key;
+        weights[*array_index] = node->value;
+        *array_index = *array_index + 1;
+        avl_to_whole_array_helper(node->right, array, array_index, weights);
+    }
+}
+
+int *avl_to_whole_array(Avl_tree tree, int *size, float *weights){
+    int *array = malloc(tree->size*sizeof(int));
+    int array_index = 0;
+    avl_to_whole_array_helper(tree->root, array, &array_index, weights);
     *size = array_index;
     return array;
 }
