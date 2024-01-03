@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include "../headers/data.h"
+#include <string.h>
 #include <omp.h>
+
+#define NUM_POINTS 1000
+#define NUM_DIMENSIONS 100
 
 
 typedef struct my_rpt_Node {
@@ -20,14 +24,20 @@ typedef struct RandomProjectionTree {
 } RandomProjectionTree;
 
 // returns midplane between two points at mid_plane
-float *find_mid_vertical_plane(void *points, int num_points, int num_dimensions){
+float *find_mid_vertical_plane(void *points, int num_points, int flag){
 
     if(num_points <= 2){
         printf("Error: no points to find midplane\n");
         exit(9);
     }
-
-    Data d_array = (Data)points;
+    int num_dimensions = 0;
+    if(flag == 0){
+        Data d_array = (Data)points;
+        num_dimensions = 100;
+    } else{
+        Data_tri d_array = (Data_tri)points;
+        num_dimensions = 3;
+    }
 
     int index_a = rand() % num_points;
     int index_b = rand() % num_points;
@@ -59,7 +69,7 @@ float *find_mid_vertical_plane(void *points, int num_points, int num_dimensions)
     return hyperplane;
 }
 
-float dot_product(float *vector1, float *vector2, int num_dimensions) {
+float dot_product(float *vector1, float *vector2, int num_dimensions){
     float result = 0.0;
     for (int i = 0; i < num_dimensions; ++i) {
         result += vector1[i] * vector2[i];
@@ -106,12 +116,19 @@ rpt_Node* create_node(float *data, int *indices) {
 }
 
 
-void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int num_dimensions, int num_point_limit) {
+void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit) {
     //TODO add flag for data tri and handle then differently, replace num_dimensions with flag
 
     // this is all points, everything
-    node->data = (Data)points;
-    Data d_array = (Data)points;
+    node->data = points;
+    int num_dimensions;
+    if(flag == 0){
+        Data d_array = (Data)node->data;
+        num_dimensions = 100;
+    } else{
+        Data_tri d_array = (Data_tri)node->data;
+        num_dimensions = 3;
+    }
     node->indices = indices;
     node->num_points_limit = num_point_limit;
 
@@ -120,7 +137,7 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
     }
 
     // find perpendicular bisector hyperplane
-    float *random_hyperplane = find_mid_vertical_plane(points,num_points,num_dimensions);
+    float *random_hyperplane = find_mid_vertical_plane(points,num_points,flag);
     
     // find projections of all points on this hyperplane(dot products)
     float *projections = (float *)malloc(num_points * sizeof(float));
@@ -158,50 +175,101 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
         #pragma omp section
         {
             node->left = create_node(NULL, NULL);  // Left child
-            build_tree_parallel(node->left, points, left_indices, left_count, num_dimensions, num_point_limit);
+            build_tree_parallel(node->left, points, left_indices, left_count, flag, num_point_limit);
         }
 
         #pragma omp section
         {
             node->right = create_node(NULL, NULL);  // Right child
-            build_tree_parallel(node->right, points, right_indices, right_count, num_dimensions, num_point_limit);
+            build_tree_parallel(node->right, points, right_indices, right_count, flag, num_point_limit);
         }
     }
     
 }
 
-void build_parallel(RandomProjectionTree *tree, float *points, int num_points, int num_dimensions, int num_point_limit) {
+void build_parallel(RandomProjectionTree *tree, void *points, int num_points, int flag, int num_point_limit) {
     tree->root = create_node(NULL, NULL);
     int *indices = (int *)malloc(num_points * sizeof(int));
     for(int i = 0; i < num_points; i++){
         indices[i] = i;
     }
+    int num_dimensions;
+    if(flag == 0){
+        num_dimensions = ;
+    } else{
+        num_dimensions = 3;
+    }
     build_tree_parallel(tree->root, points, indices, num_points, num_dimensions, num_point_limit);
 }
 
-// int main() {
-//     // ... (rest of the code remains the same)
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate){
+    if(argc < 5){
+        //              0      1              2           3                4      5       6
+        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate>\n");
+        exit(1);
+    }
+    *maxNeighbors = atoi(argv[1]);
+    *flag = atoi(argv[4]);
+    *delta = strtod(argv[5], NULL);
+    *sampling_rate = strtod(argv[6], NULL);
+    
+    if(*flag == 0){  // competition data case
+        *data = (Data)import_data(argv[2], data_size);
+        if(*data == NULL){
+            printf("Error in import_data\n");
+            exit(1);
+        }
+    } else if(*flag == 1){   // ascii data case
+        *data = (Data_tri)import_data_tri(argv[2], data_size);
+    } else{ // false flag case
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta>\nso that flag = 0 || 1 \n");
+        exit(1);
+    }
+    if(strcmp(argv[3], "manh") == 0){
+        *weight_fun = dist_manh;
+    } else if(strcmp(argv[3], "eucl") == 0){
+        *weight_fun = dist_msr;
+    } else if(strcmp(argv[3], "eucl_opt") == 0){
+        *weight_fun = dist_msr_opt;
+    }else{
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl || eucl_opt\n");
+        exit(1);
+    }
 
-    // srand(42);  // Seed for reproducibility
+    if(*delta > 1.0 || *delta <= 0){
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta>\nso that delta is in (0,1] \n");
+        exit(1);
+    }
+    if(*sampling_rate > 1.0 || *sampling_rate <= 0){
+        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta> <sampling_rate>\nso that sampling_rate is in (0,1] \n");
+        exit(1);
+    }
 
-    // double points[NUM_POINTS][NUM_DIMENSIONS];
-    // for (int i = 0; i < NUM_POINTS; ++i) {
-    //     for (int j = 0; j < NUM_DIMENSIONS; ++j) {
-    //         points[i][j] = ((double)rand() / RAND_MAX);  // Random values between 0 and 1
-    //     }
-    // }
+}
 
+int main(int argc, char** argv){
+    srand(348); // seed random number generator
+    int maxNeighbors;
+    float (*weight_fun)(void*, int, int, int);
+    printf("Starting KNN aproximation\n");
+    int data_size;
+    void** data_p = malloc(sizeof(void *));
+    int flag;
+    double delta = 0.0001; //default value of delta parameter
+    double sampling_rate = 0.4; //default value of sampling_rate parameter
 
-//     RandomProjectionTree tree;
-//     tree.depth_limit = 3;
+    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate);
+    void* data = *data_p;
 
-//     float start_time = omp_get_wtime();
-//     build_parallel(&tree, (float *)points, NUM_POINTS, NUM_DIMENSIONS);
-//     float end_time = omp_get_wtime();
+    RandomProjectionTree tree;
 
-//     printf("Time taken: %f seconds\n", end_time - start_time);
+    float start_time = omp_get_wtime();
+    build_parallel(&tree, data, NUM_POINTS, NUM_DIMENSIONS);
+    float end_time = omp_get_wtime();
 
-//     // ... (rest of the code remains the same)
+    printf("Time taken: %f seconds\n", end_time - start_time);
 
-//     return 0;
-// }
+    // ... (rest of the code remains the same)
+
+    return 0;
+}

@@ -31,8 +31,9 @@ run: $(BIN)
 	./$(BIN) $(ARGS)
 	
 
-#run_projection: $(BIN)
-#	./$(BIN) $(ARGS)
+run_projection: src/RAND_PROJ_T.c
+	gcc -o obj/projection src/RAND_PROJ_T.c -lm
+	./obj/projection
 
 test_heap: tests/test_heap.o obj/heap.o
 	gcc -o obj/test_heap tests/test_heap.o obj/heap.o -lm
