@@ -6,8 +6,6 @@
 #include "../headers/avl_tree.h"
 
 
-int max(int a, int b);
-
 // Calculate weight
 int weight(struct Node *N) {
     if (N == NULL)
@@ -86,6 +84,7 @@ struct Node *insertNode(struct Node *node, int key, float value, int flag, int *
     node->weight = 1 + max(weight(node->left),
                 weight(node->right));
 
+
     int balance = getBalance(node);
     if (balance > 1 && key < node->left->key)
         return rightRotate(node);
@@ -119,7 +118,6 @@ struct Node *minValueNode(struct Node *node) {
 struct Node *deleteNode(struct Node *root, int key, int *size) {
     // Find the node and delete it
     if (root == NULL){
-        *size = *size - 1;
         return root;
     }
 
@@ -130,21 +128,24 @@ struct Node *deleteNode(struct Node *root, int key, int *size) {
         root->right = deleteNode(root->right, key, size);
 
     else {
+        *size = *size - 1;
         if ((root->left == NULL) || (root->right == NULL)) {
-        struct Node *temp = root->left ? root->left : root->right;
+            struct Node *temp = root->left ? root->left : root->right;
 
-        if (temp == NULL) {
-            temp = root;
-            root = NULL;
-        } else
-            *root = *temp;
-        free(temp);
+            if (temp == NULL){
+                temp = root;
+                root = NULL;
+            } else
+                *root = *temp;
+            free(temp);
         } else {
-        struct Node *temp = minValueNode(root->right);
+            struct Node *temp = minValueNode(root->right);
 
-        root->key = temp->key;
+            root->key = temp->key;
+            root->value = temp->value;
+            root->flag = temp->flag;
 
-        root->right = deleteNode(root->right, temp->key, size);
+            root->right = deleteNode(root->right, temp->key, size);
         }
     }
 
@@ -183,6 +184,14 @@ void printPreOrder(struct Node *root) {
         printf("%d (%f)\n", root->key, root->value);
         printPreOrder(root->left);
         printPreOrder(root->right);
+    }
+}
+
+void printInOrder(struct Node *root) {
+    if (root != NULL) {
+        printInOrder(root->left);
+        printf("%d (%f)\n", root->key, root->value);
+        printInOrder(root->right);
     }
 }
 

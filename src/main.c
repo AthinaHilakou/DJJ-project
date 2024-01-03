@@ -2,7 +2,6 @@
 #include "../headers/data.h"
 #include "../headers/heap.h"
 #include "../headers/avl_tree.h"
-#include "../headers/map.h"
 #include "../headers/data.h"
 #include "../headers/brute_force.h"
 #include <stdlib.h>
@@ -52,11 +51,9 @@ int main(int argc, char** argv){
     norms_sqred(data, data_size,flag, norms);
 
     
-    // Map *reverse_neighbors = (Map *)malloc(data_size*sizeof(Map));
     Avl_tree *reverse_neighbors = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
     // store all comparisons so far between nodes and potential neighbors
     Avl_tree *node_history = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
-
 
     printf("Finished creating empty neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
     //create empty maps for all neighbors save
@@ -65,18 +62,11 @@ int main(int argc, char** argv){
         node_history[i] = avl_create();
     }
     for(int j = 0; j < data_size; j++) {
-        // printf("%d\n", j);
-        // weights_array[j] = (float *)malloc(data_size*sizeof(float));
-        // for(int i = 0; i < data_size; i++){
-        //     weights_array[j][i] = -1;
-        // }
-
         // get real and reverse neighbors
         getNeighbors(myadjMatrix, j, data_size, &neighbors_count, neighbor_indexes);
         // create heap from the neighbors & reverse neighbors
         get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights, flag);
         for(int i = 0; i < neighbors_count; i++){
-            // weights_array[j][neighbor_indexes[i]] = weights[i];
             avl_insert(node_history[j], neighbor_indexes[i], weights[i], 1);
             avl_insert(node_history[neighbor_indexes[i]], j, weights[i], 0);
         }
@@ -84,10 +74,6 @@ int main(int argc, char** argv){
         getReverseNeighbors(myadjMatrix, j, data_size, &neighbors_count, neighbor_indexes);
         get_weights(neighbor_indexes, j, data, neighbors_count, weight_fun, weights, flag);
         avl_from_array(reverse_neighbors[j], neighbor_indexes, weights, neighbors_count);
-        // if(heap_check(neighbors[j])){
-        //     printf("-------------Heap %d is not a heap\n",j);
-            
-        // }
     }
     free(neighbor_indexes);
     free(weights);
@@ -95,6 +81,7 @@ int main(int argc, char** argv){
     printf("Finished creating random neighbors in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     start = clock();
+
 
     //for handling flags in search
     int **old = (int **) malloc(data_size * sizeof(int *));
@@ -125,7 +112,6 @@ int main(int argc, char** argv){
         int update_counter = 0;
         
 
-        // printAdjMatrix(myadjMatrix, data_size);
         for(int i = 0; i < data_size; i++){
             // get all normal neighbors with false flag
             heap_to_array(neighbors[i],old[i],&sizes_f_flags[i], 0, sampling_rate, maxNeighbors);
@@ -135,37 +121,11 @@ int main(int argc, char** argv){
             old_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_f_flags_r[i], 0, sampling_rate, maxNeighbors);
             // get samples from reverse neighbors with true flag
             new_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_t_flags_r[i], 1, sampling_rate, maxNeighbors);
-            #ifdef OUTPUT
-            printf("i is %d\n", i);
-            printf("Heap is: ");
-            print_heap(neighbors[i]);
-            printf("old size = %d: ", sizes_f_flags[i]);
-            for(int j = 0; j < sizes_f_flags[i]; j++){
-                printf("%d ", old[i][j]);
-            }
-            printf("\n");
-            printf("new size = %d: ", sizes_t_flags[i]);
-            for(int j = 0; j++ < sizes_t_flags[i]; j++){
-                printf("%d ", new[i][j]);
-            }
-            printf("\n");
-            printf("new reverse size = %d: ", sizes_t_flags_r[i]);
-            for(int j = 0; j < sizes_t_flags_r[i]; j++){
-                printf("%d ", new_reverse[i][j]);
-            }
-            printf("\n");
-            printf("old reverse size = %d: ", sizes_f_flags_r[i]);
-            for(int j = 0; j < sizes_f_flags_r[i]; j++){
-                printf("%d ", old_reverse[i][j]);
-            }
-            printf("\n\n\n");
-            #endif
         }
 
         //-----------------------------------------------------------------------------------//
         // for each node
         for(int i = 0; i < data_size; i++){
-            // printf("Checking %d point\n", i);
             // for each neighbor
             int *joined_old_arrays;
             int *joined_new_arrays;
@@ -175,23 +135,8 @@ int main(int argc, char** argv){
             // join normal neighbors with reverse neighbors
             joined_old_arrays = join_arrays(old[i], sizes_f_flags[i], old_reverse[i], sizes_f_flags_r[i], &total_old_size);
             joined_new_arrays = join_arrays(new[i], sizes_t_flags[i], new_reverse[i], sizes_t_flags_r[i], &total_new_size);
-            #ifdef OUTPUT
-            printf("i is %d\n", i);
-            printf("Joined arrays: new %d, old %d \n", total_new_size, total_old_size);
-            printf("Joined new arrays: ");
-            for(int i = 0; i < total_new_size; i++){
-                printf("%d ", joined_new_arrays[i]);
-            }
-            printf("\n");
 
-            printf("Joined old arrays: ");
-            for(int i = 0; i < total_old_size; i++){
-                printf("%d ", joined_old_arrays[i]);
-            }
-            printf("\n\n\n");
-            #endif
-            // printf("total_new_size = %d, total_old_size = %d\n", total_new_size, total_old_size);
-            //for j , k in joined_new_arrays[i], j < k--------------------------------------
+            //for j , k in joined_new_arrays[i], j < k
             for(int j = 0; j < total_new_size; j++){
                 int neighbor1 = joined_new_arrays[j];
                 // for all neighbor pairs
@@ -201,7 +146,6 @@ int main(int argc, char** argv){
                     if(i == neighbor1 || i == neighbor2 || neighbor1 == neighbor2){
                         continue;
                     }
-                    // printf("neighbor1 = %d, neighbor2 = %d\n", neighbor1, neighbor2);
                     float weight;
                     weight = avl_get_weight(node_history[neighbor1], neighbor2);
                     if(weight == -1){
@@ -221,7 +165,6 @@ int main(int argc, char** argv){
                     if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 2)){
                         order2++;
                     }
-                    // printf("end of computation\n");
                 }
 
                 // for j in joined_new_arrays, k in joined_old_arrays--------------------------------------
@@ -242,7 +185,6 @@ int main(int argc, char** argv){
                     int old_neighbor1 = heap_find_max(neighbors[neighbor1]);
                     int old_neighbor2 = heap_find_max(neighbors[neighbor2]);
                     // if neighbor2 is not in neighbor1's neighbors
-                    // printf("neighbor1 = %d, neighbor2 = %d\n", neighbor1, neighbor2);
                     if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor1, neighbor2, old_neighbor1, weight, &update_counter, 3)){
                         order3++;
                     }
@@ -269,46 +211,7 @@ int main(int argc, char** argv){
         // free(all_neighbors);
     }
 
-    #ifdef OUTPUT
-    for(int i = 0; i < data_size; i++){
-            // get normal neighbors with false flag
-            heap_to_array(neighbors[i],old[i],&sizes_f_flags[i], 0, sampling_rate, maxNeighbors);
-            // get normal neighbors with true flag
-            heap_to_array(neighbors[i],new[i],&sizes_t_flags[i], 1,sampling_rate, maxNeighbors);
-            // get reverse neighbors with false flag
-            old_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_f_flags_r[i], 0, sampling_rate, maxNeighbors);
-            // get reverse neighbors with true flag
-            new_reverse[i] = avl_to_array(reverse_neighbors[i], &sizes_t_flags_r[i], 1, sampling_rate, maxNeighbors);
-            #ifdef OUTPUT
-            printf("i is %d\n", i);
-            printf("Heap is: ");
-            print_heap(neighbors[i]);
-            printf("old size = %d: ", sizes_f_flags[i]);
-            for(int j = 0; j < sizes_f_flags[i]; j++){
-                printf("%d ", old[i][j]);
-            }
-            printf("\n");
-            printf("new size = %d: ", sizes_t_flags[i]);
-            for(int j = 0; j++ < sizes_t_flags[i]; j++){
-                printf("%d ", new[i][j]);
-            }
-            printf("\n");
-            printf("new reverse size = %d: ", sizes_t_flags_r[i]);
-            for(int j = 0; j < sizes_t_flags_r[i]; j++){
-                printf("%d ", new_reverse[i][j]);
-            }
-            printf("\n");
-            printf("old reverse size = %d: ", sizes_f_flags_r[i]);
-            for(int j = 0; j < sizes_f_flags_r[i]; j++){
-                printf("%d ", old_reverse[i][j]);
-            }
-            printf("\n\n\n");
-            #endif
-        }
-    #endif
-
-    // printAdjMatrix(myadjMatrix, data_size);
-
+    
     
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -346,36 +249,15 @@ int main(int argc, char** argv){
         // print_heap(neighbors[i]);
         heap_destroy(neighbors[i]);
         avl_destroy(reverse_neighbors[i]);
+        avl_destroy(node_history[i]);
         free(old[i]);
         free(new[i]);
     }
     free(neighbors);
     free(reverse_neighbors);
+    free(node_history);
     free(old);
     free(new);
-
-    for(int i = 0; i < data_size; i++){
-        // printf("i: %2d, %d\n", i, node_history[i]->size);
-        // printPreOrder(node_history[i]->root);
-        // printf("\n");
-        // int size;
-        // float *weights = malloc(sizeof(float) * node_history[i]->size);
-        // // int *history = avl_to_array(node_history[i], &size, 0, sampling_rate, maxNeighbors);
-        // int *history = avl_to_whole_array(node_history[i], &size, weights);
-        // printf("I is %d\n", i);
-        // // for(int j = 0; j < size; j++){
-        // //     printf("%d(%2.2f) ", history[j], weights[j]);
-        // // }
-        // printf("\nSorted\n");
-        // sort_two_arrays(history, weights, size);
-        // for(int j = 0; j < maxNeighbors; j++){
-        //     // printf("%d(%2.2f) ", history[j], weights[j]);
-        //     printf("%d ", history[j]);
-        // }
-
-        // printf("\n");
-        avl_destroy(node_history[i]);
-    }
 
     free(old_reverse);
     free(new_reverse);
@@ -383,6 +265,7 @@ int main(int argc, char** argv){
 
     for(int i = 0; i < data_size; i++){
         free(all_neighbors[i]);
+
     }
     free(all_neighbors);
     freegraph(myadjMatrix, data_size);

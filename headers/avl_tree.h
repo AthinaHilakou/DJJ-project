@@ -10,13 +10,11 @@ typedef struct Node {
     int weight;   //weight avl
     float value; //weight of input
     int flag;   //flag for update
-
 }avl_node, *Avl_node;
 
 typedef struct my_avl_tree {
     struct Node *root;
     int size;
-
 } avl_tree, *Avl_tree;
 
 int max(int a, int b);
@@ -38,6 +36,8 @@ struct Node *minValueNode(struct Node *node);
 struct Node *deleteNode(struct Node *root, int key, int *size);
 
 void printPreOrder(struct Node *root);
+
+void printInOrder(struct Node *root);
 
 
 void avl_set_flag(Avl_tree tree,int key, int flag);

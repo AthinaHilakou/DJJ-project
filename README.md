@@ -27,8 +27,9 @@ Tρέχει με τα δεδομένα του διαγωνισμού στον φ
 
 TODO
 
-fix the damn code
-replace all_weights
 remove graph n\*n
-
 (add flag size (true & false) to avl to reduce mapp to array space)
+
+run random projection trees
+make random projections trees tests
+check for memory leaks(tests)
