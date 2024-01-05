@@ -33,3 +33,5 @@ remove graph n\*n
 run random projection trees
 make random projections trees tests
 check for memory leaks(tests)
+
+Make function that initialises and returns a graph from an rpt

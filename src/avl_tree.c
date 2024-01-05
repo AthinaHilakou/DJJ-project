@@ -184,7 +184,7 @@ struct Node *deleteNode(struct Node *root, int key, int *size) {
 // Print the tree
 void printPreOrder(struct Node *root) {
     if (root != NULL) {
-        printf("%d (%f)\n", root->key, root->value);
+        printf("%d (%f) (%d)\n", root->key, root->value, root->flag);
         printPreOrder(root->left);
         printPreOrder(root->right);
     }
@@ -282,22 +282,24 @@ Avl_tree avl_create(){
     return tree;
 }
 
-void avl_set_flag_helper(Avl_node node,int key, int flag){
+int avl_set_flag_helper(Avl_node node,int key, int flag){
     if(node != NULL){
         if(node->key == key){
             node->flag = flag;
+            return true;
         }
         else if(key < node->key){
-            avl_set_flag_helper(node->left, key, flag);
+            return avl_set_flag_helper(node->left, key, flag);
         }
         else{
-            avl_set_flag_helper(node->right, key, flag);
+            return avl_set_flag_helper(node->right, key, flag);
         }
     }
+    return false;
 }
 
-void avl_set_flag(Avl_tree tree,int key, int flag){
-    avl_set_flag_helper(tree->root, key, flag);
+int avl_set_flag(Avl_tree tree,int key, int flag){
+    return avl_set_flag_helper(tree->root, key, flag);
 }
 
 int avl_get_flag_helper(Avl_node node, int key){
@@ -336,6 +338,24 @@ float avl_get_weight_helper(Avl_node node, int key){
 
 float avl_get_weight(Avl_tree tree, int key){
     return avl_get_weight_helper(tree->root, key);
+}
+
+
+int avl_get_true_flags_helper(Avl_node node, int *array_index){
+    if(node != NULL){
+        avl_get_true_flags_helper(node->left, array_index);
+        if(node->flag == true){
+            *array_index = *array_index + 1;
+        }
+        avl_get_true_flags_helper(node->right, array_index);
+    }
+    return *array_index;
+}
+
+
+int avl_get_true_flags(Avl_tree tree){
+    int true_flags = 0;
+    return avl_get_true_flags_helper(tree->root, &true_flags);
 }
 
 // int main() {

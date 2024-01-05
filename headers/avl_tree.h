@@ -40,9 +40,10 @@ void printPreOrder(struct Node *root);
 void printInOrder(struct Node *root);
 
 
-void avl_set_flag(Avl_tree tree,int key, int flag);
+int avl_set_flag(Avl_tree tree,int key, int flag);
 int avl_get_flag(Avl_tree tree, int key);
 
+int avl_get_true_flags(Avl_tree tree);
 
 Avl_tree avl_create();
 void avl_insert(Avl_tree tree, int key, float value, int flag);

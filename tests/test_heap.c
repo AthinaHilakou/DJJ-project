@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <math.h>
 
+extern float* norms;
 
 int compare_ints(int a, int b) {
 	return abs(a - b);

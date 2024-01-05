@@ -1,4 +1,5 @@
 #include "../headers/data.h"
+#include <omp.h>
 
 float readfloat(FILE *f) {
   float v;
@@ -7,7 +8,7 @@ float readfloat(FILE *f) {
 }
 
 int global_data_size = -1;
-extern float *norms;
+float *norms;
 
 void *import_data(char* filename, int *data_size){
 
@@ -115,16 +116,15 @@ float dist_msr_opt(void* array, int index_a, int index_b, int data_type){
     float sum = 0;
     if(data_type == 0){
         Data d_array = (Data)array;
+        #pragma omp parallel for num_threads(4) reduction(+:sum)
         for(int i = 0; i < DATA_LENTH; i++){
             sum += (d_array[index_b].data_array[i])*(d_array[index_a].data_array[i]);
-        }           
-        
+        }
     } else{
         Data_tri d_array = (Data_tri)array;
         for(int i = 0; i < DATA_LENTH_TRI; i++){
             sum += (d_array[index_b].data_array[i])*(d_array[index_a].data_array[i]);
         }
-
     }
     // x^2 + y^2 - 2xy = (x-y)^2
     float dist = norms[index_a] + norms[index_b] - 2*sum;

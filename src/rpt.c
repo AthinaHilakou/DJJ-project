@@ -1,27 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "../headers/data.h"
-#include <string.h>
-#include <omp.h>
-
-#define NUM_POINTS 1000
-#define NUM_DIMENSIONS 100
-
-
-typedef struct my_rpt_Node {
-    void *data;     //this is the data of file
-    int *indices;   // we want to split this data into two groups
-    int num_points_limit; // stop when we reach this number of points
-    struct my_rpt_Node *left;
-    struct my_rpt_Node *right;
-} rpt_Node;
-
-typedef struct RandomProjectionTree {
-    rpt_Node *root;
-    int num_points_limit;
-    int data_type_flag; //TODO 0 for data, 1 for data_tri
-} RandomProjectionTree;
+/* File random_projection_tree/rpr.c */
+#include "../headers/rpt.h"
 
 // returns midplane between two points at mid_plane
 float *find_mid_vertical_plane(void *points, int num_points, int flag){
@@ -31,11 +9,13 @@ float *find_mid_vertical_plane(void *points, int num_points, int flag){
         exit(9);
     }
     int num_dimensions = 0;
+    Data d_array = NULL;
+    Data_tri d_array_tri = NULL;
     if(flag == 0){
-        Data d_array = (Data)points;
+        d_array = (Data)points;
         num_dimensions = 100;
     } else{
-        Data_tri d_array = (Data_tri)points;
+        d_array_tri = (Data_tri)points;
         num_dimensions = 3;
     }
 
@@ -116,17 +96,19 @@ rpt_Node* create_node(float *data, int *indices) {
 }
 
 
-void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit) {
+void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num) {
     //TODO add flag for data tri and handle then differently, replace num_dimensions with flag
 
     // this is all points, everything
     node->data = points;
     int num_dimensions;
+    Data d_array = NULL;
+    Data_tri d_array_tri = NULL;
     if(flag == 0){
-        Data d_array = (Data)node->data;
+        d_array = (Data)node->data;
         num_dimensions = 100;
     } else{
-        Data_tri d_array = (Data_tri)node->data;
+        d_array_tri = (Data_tri)node->data;
         num_dimensions = 3;
     }
     node->indices = indices;
@@ -187,89 +169,56 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
     
 }
 
-void build_parallel(RandomProjectionTree *tree, void *points, int num_points, int flag, int num_point_limit) {
+void build_parallel(RandomProjectionTree *tree, void *points, int num_points, int flag, int num_point_limit, int thread_num) {
     tree->root = create_node(NULL, NULL);
     int *indices = (int *)malloc(num_points * sizeof(int));
+    #pragma omp parallel for schedule(dynamic) thread_count(thread_num) // Use dynamic scheduling
     for(int i = 0; i < num_points; i++){
         indices[i] = i;
     }
     int num_dimensions;
     if(flag == 0){
-        num_dimensions = ;
+        num_dimensions = 100;
     } else{
         num_dimensions = 3;
     }
     build_tree_parallel(tree->root, points, indices, num_points, num_dimensions, num_point_limit);
 }
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate){
-    if(argc < 5){
-        //              0      1              2           3                4      5       6
-        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate>\n");
-        exit(1);
-    }
-    *maxNeighbors = atoi(argv[1]);
-    *flag = atoi(argv[4]);
-    *delta = strtod(argv[5], NULL);
-    *sampling_rate = strtod(argv[6], NULL);
-    
-    if(*flag == 0){  // competition data case
-        *data = (Data)import_data(argv[2], data_size);
-        if(*data == NULL){
-            printf("Error in import_data\n");
-            exit(1);
-        }
-    } else if(*flag == 1){   // ascii data case
-        *data = (Data_tri)import_data_tri(argv[2], data_size);
-    } else{ // false flag case
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta>\nso that flag = 0 || 1 \n");
-        exit(1);
-    }
-    if(strcmp(argv[3], "manh") == 0){
-        *weight_fun = dist_manh;
-    } else if(strcmp(argv[3], "eucl") == 0){
-        *weight_fun = dist_msr;
-    } else if(strcmp(argv[3], "eucl_opt") == 0){
-        *weight_fun = dist_msr_opt;
-    }else{
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag>\nso that weight_fun = manh || eucl || eucl_opt\n");
-        exit(1);
-    }
 
-    if(*delta > 1.0 || *delta <= 0){
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta>\nso that delta is in (0,1] \n");
-        exit(1);
-    }
-    if(*sampling_rate > 1.0 || *sampling_rate <= 0){
-        printf("Usage: ./main <maxNeighbors> <weight_function> <flag> <delta> <sampling_rate>\nso that sampling_rate is in (0,1] \n");
-        exit(1);
-    }
-
+int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_limit, int thread_num){
+    //build tree
+    //from tree, find neighbors + add some randomness
 }
 
-int main(int argc, char** argv){
-    srand(348); // seed random number generator
-    int maxNeighbors;
-    float (*weight_fun)(void*, int, int, int);
-    printf("Starting KNN aproximation\n");
-    int data_size;
-    void** data_p = malloc(sizeof(void *));
-    int flag;
-    double delta = 0.0001; //default value of delta parameter
-    double sampling_rate = 0.4; //default value of sampling_rate parameter
 
-    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate);
-    void* data = *data_p;
 
-    RandomProjectionTree tree;
+// int main(int argc, char** argv){
 
-    float start_time = omp_get_wtime();
-    build_parallel(&tree, data, NUM_POINTS, NUM_DIMENSIONS);
-    float end_time = omp_get_wtime();
+//     float *norms;
 
-    printf("Time taken: %f seconds\n", end_time - start_time);
+//     srand(348); // seed random number generator
+//     int maxNeighbors;
+//     float (*weight_fun)(void*, int, int, int);
+//     printf("Starting KNN aproximation\n");
+//     int data_size;
+//     void** data_p = malloc(sizeof(void *));
+//     int flag;
+//     double delta = 0.0001; //default value of delta parameter
+//     double sampling_rate = 0.4; //default value of sampling_rate parameter
 
-    // ... (rest of the code remains the same)
+//     get_arguments_rpt(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate);
+//     void* data = *data_p;
 
-    return 0;
-}
+//     RandomProjectionTree tree;
+
+//     float start_time = omp_get_wtime();
+//     // build_parallel(&tree, data, NUM_POINTS, NUM_DIMENSIONS);
+//     float end_time = omp_get_wtime();
+
+//     printf("Time taken: %f seconds\n", end_time - start_time);
+
+//     // ... (rest of the code remains the same)
+
+//     return 0;
+// }

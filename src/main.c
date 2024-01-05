@@ -4,17 +4,18 @@
 #include "../headers/avl_tree.h"
 #include "../headers/data.h"
 #include "../headers/brute_force.h"
+#include "../headers/rpt.h"
 #include <stdlib.h>
 #include <time.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <sys/sysinfo.h>
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate);
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag);
 int update_and_compute(int **myadjMatrix, Heap *neighbors, Avl_tree *reverse_neighbors, Avl_tree *node_history,int neighbor1,
                         int neighbor2, int old_neighbor1, float weight, int *update_counter, int order);
 
-
-float *norms;
+extern float *norms;
 // #define OUTPUT
 
 int main(int argc, char** argv){
@@ -30,11 +31,19 @@ int main(int argc, char** argv){
     int flag;
     double delta = 0.0001; //default value of delta parameter
     double sampling_rate = 0.4; //default value of sampling_rate parameter
+    int rpt_flag = -1;
 
-    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate);
+    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate, &rpt_flag);
     void* data = *data_p;
     printf("Finished importing data in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
-    int **myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
+    int **myadjMatrix;
+    RandomProjectionTree tree;
+    
+    if(rpt != 1){
+        myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
+    } else{
+        myadjMatrix = (int **)build_parallel(&tree, data, data_size, flag, 100);
+    }
     printf("Finished creating adjMatrix in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     Heap *neighbors;
@@ -46,9 +55,12 @@ int main(int argc, char** argv){
     int* neighbor_indexes = (int*)malloc(data_size * sizeof(int));
     float *weights = (float *)malloc(data_size*sizeof(float));
 
-
-    norms = (float *)malloc(data_size*sizeof(float));
-    norms_sqred(data, data_size,flag, norms);
+    if(weight_fun == dist_msr_opt){
+        norms = (float *)malloc(data_size*sizeof(float));
+        norms_sqred(data, data_size,flag, norms);
+    }
+    // norms = (float *)malloc(data_size*sizeof(float));
+    // norms_sqred(data, data_size,flag, norms);
 
     
     Avl_tree *reverse_neighbors = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
@@ -101,13 +113,8 @@ int main(int argc, char** argv){
     int sizes_t_flags_r[data_size];
     int sizes_f_flags_r[data_size];
     printf("Starting KNN aproximation\n");
+    
     // main loop
-
-    int order1 = 0;
-    int order2 = 0;
-    int order3 = 0;
-    int order4 = 0;
-
     while(1){
         int update_counter = 0;
         
@@ -158,13 +165,9 @@ int main(int argc, char** argv){
                     int old_neighbor2 = heap_find_max(neighbors[neighbor2]);
                     // if neighbor2 is not in neighbor1's neighbors
 
-                    if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor1, neighbor2, old_neighbor1, weight, &update_counter, 1)){
-                        order1++;
-                    }
+                    update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor1, neighbor2, old_neighbor1, weight, &update_counter, 1);
 
-                    if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 2)){
-                        order2++;
-                    }
+                    update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 2);
                 }
 
                 // for j in joined_new_arrays, k in joined_old_arrays--------------------------------------
@@ -185,13 +188,9 @@ int main(int argc, char** argv){
                     int old_neighbor1 = heap_find_max(neighbors[neighbor1]);
                     int old_neighbor2 = heap_find_max(neighbors[neighbor2]);
                     // if neighbor2 is not in neighbor1's neighbors
-                    if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor1, neighbor2, old_neighbor1, weight, &update_counter, 3)){
-                        order3++;
-                    }
+                    update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor1, neighbor2, old_neighbor1, weight, &update_counter, 3);
 
-                    if(update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 4)){
-                        order4++;
-                    }
+                    update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 4);
                 }
             }
             free(joined_old_arrays);
@@ -208,7 +207,6 @@ int main(int argc, char** argv){
         if((float) update_counter < delta*maxNeighbors*data_size){
             break;
         }
-        // free(all_neighbors);
     }
 
     
@@ -243,7 +241,6 @@ int main(int argc, char** argv){
         heap_check(neighbors[j]);
     }
 
-    // printf("=====================================\n");
     for(int i = 0; i < data_size; i++){
 
         // print_heap(neighbors[i]);
@@ -269,24 +266,26 @@ int main(int argc, char** argv){
     }
     free(all_neighbors);
     freegraph(myadjMatrix, data_size);
-    free(norms);
+    if(weight_fun == dist_msr_opt)
+        free(norms);
     return 0;
 
 }
 
 
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate){
-    if(argc < 5){
-        //              0      1              2           3                4      5       6
-        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate>\n");
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag){
+    if(argc < 6){
+        //              0      1              2           3                4      5       6                7
+        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate> <random_projection_tree_flag>\n");
         exit(1);
     }
     *maxNeighbors = atoi(argv[1]);
     *flag = atoi(argv[4]);
     *delta = strtod(argv[5], NULL);
     *sampling_rate = strtod(argv[6], NULL);
-    
+    *rpt_flag = atoi(argv[7]);
+
     if(*flag == 0){  // competition data case
         *data = (Data)import_data(argv[2], data_size);
         if(*data == NULL){
@@ -327,18 +326,18 @@ void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun
 int update_and_compute(int **myadjMatrix, Heap *neighbors, Avl_tree *reverse_neighbors, Avl_tree *node_history ,int neighbor1,
                         int neighbor2, int old_neighbor1, float weight, int *update_counter, int order){
     if(myadjMatrix[neighbor1][neighbor2] == 0){ // if neighbor2 is not in neighbor1's neighbors
-        #ifdef OUTPUT
-        // if(order == 2){
-        //     printf("--------------updating %d heap , %d with %d\n", neighbor1, old_neighbor1, neighbor2);
-
-        // }
-        #endif
 
         if(heap_update(neighbors[neighbor1],neighbor2, weight) == true){
             // new neighbor is inserted in neighbor1's neighbors
-            avl_set_flag(node_history[neighbor1],old_neighbor1, 0);// set old_neighbor1's flag to false, its no longer a neighbor of neighbor1
-            avl_set_flag(node_history[neighbor1], neighbor2, 1); // set neighbor2's flag to true, its a neighbor of neighbor1
-
+            if(avl_set_flag(node_history[neighbor1],old_neighbor1, 0) == false){// set old_neighbor1's flag to false, its no longer a neighbor of neighbor1
+                printf("Error in avl_set_flag\n");
+            }
+            if(avl_set_flag(node_history[neighbor1], neighbor2, 1) == false){
+                printf("Error in avl_set_flag\n");
+            } // set neighbor2's flag to true, its a neighbor of neighbor1
+            // printf("node history true flags %d\n", avl_get_true_flags(node_history[neighbor1]));
+            // printPreOrder(node_history[neighbor1]->root);
+            // print_heap(neighbors[neighbor1]);
             // remove neighbor1 from old_neighbor1's neighbors, as we just replaced old_neighbor1 with neighbor2
             avl_remove(reverse_neighbors[old_neighbor1], neighbor1);
             // add neighbor1 as reverse to its new neighbor
