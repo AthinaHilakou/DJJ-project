@@ -59,23 +59,23 @@ float dot_product(float *vector1, float *vector2, int num_dimensions){
 }
 //find indices of points that belong in one of the two spaces in which the hyperplane divides the whole
 //any indeces left out belong to the other space
-void find_indices(float *projections, float constant, int num_points, int *left_indices, int *right_indices, int *left_count, int *right_count){
+void find_indices(float *projections, float constant, int num_points, int* indices, int *left_indices, int *right_indices, int *left_count, int *right_count){
     right_indices = (int *)malloc(num_points * sizeof(int));
     left_indices = (int *)malloc(num_points * sizeof(int));
     for (int i = 0; i < num_points; ++i) {
         if (projections[i] <= constant) {
-            right_indices[(*right_count)++] = i;
+            right_indices[(*right_count)++] = indices[i];
         } else{
-            left_indices[(*left_count)++] = i;
+            left_indices[(*left_count)++] = indices[i];
         }
     }
 
     if(*left_count == 0 || *right_count == 0){
         for(int i = 0; i < num_points; i++){
             if(rand() % 2 == 0){
-                left_indices[(*left_count)++] = i;
+                left_indices[(*left_count)++] = indices[i];
             } else{
-                right_indices[(*right_count)++] = i;
+                right_indices[(*right_count)++] = indices[i];
             }
         }
     }
@@ -142,7 +142,7 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
 
     int *left_indices;
     int *right_indices;
-    find_indices(projections,constant, num_points, left_indices, right_indices, &left_count, &right_count);
+    find_indices(projections,constant, num_points,indices,left_indices, right_indices, &left_count, &right_count);
     if(left_count == 0 || right_count == 0){
             //DO Stuff
     }
@@ -169,8 +169,12 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
     
 }
 
-void build_parallel(RandomProjectionTree *tree, void *points, int num_points, int flag, int num_point_limit, int thread_num) {
+RandomProjectionTree *rpt_tree_create(void *points, int num_points, int flag, int num_point_limit, int thread_num) {
+    RandomProjectionTree *tree = (RandomProjectionTree *)malloc(sizeof(RandomProjectionTree));
     tree->root = create_node(NULL, NULL);
+    tree->num_points_limit = num_point_limit;
+    tree->data_type_flag = flag;
+
     int *indices = (int *)malloc(num_points * sizeof(int));
     #pragma omp parallel for schedule(dynamic) thread_count(thread_num) // Use dynamic scheduling
     for(int i = 0; i < num_points; i++){
@@ -183,12 +187,42 @@ void build_parallel(RandomProjectionTree *tree, void *points, int num_points, in
         num_dimensions = 3;
     }
     build_tree_parallel(tree->root, points, indices, num_points, num_dimensions, num_point_limit);
+    return tree;
 }
 
 
+void rpt_destroy_helper(rpt_Node *node){
+    if(node != NULL){
+        rpt_destroy_helper(node->left);
+        rpt_destroy_helper(node->right);
+        free(indices);
+        free(node);
+    }
+}
+
+void rpt_tree_destroy(RandomProjectionTree tree){
+    rpt_destroy_helper(tree->root);
+    free(tree);
+}
+
+
+
+
+
+
 int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_limit, int thread_num){
-    //build tree
+    int **adj_matrix = (int **)malloc(num_points * sizeof(int *)); //adjacency matrix
+    for(int i = 0; i < num_points; i++){ //initialize adj_matrix
+        adj_matrix[i] = (int *)calloc(num_points, sizeof(int));
+    }
+
+    RandomProjectionTree *tree = rpt_tree_create(points, num_points, flag, num_point_limit/2, thread_num);
+    
     //from tree, find neighbors + add some randomness
+    
+    
+    rpt_tree_destroy(tree);
+
 }
 
 

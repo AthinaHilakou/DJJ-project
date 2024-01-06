@@ -22,16 +22,28 @@ typedef struct RandomProjectionTree {
     int data_type_flag; //TODO 0 for data, 1 for data_tri
 } RandomProjectionTree;
 
+
+
+
 float *find_mid_vertical_plane(void *points, int num_points, int flag);
 
 float dot_product(float *vector1, float *vector2, int num_dimensions);
 
-void find_indices(float *projections, float constant, int num_points, int *left_indices, int *right_indices, int *left_count, int *right_count);
+void find_indices(float *projections, float constant, int num_points,int *indices ,int *left_indices, int *right_indices, int *left_count, int *right_count);
+
+void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num);
 
 rpt_Node* create_node(float *data, int *indices);
 
 
-void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num);
 
-void build_parallel(RandomProjectionTree *tree, void *points, int num_points, int flag, int num_point_limit, int thread_num);
+
+
+int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_limit, int thread_num);
+
+RandomProjectionTree *rpt_tree_create(void *points, int num_points, int flag, int num_point_limit, int thread_num);
+
+void rpt_tree_destroy(RandomProjectionTree *tree);
+
+
 
