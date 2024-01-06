@@ -70,10 +70,12 @@ void find_indices(float *projections, float constant, int num_points, int* indic
         }
     }
 
-    if(*left_count == 0 || *right_count == 0){
+    while(*left_count == 0 || *right_count == 0){
+        *left_count = 0;
+        *right_count = 0;
         for(int i = 0; i < num_points; i++){
             if(rand() % 2 == 0){
-                left_indices[(*left_count)++] = indices[i];
+                left_indices[(*left_count)++] = indices[i]; 
             } else{
                 right_indices[(*right_count)++] = indices[i];
             }
@@ -85,9 +87,9 @@ void find_indices(float *projections, float constant, int num_points, int* indic
 }
 
 
-//Create a
-rpt_Node* create_node(float *data, int *indices) {
-    rpt_Node *node = (rpt_Node *)malloc(sizeof(rpt_Node));
+//Create a node 
+rpt_Node create_node(float *data, int *indices) {
+    rpt_Node node = (rpt_Node)malloc(sizeof(my_rpt_node));
     node->data = data;
     node->indices = indices;
     node->left = NULL;
@@ -96,7 +98,7 @@ rpt_Node* create_node(float *data, int *indices) {
 }
 
 
-void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num) {
+void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num) {
     //TODO add flag for data tri and handle then differently, replace num_dimensions with flag
 
     // this is all points, everything
@@ -157,56 +159,96 @@ void build_tree_parallel(rpt_Node *node, void *points, int *indices, int num_poi
         #pragma omp section
         {
             node->left = create_node(NULL, NULL);  // Left child
-            build_tree_parallel(node->left, points, left_indices, left_count, flag, num_point_limit);
+            build_tree_parallel(node->left, points, left_indices, left_count,flag, num_point_limit, thread_num);
         }
 
         #pragma omp section
         {
             node->right = create_node(NULL, NULL);  // Right child
-            build_tree_parallel(node->right, points, right_indices, right_count, flag, num_point_limit);
+            build_tree_parallel(node->right, points, right_indices, right_count, flag, num_point_limit, thread_num);
         }
     }
     
 }
 
-RandomProjectionTree *rpt_tree_create(void *points, int num_points, int flag, int num_point_limit, int thread_num) {
-    RandomProjectionTree *tree = (RandomProjectionTree *)malloc(sizeof(RandomProjectionTree));
-    tree->root = create_node(NULL, NULL);
-    tree->num_points_limit = num_point_limit;
-    tree->data_type_flag = flag;
+RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int num_point_limit, int thread_num) {
+    RandomProjectionTree tree = (RandomProjectionTree)malloc(sizeof(myRandomProjectionTree));
+   
 
     int *indices = (int *)malloc(num_points * sizeof(int));
     #pragma omp parallel for schedule(dynamic) thread_count(thread_num) // Use dynamic scheduling
     for(int i = 0; i < num_points; i++){
         indices[i] = i;
     }
+    tree->root = create_node(points,indices);
+    tree->num_points_limit = num_point_limit;
+    tree->data_type_flag = flag;
+
     int num_dimensions;
     if(flag == 0){
         num_dimensions = 100;
     } else{
         num_dimensions = 3;
     }
-    build_tree_parallel(tree->root, points, indices, num_points, num_dimensions, num_point_limit);
+    build_tree_parallel(tree->root, points, indices, num_points, flag, num_point_limit, thread_num);
     return tree;
 }
 
 
-void rpt_destroy_helper(rpt_Node *node){
+void rpt_destroy_helper(rpt_Node node){
     if(node != NULL){
         rpt_destroy_helper(node->left);
         rpt_destroy_helper(node->right);
-        free(indices);
+        free(node->indices);
         free(node);
     }
 }
+
+void rpt_get_size_helper(rpt_Node node, int *leafs_count){
+    if(node == NULL){
+        return;
+    }
+    if(node->left == NULL && node->right == NULL){
+        (*leafs_count)++;
+        return;
+    }
+    rpt_get_size_helper(node->left, leafs_count);
+    rpt_get_size_helper(node->right, leafs_count);
+}
+
+int rpt_get_size(RandomProjectionTree tree){
+    int leafs_count = 0;
+    rpt_get_size_helper(tree->root, &leafs_count);
+    return leafs_count;
+}
+
 
 void rpt_tree_destroy(RandomProjectionTree tree){
     rpt_destroy_helper(tree->root);
     free(tree);
 }
 
+void rpt_get_indices_helper(rpt_Node node, int **indices, int *index){
+    if(node == NULL){
+        return;
+    }
+    if(node->left == NULL && node->right == NULL){
+        indices[*index] = node->indices;
+        (*index)++;
+        return;
+    }
+    rpt_get_indices_helper(node->left, indices, index);
+    rpt_get_indices_helper(node->right, indices, index);
+    
+}
 
-
+int **rpt_get_indices(RandomProjectionTree tree, int *leaf_count){
+    *leaf_count = rpt_get_size(tree);
+    int **indices = (int **)malloc((*leaf_count)* sizeof(int*));
+    int index = 0;
+    rpt_get_indices_helper(tree->root, indices, &index);
+    return indices;
+}
 
 
 
@@ -216,9 +258,16 @@ int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_
         adj_matrix[i] = (int *)calloc(num_points, sizeof(int));
     }
 
-    RandomProjectionTree *tree = rpt_tree_create(points, num_points, flag, num_point_limit/2, thread_num);
+    int leaf_count;
+    RandomProjectionTree tree = rpt_tree_create(points, num_points, flag, num_point_limit/2, thread_num);
+    int **indices = rpt_get_indices(tree, &leaf_count);
+    for(int i = 0; i < leaf_count; i++){
     
-    //from tree, find neighbors + add some randomness
+        indices[i]
+    }
+
+    //from tree, find neighbors + add some random neighbors
+    // for()
     
     
     rpt_tree_destroy(tree);
