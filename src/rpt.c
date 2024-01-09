@@ -4,7 +4,7 @@
 // returns midplane between two points at mid point
 float *find_mid_vertical_plane(void *points, int num_points, int flag){
 
-    if(num_points <= 2){
+    if(num_points < 2){
         printf("Error: no points to find midplane\n");
         exit(9);
     }
@@ -124,9 +124,6 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
     node->num_points_limit = num_point_limit;
 
     // return condition, if we have reached the minimum limit
-    if (num_points < num_point_limit) {
-        return;
-    }
 
     printf("Indices: "  );
     for(int i = 0; i < num_points; i++){
@@ -176,6 +173,15 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
     //     return;
     // }
 
+    if(num_points < 2){
+        return;
+    }
+
+    if (num_points < num_point_limit){
+        node->left = create_node(points,left_indices,0);  // Left child, create it as empty fill it later
+        node->right = create_node(points,right_indices,0);  // Right child, create it as empty fill it later
+        return;
+    }
 
     #pragma omp parallel sections
     {
