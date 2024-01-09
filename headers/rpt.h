@@ -11,6 +11,7 @@
 typedef struct my_rpt_Node {
     void *data;     //this is the data of file
     int *indices;   // we want to split this data into two groups
+    int indices_size;
     int num_points_limit; // stop when we reach this number of points
     struct my_rpt_Node *left;
     struct my_rpt_Node *right;
@@ -29,11 +30,11 @@ float *find_mid_vertical_plane(void *points, int num_points, int flag);
 
 float dot_product(float *vector1, float *vector2, int num_dimensions);
 
-void find_indices(float *projections, float constant, int num_points,int *indices ,int *left_indices, int *right_indices, int *left_count, int *right_count);
+void find_indices(float *projections, float constant, int num_points,int *indices ,int **left_indices, int **right_indices, int *left_count, int *right_count);
 
 void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num);
 
-rpt_Node create_node(float *data, int *indices);
+rpt_Node create_node(float *data, int *indices, int indices_size);
 
 
 

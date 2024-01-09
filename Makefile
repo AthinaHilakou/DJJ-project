@@ -7,7 +7,7 @@ TESTS_DIR = tests
 HEADERS = headers
 # max_neighbors/k filename manh/eucl data_type_flag delta sampling_rate
 # ARGS = 100 datasets/given/00050000-2.bin eucl 0 0.1 0.02
-ARGS = 100 datasets/given/00002000-1.bin eucl_opt 0 0.001 1 1
+ARGS = 100 datasets/given/00002000-1.bin eucl_opt 0 0.001 0.5 1
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
@@ -55,6 +55,12 @@ test_avl: tests/test_avl.c src/avl_tree.c
 	gcc -c tests/test_avl.c -o obj/test_avl.o
 	gcc -o bin/test_avl obj/test_avl.o obj/avl_tree.o -lm
 	./bin/test_avl
+
+test_rpt: tests/test_rpt.c src/rpt.c
+	gcc -c src/rpt.c -o obj/rpt.o
+	gcc -c tests/test_rpt.c -o obj/test_rpt.o
+	gcc -o bin/test_rpt obj/test_rpt.o obj/rpt.o -lm
+	./bin/test_rpt
 
 tests: $(TESTS) $(BIN)
 	gcc  -o bin/test_heap tests/test_heap.c obj/heap.o -lm
