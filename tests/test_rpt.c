@@ -61,11 +61,6 @@ void test_find_indices(){
     }
 
     float constant = random_hyperplane[100];
-    // // nth_element(projections, projections + median_index, projections + num_points);
-    // median_projection = projections[median_index];
-
-    // int *left_indices = find_indices(projections, median_projection, num_points);
-    // int *right_indices = find_indices(projections, median_projection, num_points - left_count);
 
     int left_count = 0;
     int right_count = 0;
@@ -79,10 +74,10 @@ void test_find_indices(){
 
 void test_rpt_tree_create(){
     srand (time(NULL));
-    int num_points = 20;
+    int num_points = 2000;
     data points[num_points];
     int indices[num_points];
-    int num_limit = 3;
+    int num_limit = 10;
 
     for(int i =0; i < num_points; i++){
         for(int j = 0; j < 100; j++){
@@ -105,25 +100,37 @@ void test_rpt_tree_create(){
     TEST_CHECK(tree->num_points_limit == num_limit);
     TEST_CHECK(tree->data_type_flag == flag);
 
-    printf("\nRoot %d\n", tree->root->indices_size);
-    for(int i = 0; i < num_points; i++){
-        printf("%d ", tree->root->indices[i]);
-    }
-    printf("\n");
+    // printf("\nRoot %d\n", tree->root->indices_size);
+    // for(int i = 0; i < num_points; i++){
+    //     printf("%d ", tree->root->indices[i]);
+    // }
+    // printf("\n");
 
-    printf("Left %d:\n", tree->root->left->indices_size);
-    for(int i = 0; i < tree->root->left->indices_size; i++){
-        printf("%d ", tree->root->left->indices[i]);
-    }
-    printf("\n");
+    // printf("Left %d:\n", tree->root->left->indices_size);
+    // for(int i = 0; i < tree->root->left->indices_size; i++){
+    //     printf("%d ", tree->root->left->indices[i]);
+    // }
+    // printf("\n");
 
-    printf("Right %d:\n", tree->root->right->indices_size);
-    for(int i = 0; i < tree->root->right->indices_size; i++){
-        printf("%d ", tree->root->right->indices[i]);
-    }
-    printf("\n");
-    
+    // printf("Right %d:\n", tree->root->right->indices_size);
+    // for(int i = 0; i < tree->root->right->indices_size; i++){
+    //     printf("%d ", tree->root->right->indices[i]);
+    // }
+    // printf("\n");
 
+    int leaf_count = rpt_leaf_count(tree);
+    printf("Leaf count: %d\n", leaf_count);
+    int myleaf_count = 0;
+    int *leaf_size = malloc(sizeof(int)*(leaf_count));
+    int **leaf_indices = rpt_get_indices(tree, &leaf_count, leaf_size);
+    for(int i = 0; i < leaf_count; i++){
+        myleaf_count += leaf_size[i];
+    }
+    printf("My leaf count: %d\n", myleaf_count);
+    TEST_CHECK(myleaf_count == num_points);
+    // free(leaf_indices);
+    // free(leaf_size);
+    // rpt_tree_destroy(tree);
 }
 
 TEST_LIST = {

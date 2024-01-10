@@ -24,14 +24,16 @@ Tρέχει με τα δεδομένα του διαγωνισμού στον φ
 <data_type_flag>: 0 για τα δεδομένα του διαγωνισμού και 1 για float τριών διαστάσεων
 <delta>: παράμετρος για τον προόρο τερματισμό του αλγορίθμου, 0 < delta <= 1
 <sampling_rate>: παράμετρος για την επιλογή ποσοστού των στοιχείων που θα ελεγθούν σε κάθε επανάληψη 0 < sampling_rate <= 1
+<rpt_flag>: 1 για την αρχικοποίηση του γράφου με rpts
 
 TODO
 
 remove graph n\*n
 (add flag size (true & false) to avl to reduce mapp to array space)
-
 run random projection trees
 make random projections trees tests
 check for memory leaks(tests)
 
 Make function that initialises and returns a graph from an rpt
+
+non reproducable error segmentation fault in rpt create tree

@@ -46,5 +46,7 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
 
 void rpt_tree_destroy(RandomProjectionTree tree);
 
+int rpt_leaf_count(RandomProjectionTree tree);
 
+int **rpt_get_indices(RandomProjectionTree tree, int *leaf_count, int *leaf_size);
 

@@ -106,7 +106,7 @@ rpt_Node create_node(float *data, int *indices, int indices_size) {
 
 void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num) {
     //TODO add flag for data tri and handle then differently, replace num_dimensions with flag
-
+    printf("num_points: %d\n", num_points);
     // this is all points, everything
     node->data = points;
     int num_dimensions;
@@ -125,17 +125,29 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
 
     // return condition, if we have reached the minimum limit
 
-    printf("Indices: "  );
-    for(int i = 0; i < num_points; i++){
-        printf("%d ", indices[i]);
+    if(num_points <= num_point_limit){
+        return;
     }
-    printf("\n");
+
+    // return condition, if we have reached the minimum limit
+
+    // printf("Indices: "  );
+    // for(int i = 0; i < num_points; i++){
+    //     printf("%d ", indices[i]);
+    // }
+    // printf("\n");
     // find perpendicular bisector hyperplane
     float *random_hyperplane = find_mid_vertical_plane(points,num_points,flag);
-    
+    if(random_hyperplane == NULL){
+        printf("Error: mid plane failed\n");
+        exit(9);
+    }
     // find projections of all points on this hyperplane(dot products)
     float *projections = (float *)malloc(num_points * sizeof(float));
-
+    if(projections == NULL){
+        printf("Error: malloc failed\n");
+        exit(9);
+    }
     #pragma omp parallel for schedule(dynamic) // Use dynamic scheduling
     for (int i = 0; i < num_points; ++i) {
         projections[i] = dot_product(d_array[indices[i]].data_array, random_hyperplane, num_dimensions);
@@ -149,39 +161,30 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
         constant = random_hyperplane[100];
     }
 
-    // // nth_element(projections, projections + median_index, projections + num_points);
-    // median_projection = projections[median_index];
-
     int left_count = 0;
     int right_count = 0;
 
     int *left_indices;
     int *right_indices;
     find_indices(projections,constant, num_points,indices,&left_indices, &right_indices, &left_count, &right_count);
-    if(left_count == 0 || right_count == 0){
-            //DO Stuff
+    if(left_count == 1 || right_count == 1){
+        left_count = 0;
+        right_count = 0;
+        for(int j = 0; j < num_points; j++){
+            if(rand() % 2 == 0){
+                left_indices[(left_count)++] = indices[j]; 
+            } else{
+                right_indices[(right_count)++] = indices[j];
+            }
+        }
     }
     //We stopped here--------------------------------------------------------------------------------------------
     free(projections);
 
-    node->data = random_hyperplane;
-    node->indices = left_indices;
-
-    // if (num_points > left_count || num_points > right_count) {
-    //     // free(right_indices);
-    //     // free(left_indices);
-    //     return;
-    // }
-
-    if(num_points < 2){
-        return;
+    if(left_count < 3 || right_count < 3){
+       return;
     }
 
-    if (num_points < num_point_limit){
-        node->left = create_node(points,left_indices,0);  // Left child, create it as empty fill it later
-        node->right = create_node(points,right_indices,0);  // Right child, create it as empty fill it later
-        return;
-    }
 
     #pragma omp parallel sections
     {
@@ -213,11 +216,6 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
     tree->root = create_node(points,indices,num_points);
     tree->num_points_limit = num_point_limit;
     tree->data_type_flag = flag;
-    printf("Indices: "  );
-    for(int i = 0; i < num_points; i++){
-        printf("%d ", indices[i]);
-    }
-    printf("\n");
 
     int num_dimensions;
     if(flag == 0){
@@ -243,22 +241,15 @@ void rpt_destroy_helper(rpt_Node node){
     }
 }
 
-void rpt_get_size_helper(rpt_Node node, int *leafs_count){
-    if(node == NULL){
-        return;
-    }
+int rpt_leaf_count_helper(rpt_Node node){
     if(node->left == NULL && node->right == NULL){
-        (*leafs_count)++;
-        return;
+        return 1;
     }
-    rpt_get_size_helper(node->left, leafs_count);
-    rpt_get_size_helper(node->right, leafs_count);
+    return rpt_leaf_count_helper(node->left) + rpt_leaf_count_helper(node->right);
 }
 
-int rpt_get_size(RandomProjectionTree tree){
-    int leafs_count = 0;
-    rpt_get_size_helper(tree->root, &leafs_count);
-    return leafs_count;
+int rpt_leaf_count(RandomProjectionTree tree){
+    return rpt_leaf_count_helper(tree->root);
 }
 
 
@@ -283,10 +274,9 @@ void rpt_get_indices_helper(rpt_Node node, int **indices, int *index, int *leaf_
 }
 
 int **rpt_get_indices(RandomProjectionTree tree, int *leaf_count, int *leaf_size){
-    *leaf_count = rpt_get_size(tree);
+    *leaf_count = rpt_leaf_count(tree);
     int **indices = (int **)malloc((*leaf_count)* sizeof(int*));
     int index = 0;
-    leaf_size = malloc(sizeof(int)*(*leaf_count));
     rpt_get_indices_helper(tree->root, indices, &index, leaf_size);
     return indices;
 }
