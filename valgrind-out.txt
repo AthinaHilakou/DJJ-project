@@ -1,0 +1,750 @@
+==16052== Memcheck, a memory error detector
+==16052== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==16052== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==16052== Command: ./bin/test_rpt
+==16052== Parent PID: 3968
+==16052== 
+--16052-- 
+--16052-- Valgrind options:
+--16052--    --leak-check=full
+--16052--    --show-leak-kinds=all
+--16052--    --track-origins=yes
+--16052--    --verbose
+--16052--    --log-file=valgrind-out.txt
+--16052-- Contents of /proc/version:
+--16052--   Linux version 6.2.0-39-generic (buildd@lcy02-amd64-045) (x86_64-linux-gnu-gcc-11 (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #40~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 16 10:53:04 UTC 2
+--16052-- 
+--16052-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--16052-- Page sizes: currently 4096, max supported 4096
+--16052-- Valgrind library directory: /usr/libexec/valgrind
+--16052-- Reading syms from /home/panos/git/DJJ-project/bin/test_rpt
+--16052-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--16052--   Considering /usr/lib/debug/.build-id/cc/cdd41e22e25f77a8cda3d045c57ffdb01a9793.debug ..
+--16052--   .. build-id is valid
+--16052-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--16052--    object doesn't have a symbol table
+--16052--    object doesn't have a dynamic symbol table
+--16052-- Scheduler: using generic scheduler lock implementation.
+--16052-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==16052== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-16052-by-panos-on-???
+==16052== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-16052-by-panos-on-???
+==16052== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-16052-by-panos-on-???
+==16052== 
+==16052== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==16052== don't want to do, unless you know exactly what you're doing,
+==16052== or are doing some strange experiment):
+==16052==   /usr/bin/vgdb --pid=16052 ...command...
+==16052== 
+==16052== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==16052==   /path/to/gdb ./bin/test_rpt
+==16052== and then give GDB the following command
+==16052==   target remote | /usr/bin/vgdb --pid=16052
+==16052== --pid is optional if only one valgrind process is running
+==16052== 
+--16052-- REDIR: 0x402aa40 (ld-linux-x86-64.so.2:strlen) redirected to 0x580bcec2 (???)
+--16052-- REDIR: 0x402a810 (ld-linux-x86-64.so.2:index) redirected to 0x580bcedc (???)
+--16052-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--16052--    object doesn't have a symbol table
+--16052-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+--16052--    object doesn't have a symbol table
+==16052== WARNING: new redirection conflicts with existing -- ignoring it
+--16052--     old: 0x0402aa40 (strlen              ) R-> (0000.0) 0x580bcec2 ???
+--16052--     new: 0x0402aa40 (strlen              ) R-> (2007.0) 0x0484ee30 strlen
+--16052-- REDIR: 0x4027220 (ld-linux-x86-64.so.2:strcmp) redirected to 0x484fcd0 (strcmp)
+--16052-- REDIR: 0x402afa0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4853840 (mempcpy)
+--16052-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--16052--   Considering /usr/lib/debug/.build-id/20/3de0ae33b53fee1578b117cb4123e85d0534f0.debug ..
+--16052--   .. build-id is valid
+==16052== WARNING: new redirection conflicts with existing -- ignoring it
+--16052--     old: 0x04914c60 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--16052--     new: 0x04914c60 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==16052== WARNING: new redirection conflicts with existing -- ignoring it
+--16052--     old: 0x04914c60 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--16052--     new: 0x04914c60 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+==16052== WARNING: new redirection conflicts with existing -- ignoring it
+--16052--     old: 0x04914c60 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--16052--     new: 0x04914c60 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==16052== WARNING: new redirection conflicts with existing -- ignoring it
+--16052--     old: 0x04914c60 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--16052--     new: 0x04914c60 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+--16052-- REDIR: 0x4917720 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49179e0 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49172e0 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4935cd0 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49186d0 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4934540 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918c10 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4934370 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917260 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917960 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49185a0 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+==16052== Preferring higher priority redirection:
+--16052--     old: 0x04a0f5c0 (__memcpy_avx_unalign) R-> (2018.0) 0x04850f90 __memcpy_avx_unaligned_erms
+--16052--     new: 0x04a0f5c0 (__memcpy_avx_unalign) R-> (2018.1) 0x04852880 memmove
+--16052-- REDIR: 0x49343f0 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49189e0 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49349b0 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917830 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918a70 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917420 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4934470 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49171d0 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918b60 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918480 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4920570 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x491a010 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917390 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918b10 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49176a0 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49178d0 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918950 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49183f0 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4917b00 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x49187d0 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918ac0 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4919f80 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4918310 (libc.so.6:strstr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--16052-- REDIR: 0x4a0c410 (libc.so.6:__strrchr_avx2) redirected to 0x484e810 (rindex)
+--16052-- REDIR: 0x4915520 (libc.so.6:calloc) redirected to 0x484d9d0 (calloc)
+--16052-- REDIR: 0x4933180 (libc.so.6:__strstr_sse2_unaligned) redirected to 0x4853a50 (strstr)
+--16053-- REDIR: 0x4a0c200 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--16053-- REDIR: 0x4a0c5e0 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--16053-- REDIR: 0x4a0f580 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--16053-- REDIR: 0x49140a0 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--16053-- REDIR: 0x4a0fd80 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852770 (memset)
+--16053-- REDIR: 0x4a0c760 (libc.so.6:__strnlen_avx2) redirected to 0x484ecb0 (strnlen)
+--16053-- REDIR: 0x49143e0 (libc.so.6:free) redirected to 0x484b210 (free)
+==16053== 
+==16053== HEAP SUMMARY:
+==16053==     in use at exit: 0 bytes in 0 blocks
+==16053==   total heap usage: 3 allocs, 3 frees, 1,492 bytes allocated
+==16053== 
+==16053== All heap blocks were freed -- no leaks are possible
+==16053== 
+==16053== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--16054-- REDIR: 0x4a0c200 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--16054-- REDIR: 0x4a0c5e0 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--16054-- REDIR: 0x49140a0 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--16054-- REDIR: 0x4a0f580 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--16054-- REDIR: 0x4a0fd80 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852770 (memset)
+--16054-- REDIR: 0x4a0c760 (libc.so.6:__strnlen_avx2) redirected to 0x484ecb0 (strnlen)
+--16054-- REDIR: 0x49143e0 (libc.so.6:free) redirected to 0x484b210 (free)
+==16054== 
+==16054== HEAP SUMMARY:
+==16054==     in use at exit: 0 bytes in 0 blocks
+==16054==   total heap usage: 2 allocs, 2 frees, 1,088 bytes allocated
+==16054== 
+==16054== All heap blocks were freed -- no leaks are possible
+==16054== 
+==16054== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--16055-- REDIR: 0x4a0c200 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--16055-- REDIR: 0x4a0c5e0 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--16055-- REDIR: 0x49140a0 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--16055-- REDIR: 0x4a0f580 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--16055-- REDIR: 0x4a0fd80 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852770 (memset)
+--16055-- REDIR: 0x4a0c760 (libc.so.6:__strnlen_avx2) redirected to 0x484ecb0 (strnlen)
+--16055-- REDIR: 0x49143e0 (libc.so.6:free) redirected to 0x484b210 (free)
+==16055== 
+==16055== HEAP SUMMARY:
+==16055==     in use at exit: 0 bytes in 0 blocks
+==16055==   total heap usage: 6 allocs, 6 frees, 1,552 bytes allocated
+==16055== 
+==16055== All heap blocks were freed -- no leaks are possible
+==16055== 
+==16055== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+--16056-- REDIR: 0x4a0c200 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--16056-- REDIR: 0x4a0c5e0 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--16056-- REDIR: 0x49140a0 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--16056-- REDIR: 0x4a0f580 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--16056-- REDIR: 0x4a0fd80 (libc.so.6:__memset_avx2_unaligned_erms) redirected to 0x4852770 (memset)
+--16056-- REDIR: 0x4a0c760 (libc.so.6:__strnlen_avx2) redirected to 0x484ecb0 (strnlen)
+--16056-- REDIR: 0x49143e0 (libc.so.6:free) redirected to 0x484b210 (free)
+==16056== 
+==16056== HEAP SUMMARY:
+==16056==     in use at exit: 2,704 bytes in 40 blocks
+==16056==   total heap usage: 1,725 allocs, 1,685 frees, 369,116 bytes allocated
+==16056== 
+==16056== Searching for pointers to 40 not-freed blocks
+==16056== Checked 109,608 bytes
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 1 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 2 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 3 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 4 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 5 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 44 bytes in 1 blocks are definitely lost in loss record 6 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 48 bytes in 1 blocks are definitely lost in loss record 7 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 48 bytes in 1 blocks are definitely lost in loss record 8 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 52 bytes in 1 blocks are definitely lost in loss record 9 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 52 bytes in 1 blocks are definitely lost in loss record 10 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 52 bytes in 1 blocks are definitely lost in loss record 11 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 52 bytes in 1 blocks are definitely lost in loss record 12 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 13 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 14 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 15 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 16 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 17 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 18 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 19 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 20 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 21 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 56 bytes in 1 blocks are definitely lost in loss record 22 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 60 bytes in 1 blocks are definitely lost in loss record 23 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 60 bytes in 1 blocks are definitely lost in loss record 24 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 64 bytes in 1 blocks are definitely lost in loss record 25 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 64 bytes in 1 blocks are definitely lost in loss record 26 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 64 bytes in 1 blocks are definitely lost in loss record 27 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 64 bytes in 1 blocks are definitely lost in loss record 28 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 68 bytes in 1 blocks are definitely lost in loss record 29 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 68 bytes in 1 blocks are definitely lost in loss record 30 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 76 bytes in 1 blocks are definitely lost in loss record 31 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 76 bytes in 1 blocks are definitely lost in loss record 32 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 76 bytes in 1 blocks are definitely lost in loss record 33 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 76 bytes in 1 blocks are definitely lost in loss record 34 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 96 bytes in 1 blocks are definitely lost in loss record 35 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 96 bytes in 1 blocks are definitely lost in loss record 36 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 108 bytes in 1 blocks are definitely lost in loss record 37 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 108 bytes in 1 blocks are definitely lost in loss record 38 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 176 bytes in 1 blocks are definitely lost in loss record 39 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E926: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== 176 bytes in 1 blocks are definitely lost in loss record 40 of 40
+==16056==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16056==    by 0x10E93B: find_indices (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10ED9A: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEFF: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10EEB1: build_tree_parallel (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10F002: rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10E310: test_rpt_tree_create (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056==    by 0x10BB8C: acutest_do_run_ (in /home/panos/git/DJJ-project/bin/test_rpt)
+==16056== 
+==16056== LEAK SUMMARY:
+==16056==    definitely lost: 2,704 bytes in 40 blocks
+==16056==    indirectly lost: 0 bytes in 0 blocks
+==16056==      possibly lost: 0 bytes in 0 blocks
+==16056==    still reachable: 0 bytes in 0 blocks
+==16056==         suppressed: 0 bytes in 0 blocks
+==16056== 
+==16056== ERROR SUMMARY: 40 errors from 40 contexts (suppressed: 0 from 0)
+--16052-- REDIR: 0x4a0c200 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--16052-- REDIR: 0x4a0c5e0 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--16052-- REDIR: 0x49140a0 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--16052-- REDIR: 0x4a0f580 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--16052-- REDIR: 0x49143e0 (libc.so.6:free) redirected to 0x484b210 (free)
+==16052== 
+==16052== HEAP SUMMARY:
+==16052==     in use at exit: 0 bytes in 0 blocks
+==16052==   total heap usage: 2 allocs, 2 frees, 1,088 bytes allocated
+==16052== 
+==16052== All heap blocks were freed -- no leaks are possible
+==16052== 
+==16052== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

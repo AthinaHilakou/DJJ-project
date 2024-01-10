@@ -68,7 +68,10 @@ void test_find_indices(){
     int *left_indices;
     int *right_indices;
     find_indices(projections,constant, num_points,indices,&left_indices, &right_indices, &left_count, &right_count);
-
+    free(projections);
+    free(random_hyperplane);
+    free(left_indices);
+    free(right_indices);
     TEST_CHECK(left_count + right_count == num_points);
 }
 
@@ -100,37 +103,49 @@ void test_rpt_tree_create(){
     TEST_CHECK(tree->num_points_limit == num_limit);
     TEST_CHECK(tree->data_type_flag == flag);
 
-    // printf("\nRoot %d\n", tree->root->indices_size);
-    // for(int i = 0; i < num_points; i++){
-    //     printf("%d ", tree->root->indices[i]);
-    // }
-    // printf("\n");
-
-    // printf("Left %d:\n", tree->root->left->indices_size);
-    // for(int i = 0; i < tree->root->left->indices_size; i++){
-    //     printf("%d ", tree->root->left->indices[i]);
-    // }
-    // printf("\n");
-
-    // printf("Right %d:\n", tree->root->right->indices_size);
-    // for(int i = 0; i < tree->root->right->indices_size; i++){
-    //     printf("%d ", tree->root->right->indices[i]);
-    // }
-    // printf("\n");
-
     int leaf_count = rpt_leaf_count(tree);
-    printf("Leaf count: %d\n", leaf_count);
     int myleaf_count = 0;
     int *leaf_size = malloc(sizeof(int)*(leaf_count));
     int **leaf_indices = rpt_get_indices(tree, &leaf_count, leaf_size);
     for(int i = 0; i < leaf_count; i++){
         myleaf_count += leaf_size[i];
     }
-    printf("My leaf count: %d\n", myleaf_count);
     TEST_CHECK(myleaf_count == num_points);
-    // free(leaf_indices);
-    // free(leaf_size);
-    // rpt_tree_destroy(tree);
+    free(leaf_indices);
+    free(leaf_size);
+    free(projections);
+    free(random_hyperplane);
+    rpt_tree_destroy(tree);
+}
+
+
+void test_rpt_createAdjMatrix(){
+    //Make 5 random points
+    srand (time(NULL));
+    int num_points = 100;
+    data points[num_points];
+    int indices[num_points];
+    int num_point_limit = 10; 
+
+    for(int i =0; i < num_points; i++){
+        for(int j = 0; j < 100; j++){
+            points[i].data_array[j] = (double)rand()/RAND_MAX *2.0-1.0;
+        }
+        indices[i] = i;
+    }
+    int **adj_matrix = rpt_createAdjMatrix(points, num_points, 0,num_point_limit, 4);
+    int count = 0;
+    TEST_CHECK(adj_matrix != NULL);
+    for(int i = 0; i < num_points; i++){
+        count = 0;
+        for(int j = 0; j < num_points; j++){
+            if(adj_matrix[i][j] == 1){
+                count++;
+            }
+        }
+        TEST_CHECK(count == num_point_limit);
+    }
+
 }
 
 TEST_LIST = {
@@ -138,6 +153,7 @@ TEST_LIST = {
     {"test_dot_product", test_dot_product},
     {"test_find_indices", test_find_indices},
     {"test_rpt_tree_create", test_rpt_tree_create},
+    {"test_rpt_createAdjMatrix", test_rpt_createAdjMatrix},
     {NULL, NULL}
 };
 

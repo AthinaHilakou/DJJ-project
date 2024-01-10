@@ -30,6 +30,11 @@ float *find_mid_vertical_plane(void *points, int num_points, int flag){
 
     // we will return this
     float *hyperplane = (float *)malloc((num_dimensions + 1) * sizeof(float));
+    if(hyperplane == NULL){
+        printf("Error: malloc failed\n");
+        exit(9);
+    }
+
     //find vector of two points
     for (int i = 0; i < num_dimensions; ++i) {
         hyperplane[i] = point2[i] - point1[i];
@@ -63,6 +68,10 @@ void find_indices(float *projections, float constant, int num_points, int* indic
     int *right_indices = (int *)malloc(num_points * sizeof(int));
     int *left_indices = (int *)malloc(num_points * sizeof(int));
 
+    if(right_indices == NULL || left_indices == NULL){
+        printf("Error: malloc failed\n");
+        exit(9);
+    }
     for (int i = 0; i < num_points; ++i) {
         if (projections[i] <= constant) {
             right_indices[(*right_count)++] = indices[i];
@@ -83,9 +92,12 @@ void find_indices(float *projections, float constant, int num_points, int* indic
         }
     }
     
-    left_indices = (int *)realloc(left_indices, *left_count * sizeof(int));
-    right_indices = (int *)realloc(right_indices, *right_count * sizeof(int));
-
+    // left_indices = (int *)realloc(left_indices, *left_count * sizeof(int));
+    // right_indices = (int *)realloc(right_indices, *right_count * sizeof(int));
+    // if(right_indices == NULL || left_indices == NULL){
+    //     printf("Error: realloc failed\n");
+    //     exit(9);
+    // }
     *my_left_indices = left_indices;
     *my_right_indices = right_indices;
 }
@@ -94,6 +106,10 @@ void find_indices(float *projections, float constant, int num_points, int* indic
 //Create a node 
 rpt_Node create_node(float *data, int *indices, int indices_size) {
     rpt_Node node = (rpt_Node)malloc(sizeof(my_rpt_node));
+    if(node == NULL){
+        printf("Error: malloc failed\n");
+        exit(9);
+    }
     node->data = data;
     
     node->indices = indices;
@@ -106,7 +122,6 @@ rpt_Node create_node(float *data, int *indices, int indices_size) {
 
 void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_points, int flag, int num_point_limit, int thread_num) {
     //TODO add flag for data tri and handle then differently, replace num_dimensions with flag
-    printf("num_points: %d\n", num_points);
     // this is all points, everything
     node->data = points;
     int num_dimensions;
@@ -129,13 +144,9 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
         return;
     }
 
+
     // return condition, if we have reached the minimum limit
 
-    // printf("Indices: "  );
-    // for(int i = 0; i < num_points; i++){
-    //     printf("%d ", indices[i]);
-    // }
-    // printf("\n");
     // find perpendicular bisector hyperplane
     float *random_hyperplane = find_mid_vertical_plane(points,num_points,flag);
     if(random_hyperplane == NULL){
@@ -161,6 +172,8 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
         constant = random_hyperplane[100];
     }
 
+    free(random_hyperplane);
+
     int left_count = 0;
     int right_count = 0;
 
@@ -184,8 +197,6 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
     if(left_count < 3 || right_count < 3){
        return;
     }
-
-
     #pragma omp parallel sections
     {
         #pragma omp section
@@ -224,8 +235,6 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
         num_dimensions = 3;
     }
     build_tree_parallel(tree->root, points, indices, num_points, flag, num_point_limit, thread_num);
-
-
 
 
     return tree;
@@ -289,27 +298,37 @@ int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_
         adj_matrix[i] = (int *)calloc(num_points, sizeof(int));
     }
 
-    int leaf_count;
-    RandomProjectionTree tree = rpt_tree_create(points, num_points, flag, num_point_limit/2, thread_num);
-    int *leaf_size;
+    int maxNeighbors = num_point_limit/2;
+    RandomProjectionTree tree = rpt_tree_create(points, num_points, flag, maxNeighbors, thread_num);
+    int leaf_count = rpt_leaf_count(tree);
+    int *leaf_size = malloc(sizeof(int)*(leaf_count));
     int **indices = rpt_get_indices(tree, &leaf_count, leaf_size);
+    int *neighbors_num = malloc(sizeof(int)*num_points);
+    for(int i = 0; i < num_points; i++){
+        neighbors_num[i] = 0;
+    }
     for(int i = 0; i < leaf_count; i++){
+        if(leaf_size[i] > maxNeighbors){
+            leaf_size[i] = maxNeighbors;
+        }
         for(int j = 0; j < leaf_size[i]; j++){
+
             for(int k = j+1; k < leaf_size[i]; k++){
+                neighbors_num[indices[i][j]]++;
                 adj_matrix[indices[i][j]][indices[i][k]] = 1;
+                neighbors_num[indices[i][k]]++;
                 adj_matrix[indices[i][k]][indices[i][j]] = 1;
             }
             
         }
     }
-
-    int reamaining = num_point_limit - num_point_limit/2;
     //add some random neighbors to complete the graph
     for(int i = 0; i < num_points; i++){
-        for(int j = 0; j < reamaining; j++){
-            int rand_index;
+        int remaining = num_point_limit - neighbors_num[i];
+        for(int j = 0; j < remaining; j++){
+            int rand_index = rand() % num_points;
             do{
-                rand_index=rand()%num_points;
+                rand_index= ++rand_index % num_points;
             }while(adj_matrix[i][rand_index] == 1);
             adj_matrix[i][rand_index] = 1;
         }
@@ -321,7 +340,7 @@ int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_
     free(leaf_size);
     free(indices); //we pass imdices by reference, so we dont need to free it here
     rpt_tree_destroy(tree);
-
+    return adj_matrix;
 }
 
 
