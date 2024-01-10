@@ -42,7 +42,7 @@ int main(int argc, char** argv){
     if(rpt_flag != 1){
         myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
     } else{
-        myadjMatrix = (int **)rpt_tree_create(&tree, data, data_size, flag, 100);
+        myadjMatrix = (int **)rpt_tree_create(data, data_size, flag, maxNeighbors, get_nprocs());
     }
     printf("Finished creating adjMatrix in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
