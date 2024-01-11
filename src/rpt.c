@@ -139,7 +139,7 @@ void build_tree_parallel(rpt_Node node, void *points, int *indices, int num_poin
     node->num_points_limit = num_point_limit;
 
     // return condition, if we have reached the minimum limit
-
+    // printf("num_points: %d\n", num_points);
     if(num_points <= num_point_limit){
         return;
     }
@@ -220,6 +220,10 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
    
 
     int *indices = (int *)malloc(num_points * sizeof(int));
+    if(indices == NULL){
+        printf("Error: malloc failed\n");
+        exit(9);
+    }
     #pragma omp parallel for schedule(dynamic) thread_count(thread_num) // Use dynamic scheduling
     for(int i = 0; i < num_points; i++){
         indices[i] = i;
@@ -227,7 +231,7 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
     tree->root = create_node(points,indices,num_points);
     tree->num_points_limit = num_point_limit;
     tree->data_type_flag = flag;
-
+    printf("num_points: %d\n", num_points);
     int num_dimensions;
     if(flag == 0){
         num_dimensions = 100;
@@ -236,6 +240,7 @@ RandomProjectionTree rpt_tree_create(void *points, int num_points, int flag, int
     }
     build_tree_parallel(tree->root, points, indices, num_points, flag, num_point_limit, thread_num);
 
+    
 
     return tree;
 }
@@ -334,6 +339,14 @@ int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_
         }
     }
 
+    //! this print fixed things
+    // for(int i = 0; i < num_points; i++){
+    //     for(int j= 0; j < num_points; j++){
+    //         printf("%d ", adj_matrix[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("-----------\n");
     //from tree, find neighbors + add some random neighbors
     // for()
     

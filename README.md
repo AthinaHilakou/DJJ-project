@@ -31,9 +31,10 @@ TODO
 remove graph n\*n
 (add flag size (true & false) to avl to reduce mapp to array space)
 run random projection trees
-make random projections trees tests
 check for memory leaks(tests)
 
-Make function that initialises and returns a graph from an rpt
-
 non reproducable error segmentation fault in rpt create tree
+
+TODOTODO:
+
+get better performance out of rpt!!!

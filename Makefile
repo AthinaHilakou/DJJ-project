@@ -7,7 +7,7 @@ TESTS_DIR = tests
 HEADERS = headers
 # max_neighbors/k filename manh/eucl data_type_flag delta sampling_rate
 # ARGS = 100 datasets/given/00050000-2.bin eucl 0 0.1 0.02
-ARGS = 10 datasets/given/00000200.bin eucl_opt 0 0.001 0.1 1
+ARGS = 40 datasets/given/00002000-2.bin eucl_opt 0 0.001 0.8 1
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))

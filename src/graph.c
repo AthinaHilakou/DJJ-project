@@ -110,3 +110,14 @@ void freegraph(int** graph, int numVertices) {
     }
     free(graph); // free graph memory
 }
+
+int **save_array(int **array, int size){
+    int **new_array = (int **)malloc(size * sizeof(int *));
+    for(int i = 0; i < size; i++){
+        new_array[i] = (int *)malloc(size * sizeof(int));
+        for(int j = 0; j < size; j++){
+            new_array[i][j] = array[i][j];
+        }
+    }
+    return new_array;
+}

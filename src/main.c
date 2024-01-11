@@ -19,7 +19,7 @@ extern float *norms;
 // #define OUTPUT
 
 int main(int argc, char** argv){
-    srand(348); // seed random number generator
+    srand(time(NULL)); // seed random number generator
     clock_t start, end;
     double cpu_time_used;
     int maxNeighbors;
@@ -32,6 +32,8 @@ int main(int argc, char** argv){
     double delta = 0.0001; //default value of delta parameter
     double sampling_rate = 0.4; //default value of sampling_rate parameter
     int rpt_flag = -1;
+    int ***matrix_history = malloc(100*sizeof(int **)); //TODO: adjust this
+    int matrix_history_size = 0;
 
     get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate, &rpt_flag);
     void* data = *data_p;
@@ -42,8 +44,10 @@ int main(int argc, char** argv){
     if(rpt_flag != 1){
         myadjMatrix = (int **)createAdjMatrix(data_size, maxNeighbors);
     } else{
-        myadjMatrix = (int **)rpt_tree_create(data, data_size, flag, maxNeighbors, get_nprocs());
+        myadjMatrix = (int **)rpt_createAdjMatrix(data, data_size, flag, maxNeighbors, get_nprocs());
     }
+    matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
+
     printf("Finished creating adjMatrix in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     Heap *neighbors;
@@ -61,7 +65,6 @@ int main(int argc, char** argv){
     }
     // norms = (float *)malloc(data_size*sizeof(float));
     // norms_sqred(data, data_size,flag, norms);
-
     
     Avl_tree *reverse_neighbors = (Avl_tree *)malloc(data_size*sizeof(Avl_tree));
     // store all comparisons so far between nodes and potential neighbors
@@ -207,6 +210,7 @@ int main(int argc, char** argv){
         if((float) update_counter < delta*maxNeighbors*data_size){
             break;
         }
+        matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
     }
 
     
@@ -231,7 +235,13 @@ int main(int argc, char** argv){
     // search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
 
     // printf("======Orders are $d, %d, %d, %d, %d\n", order1, order2, order3, order4);
-
+    for(int i = 0; i < matrix_history_size; i++){
+        printf("recall of graph is %1.3f\n", recall(argc,argv,matrix_history[i], maxNeighbors, weight_fun, data, data_size, flag));
+    }
+    for(int i = 0; i < matrix_history_size; i++){
+        freegraph(matrix_history[i], data_size);
+    }
+    free(matrix_history);
     //Free resources
     free(data_p);
     free(data);

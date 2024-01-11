@@ -12,3 +12,4 @@ void getReverseNeighbors(int** adjMatrix, int vertex, int numVertices, int* numN
 void printAdjMatrix(int** adjMatrix, int numVertices);
 void freegraph(int** graph, int numVertices);
 void printNeighbors(int *array, int size, int owner);
+int **save_array(int **array, int size);
