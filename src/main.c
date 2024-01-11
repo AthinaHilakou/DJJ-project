@@ -121,7 +121,7 @@ int main(int argc, char** argv){
     while(1){
         int update_counter = 0;
         
-
+        #pragma omp parallel for thread_count(5) schedule(dynamic, 100)
         for(int i = 0; i < data_size; i++){
             // get all normal neighbors with false flag
             heap_to_array(neighbors[i],old[i],&sizes_f_flags[i], 0, sampling_rate, maxNeighbors);
@@ -150,6 +150,7 @@ int main(int argc, char** argv){
             for(int j = 0; j < total_new_size; j++){
                 int neighbor1 = joined_new_arrays[j];
                 // for all neighbor pairs
+                #pragma omp parallel for thread_count(5) schedule(dynamic, 100)
                 for(int k = j + 1; k < total_new_size; k++){
                     int neighbor2 = joined_new_arrays[k];
 
@@ -172,6 +173,7 @@ int main(int argc, char** argv){
 
                     update_and_compute(myadjMatrix, neighbors, reverse_neighbors, node_history, neighbor2, neighbor1, old_neighbor2, weight, &update_counter, 2);
                 }
+                #pragma omp parallel for thread_count(5) schedule(dynamic, 100)
 
                 // for j in joined_new_arrays, k in joined_old_arrays--------------------------------------
                 for(int k = 0; k < total_old_size; k++){
@@ -234,9 +236,8 @@ int main(int argc, char** argv){
     // search here
     // search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
 
-    // printf("======Orders are $d, %d, %d, %d, %d\n", order1, order2, order3, order4);
     for(int i = 0; i < matrix_history_size; i++){
-        printf("recall of graph is %1.3f\n", recall(argc,argv,matrix_history[i], maxNeighbors, weight_fun, data, data_size, flag));
+        printf("recall of graph(%d) is %1.3f\n", i, recall(argc,argv,matrix_history[i], maxNeighbors, weight_fun, data, data_size, flag));
     }
     for(int i = 0; i < matrix_history_size; i++){
         freegraph(matrix_history[i], data_size);

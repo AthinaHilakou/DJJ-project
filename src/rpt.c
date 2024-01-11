@@ -349,7 +349,7 @@ int **rpt_createAdjMatrix(void *points, int num_points, int flag, int num_point_
     // printf("-----------\n");
     //from tree, find neighbors + add some random neighbors
     // for()
-    
+    free(neighbors_num);
     free(leaf_size);
     free(indices); //we pass imdices by reference, so we dont need to free it here
     rpt_tree_destroy(tree);
