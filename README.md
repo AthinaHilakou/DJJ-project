@@ -17,7 +17,7 @@ Tρέχει με τα δεδομένα του διαγωνισμού στον φ
 δεδομενα float τριών διαστάσεων
 
 Το πρόγραμμα δέχεται ορίσματα γραμμής εντολών ως εξής:
-./main <max_neighbors/k> <filename> <manh/eucl> <data_type_flag> <delta> <sampling_rate>
+./main <max_neighbors/k> <filename> <manh/eucl> <data_type_flag> <delta> <sampling_rate> <rpt_flag>
 <max_neighbors>: πλήθος κοντινότερων γειτόνων που ψάχνουμε
 <filename>: αρχείο δεδομένων
 <manh/eucl>: μετρική απόστασης για τα δεδομένα, ένα εκ των manh (manhattan) ή eucl (euclidian)
@@ -26,15 +26,4 @@ Tρέχει με τα δεδομένα του διαγωνισμού στον φ
 <sampling_rate>: παράμετρος για την επιλογή ποσοστού των στοιχείων που θα ελεγθούν σε κάθε επανάληψη 0 < sampling_rate <= 1
 <rpt_flag>: 1 για την αρχικοποίηση του γράφου με rpts
 
-TODO
 
-remove graph n\*n
-(add flag size (true & false) to avl to reduce mapp to array space)
-run random projection trees
-check for memory leaks(tests)
-
-non reproducable error segmentation fault in rpt create tree
-
-TODOTODO:
-
-get better performance out of rpt!!!

@@ -11,7 +11,7 @@
 #include <string.h>
 #include <sys/sysinfo.h>
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag);
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag, int *history_flag);
 int update_and_compute(int **myadjMatrix, Heap *neighbors, Avl_tree *reverse_neighbors, Avl_tree *node_history,int neighbor1,
                         int neighbor2, int old_neighbor1, float weight, int *update_counter, int order);
 
@@ -32,12 +32,16 @@ int main(int argc, char** argv){
     double delta = 0.0001; //default value of delta parameter
     double sampling_rate = 0.4; //default value of sampling_rate parameter
     int rpt_flag = -1;
-    int ***matrix_history = malloc(100*sizeof(int **)); //TODO: adjust this
+    int history_flag = -1;
+    int ***matrix_history;
     int matrix_history_size = 0;
 
-    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate, &rpt_flag);
+    get_arguments(argc, argv, &maxNeighbors, &weight_fun, &data_size, data_p, &flag, &delta, &sampling_rate, &rpt_flag, &history_flag);
     void* data = *data_p;
     printf("Finished importing data in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
+    if(history_flag == 1){
+        matrix_history = (int ***)malloc(data_size*sizeof(int **));
+    }
     int **myadjMatrix;
     RandomProjectionTree tree;
     
@@ -46,8 +50,9 @@ int main(int argc, char** argv){
     } else{
         myadjMatrix = (int **)rpt_createAdjMatrix(data, data_size, flag, maxNeighbors, get_nprocs());
     }
-    matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
-
+    if(history_flag == 1){
+        matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
+    }
     printf("Finished creating adjMatrix in %3.2f seconds\n", ((double) (clock() - start)) / CLOCKS_PER_SEC);
 
     Heap *neighbors;
@@ -212,7 +217,9 @@ int main(int argc, char** argv){
         if((float) update_counter < delta*maxNeighbors*data_size){
             break;
         }
-        matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
+        if(history_flag == 1){
+            matrix_history[matrix_history_size++] = save_array(myadjMatrix, data_size);
+        }
     }
 
     
@@ -235,14 +242,15 @@ int main(int argc, char** argv){
     }
     // search here
     // search(myadjMatrix, dist_msr_ab, data, data_size, maxNeighbors, all_neighbors, sizes, flag);
-
-    for(int i = 0; i < matrix_history_size; i++){
-        printf("recall of graph(%d) is %1.3f\n", i, recall(argc,argv,matrix_history[i], maxNeighbors, weight_fun, data, data_size, flag));
+    if(history_flag == 1){
+        for(int i = 0; i < matrix_history_size; i++){
+            printf("recall of graph(%d) is %1.3f\n", i, recall(argc,argv,matrix_history[i], maxNeighbors, weight_fun, data, data_size, flag));
+        }
+        for(int i = 0; i < matrix_history_size; i++){
+            freegraph(matrix_history[i], data_size);
+        }
+        free(matrix_history);
     }
-    for(int i = 0; i < matrix_history_size; i++){
-        freegraph(matrix_history[i], data_size);
-    }
-    free(matrix_history);
     //Free resources
     free(data_p);
     free(data);
@@ -285,10 +293,10 @@ int main(int argc, char** argv){
 
 
 
-void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag){
+void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun)(void *, int, int, int), int *data_size, void** data, int* flag, double* delta, double* sampling_rate, int *rpt_flag, int *history_flag){
     if(argc < 6){
-        //              0      1              2           3                4      5       6                7
-        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate> <random_projection_tree_flag>\n");
+        //              0      1              2           3                4      5       6                7                               8
+        printf("Usage: ./main <maxNeighbors> <file_name> <weight_function> <flag> <delta> <sampling_rate> <random_projection_tree_flag> <recall_history\n");
         exit(1);
     }
     *maxNeighbors = atoi(argv[1]);
@@ -296,6 +304,7 @@ void get_arguments(int argc, char** argv, int *maxNeighbors, float (**weight_fun
     *delta = strtod(argv[5], NULL);
     *sampling_rate = strtod(argv[6], NULL);
     *rpt_flag = atoi(argv[7]);
+    *history_flag = atoi(argv[8]);
 
     if(*flag == 0){  // competition data case
         *data = (Data)import_data(argv[2], data_size);

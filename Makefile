@@ -5,9 +5,9 @@ OBJ_DIR = obj
 BIN_DIR = bin
 TESTS_DIR = tests
 HEADERS = headers
-# max_neighbors/k filename manh/eucl data_type_flag delta sampling_rate
+# max_neighbors/k filename manh/eucl data_type_flag delta sampling_rate recall_history
 # ARGS = 100 datasets/given/00050000-2.bin eucl 0 0.1 0.02
-ARGS = 100 datasets/given/00005000-2.bin eucl_opt 0 0.001 0.2 1
+ARGS = 100 datasets/given/00000200.bin eucl_opt 0 0.001 0.08 1 1
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
@@ -67,10 +67,13 @@ tests: $(TESTS) $(BIN)
 	gcc  -o bin/test_min_heap tests/test_min_heap.c obj/min_heap.o -lm
 	gcc  -o bin/test_graph tests/test_graph.c obj/graph.o -lm
 	gcc  -o bin/test_avl tests/test_avl.c obj/avl_tree.o -lm
+	gcc  -o bin/test_rpt tests/test_rpt.c obj/rpt.o -lm
+
 	./bin/test_graph 
 	./bin/test_heap
 	./bin/test_min_heap
 	./bin/test_avl
+	./bin/test_rpt
 
 do:
 	./bin/test_graph 
@@ -79,4 +82,4 @@ do:
 	./bin/test_avl
 
 clean:
-	rm -rf $(OBJS) $(BIN) $(BIN_DIR)/real_neighbors.txt bin/test_graph bin/test_of_heap bin/test_of_min_heap bin/test_avl bin/min_heap bin/test_min_heap bin/test_heap obj/test_graph.o obj/test_heap.o obj/test_min_heap.o obj/test_avl.o
+	rm -rf $(OBJS) $(BIN) $(BIN_DIR)/real_neighbors.txt bin/test_graph bin/test_of_heap bin/test_of_min_heap bin/test_avl bin/min_heap bin/test_min_heap bin/test_heap bin/test_rpt obj/test_graph.o obj/test_heap.o obj/test_min_heap.o obj/test_avl.o
